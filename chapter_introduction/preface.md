@@ -1,19 +1,6 @@
-# Preface
+# まえがき
 
-Just a few years ago, there were no legions of deep learning scientists
-developing intelligent products and services at major companies and startups.
-When the youngest of us (the authors) entered the field,
-machine learning didn't command headlines in daily newspapers.
-Our parents had no idea what machine learning was,
-let alone why we might prefer it to a career in medicine or law.
-Machine learning was a forward-looking academic discipline
-with a narrow set of real-world applications.
-And those applications, e.g., speech recognition and computer vision,
-required so much domain knowledge that they were often regarded
-as separate areas entirely for which machine learning was one small component.
-Neural networks, the antecedents of the deep learning models
-that we focus on in this book, were regarded as outmoded tools.
-
+わずかに数年前では、大きな企業やスタートアップにおいて知的な製品やサービスを開発するような、深層学習の科学者のチームは存在しませんでした。われわれ著者のうち、最も若い世代がこの分野に入ったときも、日々の新聞で機械学習が新聞の見出しにでることはありませんでした。われわれの両親は、われわれが医薬や法律といった関係の職業よりも機械学習を好んでいることはもちろん、機械学習が何なのかということについても知りません。機械学習は、非常に狭い領域での実世界の応用に向けた、先進的な学習的領域だったのです。例えば音声認識やコンピュータビジョンといった応用では、機械学習というのは非常に小さな構成要素の1つで、それとは別に、多くのドメイン知識を必要としたのでした。ニューラルネットワークは、われわれがこの本で着目する深層学習モデルの元になるものですが、時代遅れなツールだと考えられていました。
 
 In just the past five years, deep learning has taken the world by surprise,
 driving rapid progress in fields as diverse as computer vision,
