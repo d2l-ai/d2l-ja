@@ -1,9 +1,6 @@
-# Introduction
+# はじめに
 
-Recent years have witnessed rapid progress in deep learning. It has
-changed the approach to artificial intelligence and statistics
-fundamentally. This chapter gives a brief introduction to what deep
-learning is and how to use this book.
+近年、深層学習において目ざましい進歩がみられます。この進歩は、人工知能や統計学に対するアプローチを根本的に変えています。この章では、深層学習とは何かと、この本の使い方について簡単に紹介したいと思います。
 
 ```eval_rst
 
