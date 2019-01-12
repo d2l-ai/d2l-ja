@@ -11,7 +11,7 @@
 <!--
 この本が出版されたあかつきには、本のハードコピーを協力者に無料で提供します（ただし、現在は米国のみの予定。）
 -->
-協力される方は、[issue](https://github.com/harusametime/d2l-ja/issues)にてご連絡ください。
+協力される方は、[issue](https://github.com/harusametime/d2l-ja/issues)にてご連絡ください。最初にPRを送っていただいても構いません。
 
 
 [[Chinese version](https://github.com/diveintodeeplearning)] [[Discuss and report issues](https://discuss.mxnet.io/)] 
