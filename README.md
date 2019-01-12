@@ -7,7 +7,7 @@
 
 ## Contribute ([learn how](http://en.diveintodeeplearning.org/chapter_appendix/how-to-contribute.html))
 
-このオープンソースの書籍は、コミュニティに貢献する人々から、指導内容の提案、誤字・脱字の訂正、その他の改善について協力を頂いています。他の方のために、この本をより良くするためには、これを読むあなたの協力が重要です。私達は[謝辞](http://en.diveintodeeplearning.org/chapter_introduction/preface.html#Acknowledgments) に、この本の協力者の名前を記載します。
+このオープンソースの書籍は、コミュニティに貢献する人々から、指導内容の提案、誤字・脱字の訂正、その他の改善について協力を頂いています。これを読む他の方のために、この本をより良くするための、あなたの協力が必要です。私達は[謝辞](http://en.diveintodeeplearning.org/chapter_introduction/preface.html#Acknowledgments) に、この本の協力者の名前を記載します。
 <!--
 この本が出版されたあかつきには、本のハードコピーを協力者に無料で提供します（ただし、現在は米国のみの予定。）
 -->
