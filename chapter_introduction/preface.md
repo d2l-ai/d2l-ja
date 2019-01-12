@@ -2,20 +2,7 @@
 
 以前は、大きな企業やスタートアップにおいて知的な製品やサービスを開発するような、深層学習の科学者のチームは存在しませんでした。われわれ著者のうち、最も若い世代がこの分野に入ったときも、日々の新聞で機械学習が新聞の見出しにでることはありませんでした。われわれの両親は、われわれが医薬や法律といった関係の職業よりも機械学習を好んでいることはもちろん、機械学習が何なのかということについても知りません。機械学習は、狭い領域における実世界の応用に向けた、先進的な学習的領域だったのです。例えば音声認識やコンピュータビジョンといった応用では、機械学習というのは非常に小さな構成要素の1つで、それとは別に、多くのドメイン知識を必要としたのでした。ニューラルネットワークは、われわれがこの本で着目する深層学習モデルの元になるものですが、時代遅れなツールだと考えられていました。
 
-In just the past five years, deep learning has taken the world by surprise,
-driving rapid progress in fields as diverse as computer vision,
-natural language processing, automatic speech recognition,
-reinforcement learning, and statistical modeling.
-With these advances in hand, we can now build cars that drive themselves
-(with increasing autonomy), smart reply systems that anticipate mundane replies,
-helping people dig out from mountains of email,
-and software agents that dominate the world's best humans at board games like Go,
-a feat once deemed to be decades away.
-Already, these tools are exerting a widening impact,
-changing the way movies are made, diseases are diagnosed,
-and playing a growing role in basic sciences -- from astrophysics to biology.
-This book represents our attempt to make deep learning approachable,
-teaching you both the *concepts*, the *context*, and the *code*.
+5年ほど前、深層学習はコンピュータビジョン、自然言語処理、自動音声認識、強化学習、統計的モデリングといった多様な分野において急速な進歩をみせ、世界を驚かせました。このような発展を手に、われわれは自動運転を開発したり（車の自動性を高めたり）、日常の応答を予測する賢い応答システムを開発したり、山のようなメールを探すことを助けたり、碁のようなボードゲームで世界のトッププレイヤーに打ち勝つソフトウェアエージェントを開発したり、数十年はかかると思われていたものを開発したりできるようになりました。すでに、これらのツールはそのインパクトを拡大し続けており、映画の作成方法を変え、病気の診断方法を変え、天体物理学から生物学に至るまでの基礎科学における役割を大きくしています。この本では、深層学習をより身近なものとするための試みを紹介し、読者に*概念*、*具体的な内容*、*コード*のすべてをお伝えします。
 
 
 ## One Medium Combining Code, Math, and HTML
