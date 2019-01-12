@@ -7,21 +7,9 @@
 
 ## コード、数学、HTMLを結びつける手段
 
-For any computing technology to reach its full impact,
-it must well-understood, well-documented, and supported by
-mature, well-maintained tools.
-The key ideas should be clearly distilled,
-minimizing the onboarding time needing to bring new practitioners up to date.
-Mature libraries should automate common tasks,
-and exemplar code should make it easy for practitioners
-to modify, apply, and extend common applications to suit their needs.
-Take dynamic web applications as an example.
-Despite a large number of companies, like Amazon,
-developing successful database-driven web applications in the 1990s,
-the full potential of this technology to aid creative entrepreneurs
-has only been realized over the past ten years,
-owing to the development of powerful, well-documented frameworks.
-
+どのようなコンピュータの技術もそのインパクトを十分に発揮するためには、十分に理解され、文書化され、成熟して十分に保守されたツールによって支援されるひつようがあります。
+キーとなるアイデアははっきりと抽出され、新たに深層学習に取り組む人が最新の技術を身につけるための時間を最小化すべきです。成熟したライブラリは共通のタスクを自動化し、お手本となるコードは、取り組む人が必要とするものにあわせて、アプリケーションを簡単に修正、応用、拡張する手助けとなるべきです。動的なWebアプリケーションを例にあげましょう。
+Amazonのような多くの企業が1990年代にデータベースを利用したWebアプリケーションの開発に成功しましたが、創造的な事業家を支援する潜在的な技術は、ここ10年で大きく実現されたものであり、それは強力で十分に文書化されたフレームワークの開発のおかげだったのです。
 
 
 Realizing deep learning presents unique challenges because
