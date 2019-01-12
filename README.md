@@ -7,9 +7,11 @@
 
 ## Contribute ([learn how](http://en.diveintodeeplearning.org/chapter_appendix/how-to-contribute.html))
 
-This open source book has benefited from pedagogical suggestions, typo corrections, and other improvements from community contributors. Your help is valuable for making the book better for everyone. We will [acknowledge](http://en.diveintodeeplearning.org/chapter_introduction/preface.html#Acknowledgments) each contributor in the book and send a free book (hard copy) to each contributor when it is published. 
-
-Dear contributors, please email your GitHub ID, name, and mailing address to d2lbook.en@gmail.com. Thanks.
+このオープンソースの書籍は、コミュニティに貢献する人々から、指導内容の提案、誤字・脱字の訂正、その他の改善について協力を頂いています。他の方のために、この本をより良くするためには、これを読むあなたの協力が重要です。私達は[謝辞](http://en.diveintodeeplearning.org/chapter_introduction/preface.html#Acknowledgments) に、この本の協力者の名前を記載します。
+<!--
+この本が出版されたあかつきには、本のハードコピーを協力者に無料で提供します（ただし、現在は米国のみの予定。）
+-->
+協力される方は、[issue](https://github.com/harusametime/d2l-ja/issues)にてご連絡ください。
 
 
 [[Chinese version](https://github.com/diveintodeeplearning)] [[Discuss and report issues](https://discuss.mxnet.io/)] 
