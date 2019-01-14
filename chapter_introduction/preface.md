@@ -8,10 +8,10 @@
 ## コード、数学、HTMLを結びつける手段
 
 どのようなコンピュータの技術もそのインパクトを十分に発揮するためには、十分に理解され、文書化され、成熟して十分に保守されたツールによって支援される必要があります。
-キーとなるアイデアははっきりと抽出され、新たに深層学習に取り組む人が最新の技術を身につけるための時間を最小化すべきです。成熟したライブラリは共通のタスクを自動化し、お手本となるコードは、取り組む人が必要とするものにあわせて、アプリケーションを簡単に修正、応用、拡張する手助けとなるべきです。動的なWebアプリケーションを例にあげましょう。
+キーとなるアイデアを明確な形で切り出して、新たに深層学習に取り組む人が最新の技術を身につけるための時間を最小化すべきです。成熟したライブラリは共通のタスクを自動化し、お手本となるコードは、取り組む人が必要とするものにあわせて、アプリケーションを簡単に修正、応用、拡張する手助けとなるべきです。動的なWebアプリケーションを例にあげましょう。
 Amazonのような多くの企業が1990年代にデータベースを利用したWebアプリケーションの開発に成功しましたが、創造的な事業家を支援する潜在的な技術は、ここ10年で大きく実現されたものであり、それは強力で十分に文書化されたフレームワークの開発のおかげだったのです。
 
-どんなアプリケーションも様々な学問を集めて成り立っていますので、深層学習を理解することは他にはない挑戦を意味するでしょう。深層学習を適用するためには以下を理解する必要があります。
+どんなアプリケーションも様々な学問を集めて成り立っているので、深層学習を理解することは他にはない挑戦を意味するでしょう。深層学習を適用するためには以下を理解する必要があります。
 
 (i) ある特定の手段によって問題を投げかけるための動機  
 (ii) 与えられたモデリングアプローチを構成する数学  
@@ -19,31 +19,9 @@ Amazonのような多くの企業が1990年代にデータベースを利用し�
 (iv) モデルを効率的に学習させるため工学、つまり数値計算の落とし穴にはまらないようにしたり、利用可能なハードウェアを最大限生かすこと
 
 問題を定式化するために必要なクリティカルシンキングのスキル、その問題を解くために必要な数学、その解法を実装するためのソフトウェアについて、1つの場所で
-教えることは恐ろしいほどの挑戦です。この本のわれわれのゴールは、将来の実践者に対して必要な情報を提供するための統一的なリソースを提示することです。
+教えることは恐ろしいほどの挑戦です。この本における、われわれのゴールは、将来の実践者に対して必要な情報を提供するための統一的なリソースを提示することです。
 
-We started this book project in July 2017
-when we needed to explain MXNet's (then new) Gluon interface to our users.
-At the time, there were no resources that were simultaneously
-(1) up to date, (2) covered the full breadth of modern machine learning
-with anything resembling of technical depth,
-and (3) interleaved the exposition one expects from an engaging textbook
-with the clean runnable code one seeks in hands-on tutorials.
-We found plenty of code examples for how to use a given deep learning
-framework (e.g. how to do basic numerical computing with matrices in TensorFlow)
-or for implementing particular techniques (e.g. code snippets for LeNet, AlexNet, ResNets, etc)
-in the form of blog posts or on GitHub.
-However, these examples typically focused on
-*how* to implement a given approach,
-but left out the discussion of *why* certain algorithmic decisions are made.
-While sporadic topics have been covered in blog posts,
-e.g. on the website [Distill](http://distill.pub) or personal blogs,
-they only covered selected topics in deep learning, and often lacked associated code.
-On the other hand, while several textbooks have emerged,
-most notably [Goodfellow, Bengio and Courville, 2016](https://www.deeplearningbook.org/),
-which offers an excellent survey of the concepts behind deep learning,
-these resources don't marry the descriptions to realizations of the concepts in code,
-sometimes leaving readers clueless as to how to implement them.
-Moreover, too many resources are hidden behind the paywalls of commercial course providers.
+われわれは、この本のプロジェクトを2017年7月に開始し、そのころ、MXNetの新しいGluonのインターフェースをユーザに説明する必要がありました。当時、(1) 常に最新で、(2) 技術的な深さをもちあわせて、現代の機械学習を幅広くカバーし、(3) 魅力的な教科書に期待される説明文の中に、ハンズオンの資料で求められるような整備された実行可能なコードが含まれるようなリソースは存在しませんでした。われわれは、深層学習のフレームワークの利用方法（例えば、Tensorflowにおける行列の基本的な数値計算）や、特定の技術を実装する方法（たとえば、LeNet、AlexeNet、ResNetなどのコードスニペット）に関する十分な数のコード例を、ブログの記事やGitHubに持っています。しかし、これらの例は典型的には与えられたアプローチを*どのように*実装するかに重点が置かれていて、*なぜ*そのアルゴリズムに決定したのかという議論はなされていません。ブログの記事は散発的にこのような内容をカバーしていて、例えば[Distill](http://distill.pub)というウェブサイトや、個人のブログなどがありますが、深層学習における限定的な内容をカバーするだけで、しばしば関連するコードがありません。一方で、いくつかの教科書が登場し、最も著名な[Goodfellow, Bengio and Courville, 2016](https://www.deeplearningbook.org/)は、深層学習を支える概念について丁寧に調査、説明しているが、これらのリソースは説明文とコードによる実装を合わせておらず、それを実装する方法について、ときどき読者に手がかかりを与えないままになっています。加えて、非常に多くのリソースは、商用の教育コースの提供者によって、課金者のみにアクセスできるようになっており隠れてしまっています。
 
 We set out to create a resource that could
 (1) be freely available for everyone,
