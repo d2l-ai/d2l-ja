@@ -7,27 +7,17 @@
 
 ## コード、数学、HTMLを結びつける手段
 
-どのようなコンピュータの技術もそのインパクトを十分に発揮するためには、十分に理解され、文書化され、成熟して十分に保守されたツールによって支援されるひつようがあります。
+どのようなコンピュータの技術もそのインパクトを十分に発揮するためには、十分に理解され、文書化され、成熟して十分に保守されたツールによって支援される必要があります。
 キーとなるアイデアははっきりと抽出され、新たに深層学習に取り組む人が最新の技術を身につけるための時間を最小化すべきです。成熟したライブラリは共通のタスクを自動化し、お手本となるコードは、取り組む人が必要とするものにあわせて、アプリケーションを簡単に修正、応用、拡張する手助けとなるべきです。動的なWebアプリケーションを例にあげましょう。
 Amazonのような多くの企業が1990年代にデータベースを利用したWebアプリケーションの開発に成功しましたが、創造的な事業家を支援する潜在的な技術は、ここ10年で大きく実現されたものであり、それは強力で十分に文書化されたフレームワークの開発のおかげだったのです。
 
-
-Realizing deep learning presents unique challenges because
-any single application brings together various disciplines.
-Applying deep learning requires simultaneously understanding
-(i) the motivations for casting a problem in a particular way,
-(ii) the mathematics of a given modeling approach,
-(iii) the optimization algorithms for fitting the models to data,
-(iv) and the engineering required to train models efficiently,
-navigating the pitfalls of numerical computing and getting the most
-out of available hardware.
-Teaching both the critical thinking skills required to formulate problems,
-the mathematics to solve them, and the software tools to implement those
-solutions all in one place presents formidable challenges.
-Our goal in this book is to present a unified resource
-to bring would-be practitioners up to speed.
-
-
+どんなアプリケーションも様々な学問を集めて成り立っていますので、深層学習を理解することは他にはない挑戦を意味するでしょう。深層学習を適用するためには以下を理解する必要があります。
+(i) ある特定の手段によって問題を投げかけるための動機
+(ii) 与えられたモデリングアプローチを構成する数学
+(iii) モデルをデータに適合させるための最適化アルゴリズム
+(iv) モデルを効率的に学習させるため工学、つまり数値計算の落とし穴にはまらないようにしたり、利用可能なハードウェアを最大限生かすこと
+問題を定式化するために必要なクリティカルシンキングのスキル、その問題を解くために必要な数学、その解法を実装するためのソフトウェアについて、1つの場所で
+教えることは恐ろしいほどの挑戦です。この本のわれわれのゴールは、将来の実践者に対して必要な情報を提供するための統一的なリソースを提示することです。
 
 We started this book project in July 2017
 when we needed to explain MXNet's (then new) Gluon interface to our users.
