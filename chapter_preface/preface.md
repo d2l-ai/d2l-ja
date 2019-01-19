@@ -33,24 +33,6 @@ Amazonのような多くの企業が1990年代にデータベースを利用し�
 
 これらのゴールはしばしば衝突を起こしていました。数式、理論、そして引用は、最善な形で管理されて、LaTeXによって組版されます。コードはPythonで最善の形で記述される。そして、ウェブページはもともとHTMLやJavaScriptによって成り立っている。さらに、実行可能なコードとして、物理的な書籍として、ダウンロード可能なPDFとして、インターネット上のWeb Siteとして、これらのいずれの場合でもアクセス可能なコンテンツを欲しいと考えていました。現在もこれらの要求に完全に応えられるツールやワークフローは存在しません。そこでわれわれは、われわれ自信でこれを構築する必要がありました。われわれは、このアプローチの詳細について [appendix](../chapter_appendix/how-to-contribute.md)に記載しています。そのソースの共有や編集の許可のためのGithub、コードと数式と文章を調和させるJupyter ノートブック、複数の出力(Webページ、PDFなど)を生成するためのSphinx、フォーラムのためのDisclosure、これらを利用することを決めました。われわれのシステムはまだ完全ではない一方で、これらの選択は互いに競合してきた関心事を互いに歩み寄らせているでしょう。この場がこのような統合的なワークフローを利用して最初に出版される本になるだろうと、われわれは信じています。
 
-These goals were often in conflict.
-Equations, theorems, and citations are best managed and laid out in LaTeX.
-Code is best described in Python.
-And webpages are native in HTML and JavaScript.
-Furthermore, we want the content to be
-accessible both as executable code, as a physical book,
-as a downloadable PDF, and on the internet as a website.
-At present there exist no tools and no workflow
-perfectly suited to these demands, so we had to assemble our own.
-We describe our approach in detail in the [appendix](../chapter_appendix/how-to-contribute.md).
-We settled on Github to share the source and to allow for edits,
-Jupyter notebooks for mixing code, equations and text,
-Sphinx as a rendering engine to generate multiple outputs,
-and Discourse for the forum.
-While our system is not yet perfect, these choices provide a good compromise
-among the competing concerns.
-We believe that this might be the first book published using such an integrated workflow.
-
 ## Organization
 
 Aside from a few preliminary notebooks that provide a crash course
