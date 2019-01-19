@@ -7,7 +7,6 @@
 .. toctree::
    :maxdepth: 2
 
-   preface
    deep-learning-intro
    how-to-use
 
