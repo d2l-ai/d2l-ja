@@ -33,19 +33,9 @@ Amazonのような多くの企業が1990年代にデータベースを利用し�
 
 これらのゴールはしばしば衝突を起こしていました。数式、理論、そして引用は、最善な形で管理されて、LaTeXによって組版されます。コードはPythonで最善の形で記述される。そして、ウェブページはもともとHTMLやJavaScriptによって成り立っている。さらに、実行可能なコードとして、物理的な書籍として、ダウンロード可能なPDFとして、インターネット上のWeb Siteとして、これらのいずれの場合でもアクセス可能なコンテンツを欲しいと考えていました。現在もこれらの要求に完全に応えられるツールやワークフローは存在しません。そこでわれわれは、われわれ自信でこれを構築する必要がありました。われわれは、このアプローチの詳細について [appendix](../chapter_appendix/how-to-contribute.md)に記載しています。そのソースの共有や編集の許可のためのGithub、コードと数式と文章を調和させるJupyter ノートブック、複数の出力(Webページ、PDFなど)を生成するためのSphinx、フォーラムのためのDisclosure、これらを利用することを決めました。われわれのシステムはまだ完全ではない一方で、これらの選択は互いに競合してきた関心事を互いに歩み寄らせているでしょう。この場がこのような統合的なワークフローを利用して最初に出版される本になるだろうと、われわれは信じています。
 
-## Organization
+## 構成
 
-Aside from a few preliminary notebooks that provide a crash course
-in the basic mathematical background, each subsequent notebook introduces
-both a reasonable number of new concepts and provides a single
-self-contained working example -- using a real dataset.
-This presents an organizational challenge. Some models might logically
-be grouped together in a single notebook.  And some ideas might be
-best taught by executing several models in succession.  On the other
-hand, there's a big advantage to adhering to a policy of *1 working
-example, 1 notebook*: This makes it as easy as possible for you to
-start your own research projects by leveraging our code. Just copy a
-single notebook and start modifying it.
+基礎的な数学の知識に関する集中講義を提供するための、一部の初歩的なノートブックは別として、それ以降のノートブックはほどよい量の新しいコンセプトを紹介し、全てがそろった単一で実行可能な例を実際のデータセットとともに提供します。これは、１つの構成上のチャレンジと呼んでいいと思います。いくつかのモデルは、単一のノートブックの中に論理的にひとまとめにすることもできるでしょう。そして、そのいくつかのモデルを連続的に実行することによって、考え方を教えたほうが良いかもしれません。一方、* 1つの実行可能な例と1つのノートブック* のポリシーに固執するのには大きな利点があります。われわれのコードを活用して、読者のみなさんの研究プロジェクトを、なるべく簡単に立ち上げるのを助けることができます。1つのノートブックをコピーしてから、それを修正していけばよいのです。
 
 We will interleave the runnable code with background material as needed.
 In general, we will often err on the side of making tools
