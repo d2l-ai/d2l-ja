@@ -37,16 +37,7 @@ Amazonのような多くの企業が1990年代にデータベースを利用し�
 
 基礎的な数学の知識に関する集中講義を提供するための、一部の初歩的なノートブックは別として、それ以降のノートブックはほどよい量の新しいコンセプトを紹介し、全てがそろった単一で実行可能な例を実際のデータセットとともに提供します。これは、１つの構成上のチャレンジと呼んでいいと思います。いくつかのモデルは、単一のノートブックの中に論理的にひとまとめにすることもできるでしょう。そして、そのいくつかのモデルを連続的に実行することによって、考え方を教えたほうが良いかもしれません。一方、* 1つの実行可能な例と1つのノートブック* のポリシーに固執するのには大きな利点があります。われわれのコードを活用して、読者のみなさんの研究プロジェクトを、なるべく簡単に立ち上げるのを助けることができます。1つのノートブックをコピーしてから、それを修正していけばよいのです。
 
-われわれは、必要に応じて理解するために必要な内容に、実行可能なコードを含めます。一般的に、われわれはツールを使えるようにしようとするとき
-
-We will interleave the runnable code with background material as needed.
-In general, we will often err on the side of making tools
-available before explaining them fully (and we will follow up by
-explaining the background later).  For instance, we might use
-*stochastic gradient descent* before fully explaining why it is useful
-or why it works.  This helps to give practitioners the necessary
-ammunition to solve problems quickly, at the expense of requiring the
-reader to trust us with some decisions, at least in the short term.
+われわれは、必要に応じて実行可能なコードなかに、それを理解するための情報を含めます。一般的に、ツールを十分に説明する前に、そのツールを使えるようにしようとして失敗しすることもあるでしょう （そして、あとになってフォローアップの説明をします）。例えば、*stochastic gradient descent* について、それがなぜ有用で、なぜうまくいくのかを十分に説明する前に使うことがあると思います。この方法は、短時間のうちのいくつかの判断だけで、読者にわれわれを信用してもらうことになりますが、実際に機械学習を行う人に対して、問題をすばやく解くための武器を与えることができます。
 
 Throughout, we'll be working with the MXNet library, which has the
 rare property of being flexible enough for research while being fast
