@@ -39,45 +39,21 @@ Amazonのような多くの企業が1990年代にデータベースを利用し�
 
 われわれは、必要に応じて実行可能なコードなかに、それを理解するための情報を含めます。一般的に、ツールを十分に説明する前に、そのツールを使えるようにしようとして失敗しすることもあるでしょう （そして、あとになってフォローアップの説明をします）。例えば、*stochastic gradient descent* について、それがなぜ有用で、なぜうまくいくのかを十分に説明する前に使うことがあると思います。この方法は、短時間のうちのいくつかの判断だけで、読者にわれわれを信用してもらうことになりますが、実際に機械学習を行う人に対して、問題をすばやく解くための武器を与えることができます。
 
-Throughout, we'll be working with the MXNet library, which has the
-rare property of being flexible enough for research while being fast
-enough for production.  This book will teach deep learning concepts
-from scratch.  Sometimes, we want to delve into fine details about the
-models that are hidden from the user by ``Gluon``'s advanced features.
-This comes up especially in the basic tutorials, where we want you to
-understand everything that happens in a given layer.  In these cases,
-we generally present two versions of the example: one where we
-implement everything from scratch, relying only on NDArray and
-automatic differentiation, and another where we show how to do things
-succinctly with ``Gluon``.  Once we've taught you how a layer works,
-we can just use the ``Gluon`` version in subsequent tutorials.
+ここでは最初から最後まで、MXNetのライブラリを利用して進める予定です。MXNetのライブラリは研究用途にも十分に柔軟で、本番環境の用途にも十分高速であるという得がたい特徴をもっています。深層学習の考え方についてゼロから伝えていく予定で、ときどき、``Gluon``の先進的な特徴によってユーザに隠蔽されたモデルについて、詳細な部分を掘り下げたいと思います。与えられた深層学習のレイヤーの中で起こっているすべてを理解してほしいので、特に基礎的なチュートリアルにおいて掘り下げを行います。この場合に、われわれは次の2種類の例を一般的に提示します。1つはNDArray(多次元配列）や自動微分を利用してゼロか全てを実装するもので、もう1つは``Gluon``によって同じことを簡潔に実装するものです。レイヤーがどのように動くかを伝えたら、以降のチュートリアルでは、``Gluon``を利用したものを使います。
 
-## Learning by Doing
+## やってみて学ぶ
 
-Many textbooks teach a series of topics, each in exhaustive detail.
-For example, Chris Bishop's excellent textbook,
-[Pattern Recognition and Machine Learning](https://www.amazon.com/Pattern-Recognition-Learning-Information-Statistics/dp/0387310738),
-teaches each topic so thoroughly, that getting to the chapter
-on linear regression requires a non-trivial amount of work.
-While experts love this book precisely for its thoroughness,
-for beginners, this property limits its usefulness as an introductory text.
+多くの教科書は、一連のトピックについて網羅的に詳細を交えて説明します。例えば、 Chris Bishopの素晴らしい書籍
+[Pattern Recognition and Machine Learning](https://www.amazon.com/Pattern-Recognition-Learning-Information-Statistics/dp/0387310738)は、各トピックを徹底的に説明し、線形回帰の章でもとてつもない量の内容を理解する必要があります。専門家は、その書籍の完全さゆえに非常に気に入っていますが、初心者にとっての導入の書籍としてはその有用性を活かしきれません。
 
-In this book, we'll teach most concepts *just in time*.
-In other words, you'll learn concepts at the very moment
-that they are needed to accomplish some practical end.
-While we take some time at the outset to teach
-fundamental preliminaries, like linear algebra and probability.
-We want you to taste the satisfaction of training your first model
-before worrying about more exotic probability distributions.
+この本では、たいていの考え方を *just in time*、つまり必要なときに教えたいと思います。言い換えれば、いくつかの実践的な目標を達成するために、ある考え方が必要になったときに、それを教えていきます。基礎となる予備知識、例えば、線形代数や確率といったものを伝える最初の段階では少し時間がかかると思います。風変わりな確率分布について心配する前に、最初のモデルを学習することに満足さを感じてほしいと思っています。
 
+## 謝辞
 
-## Acknowledgments
+われわれは、英語と日本語のドラフト版の作成に貢献した数百の人に恩があります。彼らは、内容を改善するための手助けをしてくれ、価値あるフィードバックを提供してくれました。特に、あらゆる人のために英語のドラフト版を改善した人々に感謝したいです。かれらのGithubのIDや名前を順不同で記載します。
 
-We are indebted to the hundreds of contributors for both
-the English and the Chinese drafts.
-They helped improve the content and offered valuable feedback.
-Specifically, we thank every contributor of this English draft for making it better for everyone.
-Their GitHub IDs or names are (in no particular order): alxnorden, avinashingit, bowen0701, brettkoonce, Chaitanya Prakash Bapat, cryptonaut, edgarroman, gkutiel, John Mitro, Liang Pu, Rahul Agarwal, mohamed-ali, mstewart141, Mike Müller, NRauschmayr, prakhar1989, sad-, sfermigier, sundeepteki, topecongiro, vishaalkapoor, vishwesh5, YaYaB.
-Moreover, we thank Amazon Web Services, especially Swami Sivasubramanian, Raju Gulabani, Charlie Bell, and Andrew Jassy for their generous support in writing this book.
-Without the available time, resources, discussions with colleagues,
-and continuous encouragement this book would not have happened.
+alxnorden, avinashingit, bowen0701, brettkoonce, Chaitanya Prakash Bapat, cryptonaut, edgarroman, gkutiel, John Mitro, Liang Pu, Rahul Agarwal, mohamed-ali, mstewart141, Mike Müller, NRauschmayr, prakhar1989, sad-, sfermigier, sundeepteki, topecongiro, vishaalkapoor, vishwesh5, YaYaB.
+
+さらに、われわれはAmazon Wen Services、特に、Swami Sivasubramanian、Raju Gulabani、Charlie Bell、Andrew Jassyには、この書籍を執筆するための惜しみないサポートしてくれたことに感謝します。
+
+費やした時間、リソース、同僚との議論、継続的な取り組みなくして、この書籍は生まれなかったでしょう。
