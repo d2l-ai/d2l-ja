@@ -1,10 +1,10 @@
-# Introduction to Deep Learning
+# 深層学習入門
 
-In 2016 Joel Grus, a well-known data scientist went for a [job interview](http://joelgrus.com/2016/05/23/fizz-buzz-in-tensorflow/) at a major internet company. As is common, one of the interviewers had the task to assess his programming skills. The goal was to implement a simple children's game - FizzBuzz. In it, the player counts up from 1, replacing numbers divisible by 3 by 'fizz' and those divisible by 5 by 'buzz'. Numbers divisible by 15 result in 'FizzBuzz'. That is, the player generates the sequence
+2016年のこと、 Joel Grusという有名なデータサイエンティストが、有名なインターネットの会社で、[仕事を得るための面接](http://joelgrus.com/2016/05/23/fizz-buzz-in-tensorflow/)を受けました。よくある話ですが、面接官の一人は彼のプログラミングスキルを確認するために、あるタスクを与えました。そのタスクとは、FizzBuzzという単純な子供の遊びを実装するというものでした。その遊びとは、プレイヤーは1からカウントを始め、3で割れる数字のときは'Fizz'と、５で割れる数字のときは'Buzz'と、そして15で割れる数字のときは'FizzBuzz'というものです。つまり、プレイヤーはこういった数字の並びを作っていくのです。
 
 ```1 2 fizz 4 buzz fizz 7 8 fizz buzz 11 ...```
 
-What happened was quite unexpected. Rather than solving the problem with a few lines of Python code *algorithmically*, he decided to solve it by programming with data. He used pairs of the form (3, fizz), (5, buzz), (7, 7), (2, 2), (15, fizzbuzz) as examples to train a classifier for what to do. Then he designed a small neural network and trained it using this data, achieving pretty high accuracy (the interviewer was nonplussed and he did not get the job).
+実際に面接で起こったことは、とても予想できないものでした。その問題を、数行のPythonのコードで*アルゴリズム的に*解くのではなく、その問題をデータを利用して解こうとしたのです。彼は、(3, fizz), (5, buzz), (7, 7), (2, 2), (15, fizzbuzz) といった形式のペアを、このタスクのための分類器を学習するデータとして利用しました。そして、小さなニューラルネットワークを設計して、そのデータを使って学習し、非常に高い精度を得たのです（面接官は完全に当惑し、彼は仕事を得ることができませんでした）。
 
 Situations such as this interview are arguably watershed moments in computer science when program design is supplemented (and occasionally replaced) by programming with data. They are significant since they illustrate the ease with which it is now possible to accomplish these goals (arguably not in the context of a job interview). While nobody would seriously solve FizzBuzz in the way described above, it is an entirely different story when it comes to recognizing faces, to classify the sentiment in a human's voice or text, or to recognize speech. Due to good algorithms, plenty of computation and data, and due to good software tooling it is now within the reach of most software engineers to build sophisticated models, solving problems that only a decade ago were considered too challenging even for the best scientists.
 
