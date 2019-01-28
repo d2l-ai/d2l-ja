@@ -6,7 +6,9 @@
 
 実際に面接で起こったことは、とても予想できないものでした。その問題を、数行のPythonのコードで*アルゴリズム的に*解くのではなく、その問題をデータを利用して解こうとしたのです。彼は、(3, fizz), (5, buzz), (7, 7), (2, 2), (15, fizzbuzz) といった形式のペアを、このタスクのための分類器を学習するデータとして利用しました。そして、小さなニューラルネットワークを設計して、そのデータを使って学習し、非常に高い精度を得たのです（面接官は完全に当惑し、彼は仕事を得ることができませんでした）。
 
-Situations such as this interview are arguably watershed moments in computer science when program design is supplemented (and occasionally replaced) by programming with data. They are significant since they illustrate the ease with which it is now possible to accomplish these goals (arguably not in the context of a job interview). While nobody would seriously solve FizzBuzz in the way described above, it is an entirely different story when it comes to recognizing faces, to classify the sentiment in a human's voice or text, or to recognize speech. Due to good algorithms, plenty of computation and data, and due to good software tooling it is now within the reach of most software engineers to build sophisticated models, solving problems that only a decade ago were considered too challenging even for the best scientists.
+
+この面接の状況は、コンピュータサイエンスにおいて、プログラムの設計がデータによるプログラミングによって補完される（ときどき完全に置き換えられる）瞬間であったことは間違いないでしょう。そして、データによるプログラミングが今現在、容易にできることを示した点において、意義深いものといえるでしょう（面接という意味ではそうではなかったですが）。FizzBuzzを上で述べたような方法で真剣に解く人はいないでしょうが、それとは全く異なる方向性で、顔を認識したり、人間の音声やテキストから感情を分類したり、音声を認識したりすることにもつながるのです。良いアルゴリズム、たくさんの計算資源とデータ、良いソフトウェアツールによって、たいていのソフトウェアエンジニアが洗練されたモデルを構築し、10年前は最も優秀なサイエンティストにとっても非常に難しいと考えられていた問題を解くことができるようになっています。
+
 
 This book aims to help engineers on this journey. We aim to make machine learning practical by combining mathematics, code and examples in a readily available package. The Jupyter notebooks are available online, they can be executed on laptops or on servers in the cloud. We hope that they will allow a new generation of programmers, entrepreneurs, statisticians, biologists, and anyone else who is interested to deploy advanced machine learning algorithms to solve their problems.
 
