@@ -11,9 +11,10 @@
 
 この本では、そうした過程に立っているエンジニアを助けることを目的とします。われわれは、数学、コード、実装例をすぐに利用できるパッケージとして組み合わせ、機械学習を実践可能しようとしています。Jupyter notebookはオンラインで利用可能で、ノートパソコンでもクラウドのサーバでも実行できます。新しい世代のプログラマー、アントレプレナー、統計学者、生物学者、機械学習に興味ある人々が、Jupyter notebookを利用して、問題解決のために進歩した機械学習アルゴリズムを実装できるようになることを望みます。
 
-## Programming with Data
+## データを利用してプログラミングする
 
-Let us delve into the distinction between programing with code and programming with data into a bit more detail, since it is more profound than it might seem. Most conventional programs do not require machine learning. For example, if we want to write a user interface for a microwave oven, it is possible to design a few buttons with little effort. Add some logic and rules that accurately describe the behavior of the microwave oven under various conditions and we're done. Likewise, a program checking the validity of a social security number needs to test whether a number of rules apply. For instance, such numbers must contain 9 digits and not start with 000.
+コードを利用してプログラミングすることと、データを利用してプログラミングすることの違いについてもう少し見てみましょう。それは、思ったよりも深いものかもしれません。たいていの既存のプログラムは機械学習を必要としません。例えば、もし電子レンジのユーザインタフェースを記述しようと思ったら、わずかなボタンで設計することが可能で、ほとんど労力はかかりません。様々な条件を想定して、電子レンジに関する動作を精密に表すロジックやルールを追加すれば完了です。同様に、社会保障番号の妥当性をチェックするプログラムは、たくさんのルールが当てはまるかどうかのテストを必要とします。例えば、その番号は９桁で、000からは始まらない、といったルールです。
+
 
 It is worth noting that in the above two examples, we do not need to collect data in the real world to understand the logic of the program, nor do we need to extract the features of such data. As long as there is plenty of time, our common sense and algorithmic  skills are enough for us to complete the tasks.
 
