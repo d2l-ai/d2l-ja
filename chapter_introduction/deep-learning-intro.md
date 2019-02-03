@@ -15,8 +15,7 @@
 
 コードを利用してプログラミングすることと、データを利用してプログラミングすることの違いについてもう少し見てみましょう。それは、思ったよりも深いものかもしれません。たいていの既存のプログラムは機械学習を必要としません。例えば、もし電子レンジのユーザインタフェースを記述しようと思ったら、わずかなボタンで設計することが可能で、ほとんど労力はかかりません。様々な条件を想定して、電子レンジに関する動作を精密に表すロジックやルールを追加すれば完了です。同様に、社会保障番号の妥当性をチェックするプログラムは、たくさんのルールが当てはまるかどうかのテストを必要とします。例えば、その番号は９桁で、000からは始まらない、といったルールです。
 
-
-It is worth noting that in the above two examples, we do not need to collect data in the real world to understand the logic of the program, nor do we need to extract the features of such data. As long as there is plenty of time, our common sense and algorithmic  skills are enough for us to complete the tasks.
+上記の二つの例で着目すべきなのは、プログラムのロジックを理解するためにデータを集める必要がないことと、そのデータから特徴を取り出す必要がないことです。十分な時間がある限り、常識やアルゴリズムに関するスキルがあればタスクをこなすことができるのです。
 
 As we observed before, there are plenty of examples that are beyond the abilities of even the best programmers, yet many children, or even many animals are able to solve them with great ease. Consider the problem of detecting whether an image contains a cat. Where should we start? Let us further simplify this problem: if all  images are assumed to have the same size (e.g. 400x400 pixels) and each pixel consists of values for red, green and blue, then an image is represented by 480,000 numbers. It is next to impossible to decide where the relevant information for our cat detector resides.  Is it the average of all the values, the values of the four corners, or is it a particular point in the image? In fact, to interpret the content in an image, you need to look for features that only appear when you combine thousands of values, such as edges, textures, shapes, eyes, noses. Only then will one be able to determine whether the image contains a cat.
 
