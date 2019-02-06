@@ -19,15 +19,15 @@
 
 これまで見てきたように、多くの子供や動物がいともたやすく解けるような問題にもかかわらず、それをプログラミングすることは、最も優れたプログラマーであっても難しいという例が多く存在します。画像のなかに猫が写ってるかどうかを判別する問題を考えてみましょう。どこから始めるのが良さそうでしょうか。問題をまずは単純化してみます。つまり、全てのイメージは同じ大きさ(たとえば、400x400 pixels)で、各ピクセルには赤、緑、青のの値が入っており、すなわち画像は480,000の値で表現されます。猫を検出するために関係しそうな情報がどこにあるか、これを決めることはほとんど不可能です。全ての値の平均値、四隅の値、画像内のある一点の値でしょうか。実際、画像の内容を解釈するためには、エッジ、テクスチャ、形、目、鼻などの数千もの値を組み合わせによって現れる特徴を探す必要があります。そのときようやく、その画像に猫が写っているかどうかを決定することができます。
 
-An alternative strategy is to start by looking for a solution based on the final need, i.e. by *programming with data*, using examples of images and desired responses (cat, no cat) as a starting point.  We can collect real images of cats (a popular motif on the internet) and beyond. Now our goal translates into finding a function that can *learn* whether the image contains a cat. Typically the form of the function, e.g. a polynomial, is chosen by the engineer, its parameters are *learned* from data.
+それに変わる手段として、最終的に求めているものにもとづいて、解法を探す方法があります。つまり、画像の例と求めている結果（猫か猫でないか）を出発点とする*データでプログラミングする*ことです。インターネット上では人気な猫の実画像やそれ以上の情報を収集することができます。そして、画像のなかに猫が写っているかどうかを*学習*できる関数を探すというゴールに置き換えます。それは通常、特定の関数の形（例えば多項式の関数）をエンジニアが選んで、そのパラメータをデータから*学習*することを意味します。
 
-In general, machine learning deals with a wide class of functions that can be used in solving problems such as that of cat recognition. Deep learning, in particular, refers to a specific class of functions that are inspired by neural networks, and a specific way of training them (i.e. computing the parameters of such functions). In recent years, due to big data and powerful hardware,  deep learning has gradually become the de facto choice for processing complex high-dimensional data such as images, text and audio signals.
+一般的に機械学習は、猫の認識のような問題に利用できる幅広い種類の関数を扱います。特に、深層学習はニューラルネットワークにもとづく特定の関数を利用し、特殊な方法でそれらをトレーニング（つまり、それらの関数のパラメータを計算）します。近年、大量のデータと高性能なハードウェアによって、画像、テキスト、音声信号といった複雑で高次元なデータを処理する方法として、深層学習は標準的な選択肢になりつつあります。
 
-## Roots
+## 起源
 
-Although deep learning is a recent invention, humans have held the desire to analyze data and to predict future outcomes for centuries. In fact, much of natural science has its roots in this. For instance, the Bernoulli distribution is named after [Jacob Bernoulli (1655-1705)](https://en.wikipedia.org/wiki/Jacob_Bernoulli), and the Gaussian distribution was discovered by [Carl Friedrich Gauss (1777-1855)](https://en.wikipedia.org/wiki/Carl_Friedrich_Gauss). He invented for instance the least mean squares algorithm, which is still used today for a range of problems from insurance calculations to medical diagnostics. These tools gave rise to an experimental approach in natural sciences - for instance, Ohm's law relating current and voltage in a resistor is perfectly described by a linear model.
+深層学習は最近の発明ですが、人間は何世紀にも渡って、データの分析や将来の予測をしたいと考えてきました。実際、自然科学の多くはそうしたことの起源になっています。例えば、ベルヌーイ分布は[Jacob Bernoulli (1655-1705)](https://en.wikipedia.org/wiki/Jacob_Bernoulli)の名をとっており、ガウス分布は[Carl Friedrich Gauss (1777-1855)](https://en.wikipedia.org/wiki/Carl_Friedrich_Gauss)によって発見されました。彼は、例えば最小二乗法を発見し、今日でも保険の計算や医療診断に至る様々な問題に利用されています。これらのツールは自然科学における実験的なアプローチによってうまれたものです。例えば、抵抗における電流と電圧に関係するオームの法則は。完全に線形モデルとして記述することができます。
 
-Even in the middle ages mathematicians had a keen intuition of estimates. For instance, the geometry book of [Jacob Köbel (1460-1533)](https://www.maa.org/press/periodicals/convergence/mathematical-treasures-jacob-kobels-geometry) illustrates averaging the length of 16 adult men's feet to obtain the average foot length.
+中世においても、数学者は予測に対して熱意を注いできました。例えば、[Jacob Köbel (1460-1533)](https://www.maa.org/press/periodicals/convergence/mathematical-treasures-jacob-kobels-geometry)による幾何学の本は、平均的な足の長さを得るために、16人の成人男性の足の長さの平均を計算することを記述しています。
 
 ![Estimating the length of a foot](../img/koebel.jpg)
 
