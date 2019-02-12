@@ -33,9 +33,9 @@
 
 図1.1 はこの予測がどの機能するのかを示しています。16人の成人男性が、教会から出る際に1列に並ぶように言われていました。1フィートの値を見積もるために、彼らの足の長さの総和を16で割ったのでした。そのアルゴリズムは後に、特異な長さを処理するように改善されており、最も短いものと最も長いものを取り除き、残りについて平均をとっています。これはtrimmed mean とよばれる推定手法の始まりといえます。
 
-統計学者は、データを収集して、利用できるようにするところからはじめました。偉大な統計学者の一人、[Ronald Fisher (1890-1962)](https://en.wikipedia.org/wiki/Ronald_Fisher)は、その理論と遺伝学への応用に関して多大な貢献をしました。彼の多くの線形判別分析のようなアルゴリズムや
+統計学者は、データを収集して、利用できるようにするところからはじめました。偉大な統計学者の一人、[Ronald Fisher (1890-1962)](https://en.wikipedia.org/wiki/Ronald_Fisher)は、その理論と遺伝学への応用に関して多大な貢献をしました。彼の多くの線形判別分析のようなアルゴリズムやフィッシャー情報行列といった数式は、今日でも頻繁に利用されています（そして、彼が1936年にリリースしたIrisのデータセットも、機械学習を図解するために利用されています）。
 
-Statistics really took off with the collection and availability of data. One of its titans, [Ronald Fisher (1890-1962)](https://en.wikipedia.org/wiki/Ronald_Fisher), contributed significantly to its theory and also its applications in genetics. Many of his algorithms (such as Linear Discriminant Analysis) and formulae (such as the Fisher Information Matrix) are still in frequent use today (even the Iris dataset that he released in 1936 is still used sometimes to illustrate machine learning algorithms).
+
 
 A second influence for machine learning came from Information Theory [(Claude Shannon, 1916-2001)](https://en.wikipedia.org/wiki/Claude_Shannon) and the Theory of computation via [Alan Turing (1912-1954)](https://en.wikipedia.org/wiki/Alan_Turing). Turing posed the question "can machines think?” in his famous paper [Computing machinery and intelligence](https://www.jstor.org/stable/2251299) (Mind, October 1950). In what he described as the Turing test, a machine can be considered intelligent if it is difficult for a human evaluator to distinguish between the replies from a machine and a human being through textual interactions. To this day, the development of intelligent machines is changing rapidly and continuously.
 
