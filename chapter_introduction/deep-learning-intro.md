@@ -39,15 +39,12 @@
 
 もう一つの影響は神経科学や心理学の分野にみられるでしょう。人間というものは知的な行動をはっきりと示します。そこで、知的な行動を説明したり、その本質を逆解析したりできないかと考えることは当然のように思います。これを達成した最古のアルゴリズムの1つは[Donald Hebb (1904-1985)](https://en.wikipedia.org/wiki/Donald_O._Hebb)によって定式化されました。
 
-彼の革新的な書籍 [The Organization of Behavior](http://s-f-walker.org.uk/pubsebooks/pdfs/The_Organization_of_Behavior-Donald_O._Hebb.pdf) (John Wiley & Sons, 1949)では、
+彼の革新的な書籍 [The Organization of Behavior](http://s-f-walker.org.uk/pubsebooks/pdfs/The_Organization_of_Behavior-Donald_O._Hebb.pdf) (John Wiley & Sons, 1949)では、ニューロンは正の強化 (Positive reinforcement)によって学習すると彼は断言しています。このことは、Hebbian learning rule として知られるようになりました。。それは、Rosenblatt のパーセプトロンの学習アルゴリズムのプロトタイプであり、今日の深層学習を支えている確率的勾配降下法の多くの基礎を築きました。つまり、ニューラルネットワークにおいて適切な重みを学習するために、求められる行動を強化し、求められない行動を減らすことなのです。
 
+生物学的な観点からの着想という意味では、まず、ニューラルネットワークが名前として与えられている通りです。1世紀以上にわたって （1873年のAlexander Bainや1890年のJames Sherringtonにさかのぼります）、研究者はニューロンを相互作用させるネットワークに類似した計算回路を組み立てようとしていました。時代をこえ、生物学にの解釈はやや薄まってしまいましたが、名前は依然として残っています。その核となる部分には、今日のたいていのネットワークにもみられる重要な原理がわずかに残っています。
 
-In his groundbreaking book [The Organization of Behavior](http://s-f-walker.org.uk/pubsebooks/pdfs/The_Organization_of_Behavior-Donald_O._Hebb.pdf) (John Wiley & Sons, 1949) he posited that neurons learn by positive reinforcement. This became known as the Hebbian learning rule. It is the prototype of Rosenblatt's perceptron learning algorithm and it laid the foundations of many stochastic gradient descent algorithms that underpin deep learning today: reinforce desirable behavior and diminish undesirable behavior to obtain good weights in a neural network.
-
-Biological inspiration is what gave Neural Networks its name. For over a century (dating back to the models of Alexander Bain, 1873 and James Sherrington, 1890) researchers have tried to assemble computational circuits that resemble networks of interacting neurons. Over time the interpretation of biology became more loose but the name stuck. At its heart lie a few key principles that can be found in most networks today:
-
-* The alternation of linear and nonlinear processing units, often referred to as 'layers'.
-* The use of the chain rule (aka backpropagation) for adjusting parameters in the entire network at once.
+* 線形あるいは非線形の演算ユニットについて、しばしば「レイヤー」と呼ばれます。
+* 全体のネットワークのパラメータをただちに調整するために連鎖律 (Chain rule, 誤差逆伝播法とも呼ばれる)を使用します。
 
 After initial rapid progress, research in Neural Networks languished from around 1995 until 2005. This was due to a number of reasons. Training a network is computationally very expensive. While RAM was plentiful at the end of the past century, computational power was scarce. Secondly, datasets were relatively small. In fact, Fisher's 'Iris dataset' from 1932 was a popular tool for testing the efficacy of algorithms. MNIST with its 60,000 handwritten digits was considered huge.
 
