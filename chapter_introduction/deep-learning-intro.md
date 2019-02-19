@@ -104,10 +104,10 @@ World Wide Web、数百万のオンラインユーザをかかえる企業の到
 
 * AIの進歩における別の兆候としては、車やトラックの自動運転の登場でしょう。完全自動化には全く及んでいないとはいえ、この方向性には重要な進歩がありました。例えば、[Momenta](https://www.momenta.ai/en)、[Tesla](http://www.tesla.com), [NVIDIA](http://www.nvidia.com)、[MobilEye](http://www.mobileye.com)、[Waymo](http://www.waymo.com)は、少なくとも部分的な自動化を可能にした商品を販売しています。完全自動化がなぜ難しいかというと、正しい運転にはルールを認識して論理的に考え、システムに組み込むことが必要だからです。現在は、深層学習はこれらの問題のうち、コンピュータビジョンの側面で主に利用されています。残りはエンジニアによって非常に調整されているのです。
 
+繰り返しますが、上記のリストは知性というものがとういうもので、機械学習がある分野において素晴らしい進歩をもたらしたということについて、表面的な内容を走り書きしたに過ぎません。例えば、ロボティクス、ロジスティクス、計算生物学、粒子物理学、天文学においては、それらの優れた近年の進歩に関して、部分的にでも機械学習によるところがあります。機械学習は、こうしてエンジニアやサイエンティストにとって、広く利用されるツールになったのです。
 
-Again, the above list barely scratches the surface of what is considered intelligent and where machine learning has led to impressive progress in a field. For instance, robotics, logistics, computational biology, particle physics and astronomy owe some of their most impressive recent advances at least in parts to machine learning. ML is thus becoming a ubiquitous tool for engineers and scientists.
-
-Frequently the question of the AI apocalypse, or the AI singularity has been raised in non-technical articles on AI. The fear is that somehow machine learning systems will become sentient and decide independently from their programmers (and masters) about things that directly affect the livelihood of humans. To some extent AI already affects the livelihood of humans in an immediate way - creditworthiness is assessed automatically, autopilots mostly navigate cars safely, decisions about whether to grant bail use statistical data as input. More frivolously, we can ask Alexa to switch on the coffee machine and she will happily oblige, provided that the appliance is internet enabled.
+しばしば、AIの黙示録や特異点に関する質問が、AIに関する技術的でない
+記事に取り上げられることがあります。機械学習システムが知覚を持ち、プログラマー（や管理者）の意図にかかわらず、人間の生活に直接的に影響を及ぼすものごとを決定することについて、恐れられているのです。ある程度は、AIはすでに人間の生活に直接的に影響を与えています。つまり、信用力は自動で評価されえいますし、自動パイロットは車をほとんど安全にナビゲーションしますし、保釈をしてよいかどうかを決める際には統計データが利用されています。取るに足らない例ではありますが、われわれは、インターネットにつながってさえいれば、AlexaにコーヒーマシンのスイッチをONにするようお願いでき、要望に応えることができるでしょう。
 
 Fortunately we are far from a sentient AI system that is ready to enslave its human creators (or burn their coffee). Firstly, AI systems are engineered, trained and deployed in a specific, goal oriented manner. While their behavior might give the illusion of general intelligence, it is a combination of rules, heuristics and statistical models that underlie the design. Second, at present tools for general Artificial Intelligence simply do not exist that are able to improve themselves, reason about themselves, and that are able to modify, extend and improve their own architecture while trying to solve general tasks.
 
