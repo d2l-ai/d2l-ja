@@ -116,6 +116,8 @@ World Wide Web、数百万のオンラインユーザをかかえる企業の到
 
 ## Key Components
 
+機械学習は、異なる情報の変換を学習するためにデータを利用します。例えば、数字の画像を0から9までの数字に変換したり、音声をテキストに変換したり(音声認識)、テキストを異なる言語のテキストに翻訳したり(機械翻訳)、顔写真を名前に変換したり(顔認識)します。そのなかで、処理するアルゴリズムに適した方法で、データを表現する必要がしばしば生じます。こうした特徴変換は、表現を学習する手段としての深層学習に言及する際によく用いられます（実際のところ、the International Conference on Learning Representations という国際会議はそこから名前をとっています)。同時に、機械学習は統計学(特定のアルゴリズムというよりは幅広い問題について)やデータマイニング（スケーラビリティを扱うことについて）から考えかたを取り入れています。
+
 Machine learning uses data to learn transformations between examples. For instance, images of digits are transformed to integers between 0 and 9, audio is transformed into text (speech recognition), text is transformed into text in a different language (machine translation), or mugshots are transformed into names (face recognition). In doing so, it is often necessary to represent data in a way suitable for algorithms to process it. This degree of feature transformations is often used as a reason for referring to deep learning as a means for representation learning (in fact, the International Conference on Learning Representations takes its name from that). At the same time, machine learning equally borrows from statistics (to a very large extent questions rather than specific algorithms) and data mining (to deal with scalability).
 
 The dizzying set of algorithms and applications makes it difficult to assess what *specifically* the ingredients for deep learning might be. This is as difficult as trying to pin down required ingredients for pizza - almost every component is substitutable. For instance one might assume that multilayer perceptrons are an essential ingredient. Yet there are computer vision models that use only convolutions. Others only use sequence models.
