@@ -94,7 +94,7 @@ World Wide Web、数百万のオンラインユーザをかかえる企業の到
 
 最近になって、以前は解くことが困難と思われた問題へのソリューションとして、AIが脚光を浴びています。
 
-* AppleのSiri、AmazonのAlexa、Google assistantといった知的なアシスタントは、利用可能なレベルの精度で話し言葉の質問に回答することができます。これらは、証明のスイッチをONにする（身体障害者にとってはありがたい）、理髪店の予約をする、電話サポートにおける会話を提供する、といった単純なタスクをこなします。これは、AIがわれわれの生活に影響をもたらしている最も顕著なサインであるように思えます。
+* AppleのSiri、AmazonのAlexa、Google assistantといった知的なアシスタントは、利用可能なレベルの精度で話し言葉の質問に回答することができます。これらは、証明のスイッチをONにする（身体障害者にとってはありがたい）、理髪店の予約をする、電話サポートにおける会話を提供する、といった技術を必要としないタスクをこなします。これは、AIがわれわれの生活に影響をもたらしている最も顕著なサインであるように思えます。
 
 * デジタルなアシスタントなかで重要な構成要素となっているのは、音声を精度よく認識する能力です。音声認識の精度は、特定のアプリケーションにおいて、人間と同等の精度にまで徐々に改善してきました [14]。
 
@@ -107,11 +107,12 @@ World Wide Web、数百万のオンラインユーザをかかえる企業の到
 繰り返しますが、上記のリストは知性というものがとういうもので、機械学習がある分野において素晴らしい進歩をもたらしたということについて、表面的な内容を走り書きしたに過ぎません。例えば、ロボティクス、ロジスティクス、計算生物学、粒子物理学、天文学においては、それらの優れた近年の進歩に関して、部分的にでも機械学習によるところがあります。機械学習は、こうしてエンジニアやサイエンティストにとって、広く利用されるツールになったのです。
 
 しばしば、AIの黙示録や特異点に関する質問が、AIに関する技術的でない
-記事に取り上げられることがあります。機械学習システムが知覚を持ち、プログラマー（や管理者）の意図にかかわらず、人間の生活に直接的に影響を及ぼすものごとを決定することについて、恐れられているのです。ある程度は、AIはすでに人間の生活に直接的に影響を与えています。つまり、信用力は自動で評価されえいますし、自動パイロットは車をほとんど安全にナビゲーションしますし、保釈をしてよいかどうかを決める際には統計データが利用されています。取るに足らない例ではありますが、われわれは、インターネットにつながってさえいれば、AlexaにコーヒーマシンのスイッチをONにするようお願いでき、要望に応えることができるでしょう。
+記事に取り上げられることがあります。機械学習システムが知覚を持ち、プログラマー（や管理者）の意図にかかわらず、人間の生活に直接的に影響を及ぼすものごとを決定することについて、恐れられているのです。ある程度は、AIはすでに人間の生活に直接的に影響を与えています。つまり、信用力は自動で評価されえいますし、自動パイロットは車をほとんど安全にナビゲーションしますし、保釈をしてよいかどうかを決める際には統計データが利用されています。取るに足らない例ではありますが、われわれは、インターネットにつながってさえいれば、AlexaにコーヒーマシンのスイッチをONにするようお願いでき、Alexaは要望に応えることができるでしょう。
 
-Fortunately we are far from a sentient AI system that is ready to enslave its human creators (or burn their coffee). Firstly, AI systems are engineered, trained and deployed in a specific, goal oriented manner. While their behavior might give the illusion of general intelligence, it is a combination of rules, heuristics and statistical models that underlie the design. Second, at present tools for general Artificial Intelligence simply do not exist that are able to improve themselves, reason about themselves, and that are able to modify, extend and improve their own architecture while trying to solve general tasks.
+幸運にも人間を奴隷として扱う（もしくはコーヒーを焦がしてしまう）ような知覚のあるAIシステムはまだ遠い未来にあります。まず、AIシステムは、ある目的に特化した方法で開発され、学習され、展開されます。AIシステムの行動はあたかも汎用的な知性をもっているかのように幻想をみせるかもしれませんが、それらは設計されたルールや経験則、統計モデルの組み合わせになっています。次に現時点では、あらゆるタスクを解決するために、自分自身を改善し、それらを論理的に考え、アーキテクチャを修正、拡張、改善するような、汎用人工知能の方法というのは存在していません。
 
-A much more realistic concern is how AI is being used in our daily lives. It is likely that many menial tasks fulfilled by truck drivers and shop assistants can and will be automated. Farm robots will likely reduce the cost for organic farming but they will also automate harvesting operations. This phase of the industrial revolution will have profound consequences on large swaths of society (truck drivers and shop assistants are some of the most common jobs in many states). Furthermore, statistical models, when applied without care can lead to racial, gender or age bias. It is important to ensure that these algorithms are used with great care. This is a much bigger concern than to worry about a potentially malevolent superintelligence intent on destroying humanity.
+さらに現実的な心配ごととしては、AIがどのように日々の生活に利用されるかです。トラックの運転手や店舗のアシスタントが担っている、技術を必要としないたくさんのタスクは自動化されるでしょう。農業ロボットは有機栽培のコストを下げるでしょうが、収穫作業も自動化してしまうしょう。この産業革命となるフェーズでは、社会における広い範囲に重大な結果を及ぼすでしょう（トラックの運転手や店舗のアシスタントは、多くの州において最も広く行われている仕事です）。さらに、統計モデルは注意せずに利用されれば、人種、性別、年齢による差別を生じる可能性があります。これらのアルゴリズムを、必ず注意して利用ことは重要です。このことは、人類を滅亡させるような悪意ある超人的な知能や意思を心配するよりもずっと、懸念されることなのです。
+
 
 ## Key Components
 
