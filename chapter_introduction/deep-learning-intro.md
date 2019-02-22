@@ -203,6 +203,6 @@ End-to-endの学習の先にあるもので、次に関係する部分として�
 
 [23] Tesauro, G. (1995), Transactions of the ACM, (38) 3, 58-68
 
-## Discuss on our Forum
+## フォーラムでの議論
 
 <div id="discuss" topic_id="2310"></div>
