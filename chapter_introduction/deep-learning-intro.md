@@ -114,7 +114,7 @@ World Wide Web、数百万のオンラインユーザをかかえる企業の到
 さらに現実的な心配ごととしては、AIがどのように日々の生活に利用されるかです。トラックの運転手や店舗のアシスタントが担っている、技術を必要としないたくさんのタスクは自動化されるでしょう。農業ロボットは有機栽培のコストを下げるでしょうが、収穫作業も自動化してしまうしょう。この産業革命となるフェーズでは、社会における広い範囲に重大な結果を及ぼすでしょう（トラックの運転手や店舗のアシスタントは、多くの州において最も広く行われている仕事です）。さらに、統計モデルは注意せずに利用されれば、人種、性別、年齢による差別を生じる可能性があります。これらのアルゴリズムを、必ず注意して利用ことは重要です。このことは、人類を滅亡させるような悪意ある超人的な知能や意思を心配するよりもずっと、懸念されることなのです。
 
 
-## Key Components
+## 重要なポイント
 
 機械学習は、異なる情報の変換を学習するためにデータを利用します。例えば、数字の画像を0から9までの数字に変換したり、音声をテキストに変換したり(音声認識)、テキストを異なる言語のテキストに翻訳したり(機械翻訳)、顔写真を名前に変換したり(顔認識)します。そのなかで、処理するアルゴリズムに適した方法で、データを表現する必要がしばしば生じます。こうした特徴変換は、表現を学習する手段としての深層学習に言及する際によく用いられます（実際のところ、the International Conference on Learning Representations という国際会議はそこから名前をとっています)。同時に、機械学習は統計学(特定のアルゴリズムというよりは幅広い問題について)やデータマイニング（スケーラビリティを扱うことについて）から考えかたを取り入れています。
 
@@ -126,28 +126,36 @@ World Wide Web、数百万のオンラインユーザをかかえる企業の到
 
 End-to-endの学習の先にあるもので、次に関係する部分として、パラメトリックな統計的記述から完全にノンパラメトリックなモデルへの推移をわれわれは感じています。不足したデータをもって有用なモデルを構築したいとき、スペクトラル法のように、実データに対する仮定を単純化することを考える必要があります。もしデータが豊富にあれば、実データに精度良く適合するノンパラメトリックなモデルで置き換えることができます。このことは、コンピュータによって前世紀の中頃に物理学が経験した進歩を、いくらか反映しているといえます。電子の動きをパラメータで近似して手で解くよりもむしろ、連立の偏微分方程式に対する数値シミュレーションに頼ることができるでしょう。これによって、モデルから結果を説明することはできなくなったものの、ずっと精度の良いモデルがうまれました。
 
-適切な事例としてはGenerative Adversarial Networksがあり、グラフィカルモデルは適切な確率的定式化を行うことなく、データを生成するコードによって置き換えられました。これによって、人ですら見分けがつかないリアルなイメージのモデルを作ることができ、それは長い間、困難であると考えられたものです。
+適切な事例としてはGenerative Adversarial Networksがあります。グラフィカルモデルは適切な確率的定式化を行うことなく、データを生成するコードによって置き換えられました。これによって、人ですら見分けがつかないリアルなイメージのモデルを作ることができ、それは長い間、困難であると考えられたものです。
 
 以前の成果とは異なるもう一つの点としては、非凸で非線形な最適化問題を扱うときに、準最適解を受け入れ、その証明を行う前に試してみようとしたところです。統計的な問題を扱う上で、こうした新しい経験主義は、急速に人々の才能が集まったこともあり、実用的なアルゴリズムを急速に発展させました（多くの場合、数十年にわたって存在したツールの修正や、再発明を伴いましたが）。
 
 最後に、この深層学習のコミュニティは、学術界と企業の協会をまたぐ共有ツールであることを誇りにしており、すぐれた書籍、統計モデル、学習済みのネットワークを数多くオープンソースとして提供しています。それは、ここでコンテンツとして提供されるノートブックが、フリーで配布して利用できるという考えに含まれています。著者らは、みなさんが深層学習を学ぶまでの障壁を下げるために懸命に仕事をしており、この読者がそれによって恩恵を受けることを望んでいます。
 
-## Summary
+## まとめ
 
-* Machine learning studies how computer systems can use data to improve performance. It combines ideas from statistics, data mining, artificial intelligence and optimization. Often it is used as a means of implementing artificially intelligent solutions.
-* As a class of machine learning, representational learning focuses on how to automatically find the appropriate way to represent data. This is often accomplished by a progression of learned transformations.
-* Much of the recent progress has been triggered by an abundance of data arising from cheap sensors and internet scale applications, and by significant progress in computation, mostly through GPUs.
-* Whole system optimization is a key component in obtaining good performance. The availability of efficient deep learning frameworks has made design and implementation of this significantly easier.
+* 機械学習は、コンピュータのシステムが性能を改善するために、データの利用方法を研究するものです。それは、統計学、データマイニング、人工知能、最適化の考え方を組み合わせています。そして、人工知能的なソリューションを実装するためによく利用されます。
 
-## Problems
+* 機械学習の一種で、表現学習というものは、データの最適な表現を自動的に探す方法に焦点を当てています。多くの場合、これは学習によるデータ変換の発展によって実現されました。
 
-1. Which parts of code that you are currently writing could be 'learned', i.e. improved by learning and automatically determining design choices that are made in your code? Does your code include heuristic design choices?
-1. Which problems that you encounter have many examples for how to solve them, yet no specific way to automate them? These may be prime candidates for using Deep Learning.
-1. Viewing the development of Artificial Intelligence as a new industrial revolution, what is the relationship between algorithms and data? Is it similar to steam engines and coal (what is the fundamental difference)?
-1. Where else can you apply the end-to-end training approach? Physics? Engineering? Econometrics?
-1. Why would you want to build a Deep Network that is structured like a human brain? What would the advantage be? Why would you not want to do that (what are some key differences between microprocessors and neurons)?
+* 最近の進歩の多くは、安価なセンサー、インターネット上に広がるアプリケーションから得られる豊富なデータと、GPUを主にする演算能力の素晴らしい進歩がきっかけになっています。
 
-## References
+* 全体のシステム最適化は、良い性能を得るために重要な構成要素です。効率的な深層学習フレームワークによって、最適化を非常に簡単に設計して、実装することができます。
+
+## 質問
+
+1. あなたが現在書いているコードの中で、学習可能な部分はどこでしょうか。言い換えれば、コードの中で設計に関する選択をしている部分で、学習によって改善できて、自動的に決定できる部分がありますか?あなたのコードは、経験則にもとづいて設計に関する選択する部分を含んでいますか?
+
+1. あなたが直面した問題で、その問題を解くのに十分なデータがあるけども、自動化する手法がないような問題はどういうものでしょうか？これらは、深層学習を適用できる最初の候補になるかもしれません。
+
+1. 人工知能の発展を新たな産業革命としてみたとき、アルゴリズムとデータの関係は何にあたるでしょうか?それは蒸気機関と石炭に似ています。根本的な違いは何でしょうか。
+
+1. End-to-endの学習を適用できる他の分野はどこでしょうか? 物理学?
+工学?経済学?
+
+1. なぜ人間の脳のような構造をした深層学習のネットワークを構築したいのでしょうか? その利点はなんでしょうか? そうしたくないとしたらなぜでしょうか (マイクロプロセッサとニューロンの決定的な違いは何でしょうか)?
+
+## 参考文献
 
 [1] Turing, A. M. (1950). Computing machinery and intelligence. Mind, 59(236), 433.
 
