@@ -12,11 +12,11 @@
 簡単に全てのライブラリをインストールする方法として、[conda](https://conda.io)という人気のPythonパッケージの管理ツールをおすすめします。
 
 1. [conda.io/miniconda.html](https://conda.io/miniconda.html)にある[Miniconda](https://conda.io/miniconda.html)をOSにあわせて、ダウンロード、インストールします。
-1. Update your shell by `source ~/.bashrc` (Linux) or `source ~/.bash_profile` (macOS). Make sure to add Anaconda to your PATH environment variable.
-1. Download the tarball containing the notebooks from this book. This can be found at [www.d2l.ai/d2l-en-1.0.zip](https://www.d2l.ai/d2l-en-1.0.zip). Alternatively feel free to clone the latest version from GitHub.
-1. Uncompress the ZIP file and move its contents to a folder for the tutorials.
+1. `source ~/.bashrc` (Linux) や `source ~/.bash_profile` (macOS)を実行してシェルを更新します。環境変数PATHにAnacondaが追加されていることを確認してください。
+1. この書籍からノートブックを含むtarballをダウンロードします。ファイルは、[www.d2l.ai/d2l-en-1.0.zip](https://www.d2l.ai/d2l-en-1.0.zip)においています。代わりに、Githubから最新バージョンをクローンすることもできます。
+1. ZIPファイルを解凍して、その中身をチュートリアルのためのフォルダに移動させます。
 
-On Linux this can be accomplished as follows from the command line; For MacOS replace Linux by MacOSX in the first line, for Windows follow the links provided above.
+上記の操作は、Linuxのコマンドラインを利用して、以下のように実行することができます。MacOSの場合は、最初の行をLinuxからMacOSXに変更してください。Windowsの場合は、上のリンクを参考にしてください。
 
 ```
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
