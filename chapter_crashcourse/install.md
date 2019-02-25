@@ -1,18 +1,17 @@
-# Getting started with Gluon
+# Gluonで始めよう
 
-To get started we need to download and install the code needed to run the notebooks. Although skipping this section will not affect your theoretical understanding of sections to come, we strongly recommend that you get some hands-on experience. We believe that modifying and writing code and seeing the results thereof greatly enhances the benefit you can gain from the book. In a nutshell, to get started you need to do the following steps:
+始めるにあたって、ノートブックの実行に必要なコードのダウンロードとインストールが必要です。この節を読み飛ばしても、以降の理論的な理解に影響ありませんが、読者がここでハンズオンを経験することを強くおすすめします。コードを修正したり、書いたりして、その結果を確認することで、この書籍から更に多くの利益を得られるでしょう。手短に、始めるためには以下を行う必要があります。
 
-1. Install conda
-1. Download the code that goes with the book
-1. Install GPU drivers if you have a GPU and haven't used it before
-1. Build the conda environment to run MXNet and the examples of the book
-
+1. condaをインストール
+1. 書籍で動くコードをダウンロード
+1. もしGPUをもっていて、まだ使ったことがなければ、GPUドライバをインストール
+1. MXNetや書籍のコード例を実行するためのconda環境のビルド
 
 ## Conda
 
-For simplicity we recommend [conda](https://conda.io), a popular Python package manager to install all libraries.
+簡単に全てのライブラリをインストールする方法として、[conda](https://conda.io)という人気のPythonパッケージの管理ツールをおすすめします。
 
-1. Download and install [Miniconda](https://conda.io/miniconda.html) at [conda.io/miniconda.html](https://conda.io/miniconda.html) based on your operating system.
+1. [conda.io/miniconda.html](https://conda.io/miniconda.html)にある[Miniconda](https://conda.io/miniconda.html)をOSにあわせて、ダウンロード、インストールします。
 1. Update your shell by `source ~/.bashrc` (Linux) or `source ~/.bash_profile` (macOS). Make sure to add Anaconda to your PATH environment variable.
 1. Download the tarball containing the notebooks from this book. This can be found at [www.d2l.ai/d2l-en-1.0.zip](https://www.d2l.ai/d2l-en-1.0.zip). Alternatively feel free to clone the latest version from GitHub.
 1. Uncompress the ZIP file and move its contents to a folder for the tutorials.
