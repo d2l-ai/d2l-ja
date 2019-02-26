@@ -47,13 +47,13 @@ cd d2l
 emacs environment.yml
 ```
 
-## Conda Environment
+## Conda環境
 
-In a nutshell, conda provides a mechanism for setting up a set of Python libraries in a reproducible and reliable manner, ensuring that all software dependencies are satisfied. Here's what is needed to get started.
+手短に言うと、condaは再現可能かつ信頼できる方法で、一連のPythonライブラリをセットアップする機構を提供しており、すべてのソフトウェアの依存関係が満足されるようになっています。ここでは、始めるにあたって必要なことを説明します。
 
-1. Create and activate the environment using conda. For convenience we created an `environment.yml` file to hold all configuration.
-1. Activate the environment.
-1. Open Jupyter notebooks to start experimenting.
+1. condaを利用して環境の作成とアクティベートをします。利便性のために、全ての構成を保持した`environment.yml`というファイルを作成しています。
+1. 環境をアクティベートします。
+1. 実験を始めるためにJupyterノートブックを開きます。
 
 ### Windows
 
