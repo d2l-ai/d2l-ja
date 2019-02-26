@@ -1,6 +1,6 @@
 # Gluonで始めよう
 
-始めるにあたって、ノートブックの実行に必要なコードのダウンロードとインストールが必要です。この節を読み飛ばしても、以降の理論的な理解に影響ありませんが、読者がここでハンズオンを経験することを強くおすすめします。コードを修正したり、書いたりして、その結果を確認することで、この書籍から更に多くの利益を得られるでしょう。手短に、始めるためには以下を行う必要があります。
+始めるにあたって、ノートブックの実行に必要なコードのダウンロードとインストールが必要です。この節を読み飛ばしても、以降の理論的な理解に影響ありませんが、読者がここでハンズオンを経験することを強くおすすめします。コードを修正したり、書いたりして、その結果を確認することで、更に多くの学びを得られるでしょう。手短ではありますが、始めるために以下を行う必要があります。
 
 1. condaをインストール
 1. 書籍で動くコードをダウンロード
@@ -28,18 +28,19 @@ unzip d2l-en-1.0.zip
 rm d2l-en-1.0.zip
 ```
 
-## GPU Support
+## GPUサポート
 
-By default MXNet is installed without GPU support to ensure that it will run on any computer (including most laptops). If you should be so lucky to have a GPU enabled computer, you should modify the conda environment to download the CUDA enabled build. Obviously you need to have the appropriate drivers installed. In particular you need the following:
+デフォルトでは、MXNetはどのコンピュータ（多くの場合ノートパソコン）でも動くために、GPUサポート無しでインストールされます。もし読者がGPUを利用できるコンピュータを持つ幸せな人であれば、CUDAを利用可能なビルドをダウンロードしてconda環境を修正すべきでしょう。もちろん適切なドライバがインストールされている必要があります。具体的には、以下を実行する必要があります。
 
-1. Ensure that you install the [NVIDIA Drivers](https://www.nvidia.com/drivers) for your specific GPU.
-1. Install [CUDA](https://developer.nvidia.com/cuda-downloads), the programming language for GPUs.
-1. Install [CUDNN](https://developer.nvidia.com/cudnn), which contains many optimized libraries for deep learning.
-1. Install [TensorRT](https://developer.nvidia.com/tensorrt), if appropriate, for further acceleration.
+1. 利用するGPUにあった[NVIDIA Drivers](https://www.nvidia.com/drivers)がインストールされていることを確認
+1. GPUのためのプログラミング言語である[CUDA](https://developer.nvidia.com/cuda-downloads)をインストール
+1. 深層学習用に最適化された多数のライブラリを含む[CUDNN](https://developer.nvidia.com/cudnn)をインストール
+1. もし、さらなる高速化を求めるなら、[TensorRT](https://developer.nvidia.com/tensorrt)をインストール
 
-The installation process is somewhat lengthy and you will need to agree to a number of different licenses and use different installation scripts for it. Details will depend strongly on your choice of operating system and hardware.
+このインストールのプロセスはいくらか時間がかかり、多数の異なるライセンスへの同意と、インストールスクリプトの実行を求められるでしょう。OSやハードウェアによって細かい部分は異なります。
 
-Next update the environment description in `environment.yml`. Replace `mxnet` by `mxnet-cu92` or whatever version of CUDA that you've got installed. For instance, if you're on CUDA 8.0, you need to replace `mxnet-cu92` with `mxnet-cu80`. You should do this *before* creating the conda environment. Otherwise you will need to rebuild it later. On Linux this looks as follows (on Windows you can use e.g. Notepad to edit `environment.yml` directly).
+次に、`environment.yml`に記載された環境を更新します。`mxnet`を
+`mxnet-cu92`や読者がインストールしたCUDAのバージョンで書き換えます。もしCUDA 8.0を利用しているのであれば、`mxnet-cu92`を `mxnet-cu80`に書き換えます。これをconda環境を作る*前に*行うほうが良いです。もしそうでなければ、後に再起動が必要になるでしょう。Linuxでは以下のようなコマンドで編集できます（Windowsではメモ帳を使って`environment.yml`を直接編集できます。）
 
 ```
 cd d2l
