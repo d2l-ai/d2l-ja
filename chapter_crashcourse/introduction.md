@@ -1,38 +1,15 @@
-# Introduction
+# はじめに
 
-Before we could begin writing, the authors of this book, like much of
-the work force, had to become caffeinated.  We hopped in the car and
-started driving.  Using an iPhone, Alex called out 'Hey Siri',
-awakening the phone's voice recognition system.  Then Mu commanded
-'directions to Blue Bottle coffee shop'.  The phone quickly displayed
-the transcription of his command.  It also recognized that we were
-asking for directions and launched the Maps application to fulfill our request.  Once launched, the Maps app identified a number of routes. Next to each route, the phone displayed a predicted transit time. While we fabricated this story for pedagogical convenience, it demonstrates that in the span of just a few seconds, our everyday interactions with a smartphone can engage several machine learning
-models.
+この書籍の著者は、これを書き始めるようとするときに、多くの仕事を始める場合と同様に、カフェインを摂取していました。そして車に飛び乗って運転を始めたのです。iPhoneをもって、Alexは"Hey Siri"と言って、スマートフォンの音声認識システムを起動します。
+Muは「ブルーボトルのコーヒーショップへの行き方」と言いました。するとスマートフォンは、すぐに彼の指示内容を文章で表示しました。そして、行き方に関する要求を認識して、意図に合うようにマップのアプリを起動したのです。起動したマップはたくさんのルートを提示しました。この本で伝えたいことのために、この物語を作ってみましたが、たった数秒の間における、スマートフォンとの日々のやりとりに、様々な機械学習モデルが利用されているのです。
 
-If you've never worked with machine learning before, you might be
-wondering what we're talking about.  You might ask, 'isn't that just
-programming?' or 'what does *machine learning* even mean?'  First, to
-be clear, we implement all machine learning algorithms by writing
-computer programs.  Indeed, we use the same languages and hardware as
-other fields of computer science, but not all computer programs
-involve machine learning.  In response to the second question,
-precisely defining a field of study as vast as machine learning is
-hard.  It's a bit like answering, 'what is math?'.  But we'll try to
-give you enough intuition to get started.
+もし、これまで機械学習に取り組んだことがなければ、著者が何を言っているのか不思議に思うかもしれません。「ただのプログラミングとは違うの？」とか「機械学習ってどういう意味？」といった疑問をもつと思います。まずはじめに、明確にしておきますが、機械学習のアルゴリズムはすべてコンピュータのプログラミングという形で実装されます。ここでは、他のコンピュータサイエンスの分野でも利用されるようなプログラミング言語とハードウェアを利用しますが、すべてのコンピュータプログラムが機械学習と関係しているわけではありません。2つ目の質問に関しては、機械学習のような広範囲に渡る学問分野を定義することは難しいです。それは、例えば、「数学って何?」といった質問に答えるようなものです。しかし、始めるにあたって、直感的でわかりやすい説明を心がけようと思います。
 
 
 ## A motivating example
 
-Most of the computer programs we interact with every day
-can be coded up from first principles.
-When you add an item to your shopping cart,
-you trigger an e-commerce application to store an entry
-in a *shopping cart* database table,
-associating your user ID with the product's ID.
-We can write such a program from first principles,
-launch without ever having seen a real customer.
-When it's this easy to write an application
-*you should not be using machine learning*.
+私達が普段利用しているコンピュータプログラムの多くは、根本的に成立する第一原理にもとづいて実装されます。ショッピングカートに商品を追加するとき、e-commerceのアプリを実行して、shopping cartという、ユーザIDと商品IDが結びついたデータベースのテーブルにエントリを追加すると思います。このようなプログラムは、実際のお客さんに会ったことがなくても成立する第一原理から実装します。もし、このような簡単なアプリケーションを実装しようとするなら、機械学習を使わないほうが良いです。
+
 
 Fortunately (for the community of ML scientists)
 for many problems, solutions aren't so easy.
