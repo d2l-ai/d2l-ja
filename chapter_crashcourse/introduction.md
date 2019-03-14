@@ -1,97 +1,42 @@
 # はじめに
 
 この書籍の著者は、これを書き始めるようとするときに、多くの仕事を始める場合と同様に、カフェインを摂取していました。そして車に飛び乗って運転を始めたのです。iPhoneをもって、Alexは"Hey Siri"と言って、スマートフォンの音声認識システムを起動します。
-Muは「ブルーボトルのコーヒーショップへの行き方」と言いました。するとスマートフォンは、すぐに彼の指示内容を文章で表示しました。そして、行き方に関する要求を認識して、意図に合うようにマップのアプリを起動したのです。起動したマップはたくさんのルートを提示しました。この本で伝えたいことのために、この物語を作ってみましたが、たった数秒の間における、スマートフォンとの日々のやりとりに、様々な機械学習モデルが利用されているのです。
+Muは「ブルーボトルのコーヒーショップへの行き方」と言いました。するとスマートフォンは、すぐに彼の指示内容を文章で表示しました。そして、行き方に関する要求を認識して、意図に合うようにマップのアプリを起動したのです。起動したマップはたくさんのルートを提示しました。この本で伝えたいことのために、この物語をでっちあげてみましたが、たった数秒の間における、スマートフォンとの日々のやりとりに、様々な機械学習モデルが利用されているのです。
 
 もし、これまで機械学習に取り組んだことがなければ、著者が何を言っているのか不思議に思うかもしれません。「ただのプログラミングとは違うの？」とか「機械学習ってどういう意味？」といった疑問をもつと思います。まずはじめに、明確にしておきますが、機械学習のアルゴリズムはすべてコンピュータのプログラミングという形で実装されます。ここでは、他のコンピュータサイエンスの分野でも利用されるようなプログラミング言語とハードウェアを利用しますが、すべてのコンピュータプログラムが機械学習と関係しているわけではありません。2つ目の質問に関しては、機械学習のような広範囲に渡る学問分野を定義することは難しいです。それは、例えば、「数学って何?」といった質問に答えるようなものです。しかし、始めるにあたって、直感的でわかりやすい説明を心がけようと思います。
 
 
-## A motivating example
+## 機械学習の適用例
 
 私達が普段利用しているコンピュータプログラムの多くは、根本的に成立する第一原理にもとづいて実装されます。ショッピングカートに商品を追加するとき、e-commerceのアプリを実行して、shopping cartという、ユーザIDと商品IDが結びついたデータベースのテーブルにエントリを追加すると思います。このようなプログラムは、実際のお客さんに会ったことがなくても成立する第一原理から実装します。もし、このような簡単なアプリケーションを実装しようとするなら、機械学習を使わないほうが良いです。
 
-
-Fortunately (for the community of ML scientists)
-for many problems, solutions aren't so easy.
-Returning to our fake story about going to get coffee,
-imagine just writing a program to respond to a *wake word*
-like 'Alexa', 'Okay, Google' or 'Siri'.
-Try coding it up in a room by yourself
-with nothing but a computer and a code editor.
-How would you write such a program from first principles?
-Think about it... the problem is hard.
-Every second, the microphone will collect roughly 44,000 samples.
-What rule could map reliably from a snippet of raw audio
-to confident predictions ``{yes, no}``
-on whether the snippet contains the wake word?
-If you're stuck, don't worry.
-We don't know how to write such a program from scratch either.
-That's why we use machine learning.
+これは機械学習のサイエンティストにとって幸運なこともかもしれませんが、多くの問題に対するソリューションは簡単なものではありません。 コーヒーを買いに行くという嘘の話に戻りましょう。"Alexa"、"Okay Google"、"Siri"といった起動のための言葉に反応するコードを書くことを考えてみます。コンピュータとコードを書くエディタだけをつかって部屋でコードを書いてみましょう。どうやって第一原理に従ってコードを書きますか？考えてみましょう。問題は難しいです。だいたい44,000/秒でマイクからサンプルを集めます。音声の生データに対して、起動の言葉が含まれているかを調べて、YesかNoを正確に対応付けるルールとは何でしょうか？行き詰まってしまうと思いますが心配ありません。このようなプログラムを、ゼロから書く方法はだれもわかりません。これこそが機械学習を使う理由なのです。
 
 ![](../img/wake-word.svg)
 
-Here's the trick.
-Often, even when we don't know how to tell a computer
-explicitly how to map from inputs to outputs,
-we are nonetheless capable of performing the cognitive feat ourselves.
-In other words, even if you don't know *how to program a computer* to recognize the word 'Alexa',
-you yourself *are able* to recognize the word 'Alexa'.
-Armed with this ability,
-we can collect a huge *data set* containing examples of audio
-and label those that *do* and that *do not* contain the wake word.
-In the machine learning approach, we do not design a system *explicitly* to recognize
-wake words right away.
-Instead, we define a flexible program with a number of *parameters*.
-These are knobs that we can tune to change the behavior of the program.
-We call this program a model.
-Generally, our model is just a machine that transforms its input into some output.
-In this case, the model receives as *input* a snippet of audio,
-and it generates as output an answer ``{yes, no}``,
-which we hope reflects whether (or not) the snippet contains the wake word.
+ちょっとした考え方を紹介したいと思います。私達が、入力と出力を対応付ける方法をコンピュータに陽に伝えることができなくても、私達自身はそのような認識を行う素晴らしい能力を持っています。言い換えれば、たとえ"Alexa"といった言葉を認識するようにコンピュータのプログラムを書けなくても、あなた自身は"Alexa"の言葉を認識できます。従って、私達人間は、音声のデータと起動の言葉を含んでいるか否かのラベルをサンプルとして含む巨大なデータセットをつくることができます。機械学習を使うと、起動の言葉を直ちに認識するようなシステムを陽に実装する必要がありません。代わりに、膨大なパラメータで柔軟なプログラムを実装します。パラメータは、プログラムの挙動を柔軟に変更・調整するためのものです。私達はこのプログラムのことをモデルとよんでいます。一般的に、モデルは入力を出力に変換するような機械に過ぎません。上記の例では、モデルは一部の音声を入力として受け取って、それが起動の言葉を含んでいるかどうかを判定できることを期待し、YesかNoを回答として返します。
 
-If we choose the right kind of model,
-then there should exist one setting of the knobs
-such that the model fires ``yes`` every time it hears the word 'Alexa'.
-There should also be another setting of the knobs that might fire ``yes``
-on the word 'Apricot'.
-We expect that the same model should apply to 'Alexa' recognition and 'Apricot' recognition
-because these are similar tasks.
-However, we might need a different model to deal with fundamentally different inputs or outputs.
-For example, we might choose a different sort of machine to map from images to captions,
-or from English sentences to Chinese sentences.
+もし私達が、正しいモデルを選ぶことができれば、そのモデルは"Alexa"という言葉を聞いたときに"Yes"と出力するペアが必要になります。"Yes"という言葉は"Apricot"に置き換えることもできるでしょう。"Alexa"を認識する機能は"Apricot"を認識する機能は非常に似たようなものであり、同じモデルが適用できると思うかもしれません。しかし、入出力が変われば根本的に別のモデルを必要とする場合もあります。例えば、画像とラベルを対応付けるタスクと、英語と中国語を対応付けるタスクには、異なるモデルを利用する必要があるでしょう。
 
-As you might guess, if we just set the knobs randomly,
-the model will probably recognize neither 'Alexa', 'Apricot',
-nor any other English word.
-Generally, in deep learning, the *learning*
-refers precisely
-to updating the model's behavior (by twisting the knobs)
-over the course of a *training period*.
+想像できるとは思いますが、"Alexa"と"Yes"のようなペアがランダムなものであれば、モデルは"Alexa"も"Apricot"も他の英語も何も認識できないでしょう。Deep Learningという言葉の中のLearningというのは、学習の期間において、複数のペアを上手く使って、モデルの挙動を更新していくことを指します。その学習のプロセスというのは以下のようなものです。
 
-The training process usually looks like this:
-
-1. Start off with a randomly initialized model that can't do anything useful.
-1. Grab some of your labeled data (e.g. audio snippets and corresponding ``{yes,no}`` labels)
-1. Tweak the knobs so the model sucks less with respect to those examples
-1. Repeat until the model is awesome.
+1. まず最初にランダムに初期化されたモデルから始めます。このモデルは最初は使い物になりません
+1. ラベルデータを取り込みます（例えば、部分的な音声データと対応するYes/Noのラベルです）
+1. そのペアを利用してモデルを改善します
+1. モデルが良いものになるまで繰り返します
 
 ![](../img/ml-loop.svg)
 
-To summarize, rather than code up a wake word recognizer,
-we code up a program that can *learn* to recognize wake words,
-*if we present it with a large labeled dataset*.
-You can think of this act
-of determining a program's behavior by presenting it with a dataset
-as *programming with data*.
+まとめると、起動の言葉を認識できるようなコードを直接書くよりも、*もしラベル付きのデータをたくさん集められるなら*、その認識機能を*学習*するようなコードを書くべきです。これは、プログラムの挙動をデータセットで決める、つまり*データでプログラムを書く*ようなものだと考えることができます。
 
-We can 'program' a cat detector by providing our machine learning system with many examples of cats and dogs, such as the images below:
+私達は、以下に示すようなネコとイヌの画像サンプルを大量に集めて、機械学習を利用することで、ネコ認識器をプログラムすることができます。
+
 
 |![](../img/cat1.png)|![](../img/cat2.jpg)|![](../img/dog1.jpg)|![](../img/dog2.jpg)|
 |:---------------:|:---------------:|:---------------:|:---------------:|
-|cat|cat|dog|dog|
+|ネコ|ネコ|イヌ|イヌ|
 
-This way the detector will eventually learn to emit a very large positive number if it's a cat, a very large negative number if it's a dog, and something closer to zero if it isn't sure, but this is just barely scratching the surface of what machine learning can do.
-
+このケースでは、認識器はネコであれば非常に大きな正の値、イヌであれば非常に大きな負の値、どちらかわからない場合はゼロを出力するように学習するでしょう。しかし、機械学習が行うようなイヌとネコを識別するための境界を、ゼロからプログラミングするわけではありません。
 
 ## The dizzying versatility of machine learning
 
