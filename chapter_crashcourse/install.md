@@ -51,13 +51,13 @@ emacs environment.yml
 
 手短に言うと、condaは再現可能かつ信頼できる方法で、一連のPythonライブラリをセットアップする機構を提供しており、すべてのソフトウェアの依存関係が満足されるようになっています。ここでは、始めるにあたって必要なことを説明します。
 
-1. condaを利用して環境の作成とアクティベートをします。利便性のために、全ての構成を保持した`environment.yml`というファイルを作成しています。
+1. condaを利用して環境の作成とアクティベートをします（利用可能にします）。作業を楽にするために、全ての構成を保持した`environment.yml`というファイルを作成しています。
 1. 環境をアクティベートします。
 1. 実験を始めるためにJupyterノートブックを開きます。
 
 ### Windows
 
-As before, open the command line terminal.
+これまで通り、ターミナルを開いて以下を実行します。
 
 ```
 conda env create -f environment.yml
@@ -66,9 +66,10 @@ activate gluon
 jupyter notebook
 ```
 
-If you need to reactivate the set of libraries later, just skip the first line. This will ensure that your setup is active. Note that instead of Jupyter Notebooks you can also use JupyterLab via `jupyter lab` instead of `jupyter notebook`. This will give you a more powerful Jupyter environment (if you have JupyterLab installed). You can do this manually via `conda install jupyterlab` from within an active conda gluon environment.
+もし、ライブラリをかえて上記と同じ操作を行うときは、最初の1行目(conda createのところ)はスキップしてください。これで構成
+をアクティブにすることができるでしょう。Jupyer notebookの代わりにJupyterLabを使うこともできます。その場合は`jupyter noebook`としているところを`jupyter lab`にします。JupyterLabはもっと機能的なJupyter環境を提供してくれます(JupyerLabがインストールされている必要があります)。アクティブなcondaのgluon環境において、`conda install jupyterlab`とすると手動でインストールできます。
 
-If your browser integration is working properly, starting Jupyter will open a new window in your browser. If this doesn't happen, go to http://localhost:8888 to open it manually. Some notebooks will automatically download the data set and pre-training model. You can adjust the location of the repository by overriding the `MXNET_GLUON_REPO` variable.
+もしブラウザが正常に動いて入れば、Jupyterを起動すると、ブラウザ内で新しいウィンドウが開くでしょう。もし何も起こらなければ、http://localhost:8888 にアクセスして手動で開きます。ノートブックの中には、データセットや学習済みモデルを自動でダウンロードするものもあります。`MXNET_GLUON_REPO`の変数を上書きすれば、レポジトリの場所を変更することができます。
 
 ### Linux and MacOSX
 
