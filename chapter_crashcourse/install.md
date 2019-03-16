@@ -71,9 +71,9 @@ jupyter notebook
 
 もしブラウザが正常に動いて入れば、Jupyterを起動すると、ブラウザ内で新しいウィンドウが開くでしょう。もし何も起こらなければ、http://localhost:8888 にアクセスして手動で開きます。ノートブックの中には、データセットや学習済みモデルを自動でダウンロードするものもあります。`MXNET_GLUON_REPO`の変数を上書きすれば、レポジトリの場所を変更することができます。
 
-### Linux and MacOSX
+### LinuxとMacOSX
 
-The steps for Linux are quite similar, just that anaconda uses slightly different command line options.
+Linuxの場合の手順も非常に似ていて、少しだけ異なるanacondaのコマンドラインオプションを利用します。
 
 ```
 conda env create -f environment.yml
@@ -82,18 +82,18 @@ source activate gluon
 jupyter notebook
 ```
 
-The main difference between Windows and other installations is that for the former you use `activate gluon` whereas for Linux and macOS you use `source activate gluon`. Beyond that, the same considerations as for Windows apply. Install JupyterLab if you need a more powerful environment
+Windowsと他のインストールとの主な違いは、LinuxとmacOSでは`source activate gluon`を利用するのに対して、Windowsでは`activate gluon`を利用します。こうして、同じことがWindowsにも適用されます。より高性能な環境を求めるならJupyterLabをインストールしましょう。
 
-## Updating Gluon
+## Gluonのアップデート
 
-In case you want to update the repository, if you installed a new version of CUDA and (or) MXNet, you can simply use the conda commands to do this. As before, make sure you update the packages accordingly.
+もしレポジトリをアップデートしたい場合や、新しいバージョンのCUDAやMXNetをインストールした場合は、condaのコマンドを利用して以下を実行します。これまでと同様に、あわせてパッケージをアップデートすることも忘れないようにしましょう。
 
 ```
 cd d2l-en
 conda env update -f environment.yml
 ```
 
-## Summary
+## まとめ
 
 * Conda is a Python package manager that ensures that all software dependencies are met.
 * `environment.yml` has the full configuration for the book. All notebooks are available for download or on GitHub.
