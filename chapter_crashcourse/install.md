@@ -95,16 +95,18 @@ conda env update -f environment.yml
 
 ## まとめ
 
-* Conda is a Python package manager that ensures that all software dependencies are met.
-* `environment.yml` has the full configuration for the book. All notebooks are available for download or on GitHub.
-* Install GPU drivers and update the configuration if you have GPUs. This will shorten the time to train significantly.
+* Condaは全てのソフトウェアの依存関係を満たすためのPythonパッケージマネージャです。
+* `environment.yml`はこの書籍で必要な全ての設定を記述しています。全てのノートブックはダウンロード可能で、GitHub上でも利用可能です。
+* GPUを持っていれば、GPUドライバーをインストールして、設定を更新しましょう。学習にかかる時間を飛躍的に短くできるでしょう。
 
-## Exercise
+## 練習
 
-1. Download the code for the book and install the runtime environment.
-1. Follow the links at the bottom of the section to the forum in case you have questions and need further help.
-1. Create an account on the forum and introduce yourself.
+1. 書籍のコードをダウンロードして、実行環境をインストールしましょう。
 
-## Discuss on our Forum
+1. もし質問やさらなるヘルプが必要な場合は、フォーラムの節の下にあるリンクを進みましょう。
+
+1. フォーラムのアカウントを作成し、自己紹介しましょう。
+
+## フォーラムでの議論
 
 <div id="discuss" topic_id="2315"></div>
