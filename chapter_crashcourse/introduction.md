@@ -130,23 +130,8 @@ Muは「ブルーボトルのコーヒーショップへの行き方」と言い
 * '手術は何時間かかりますか?' - *回帰*
 * 'この写真にイヌは何匹いますか?' - *回帰*.
 
-However, if you can easily pose your problem as 'Is this a _ ?',
-then it's likely, classification, a different fundamental problem type that we'll cover next.
-Even if you've never worked with machine learning before,
-you've probably worked through a regression problem informally.
-Imagine, for example, that you had your drains repaired
-and that your contractor spent $x_1=3$ hours removing gunk from your sewage pipes.
-Then she sent you a bill of $y_1 = \$350$.
-Now imagine that your friend hired the same contractor for $x_2 = 2$ hours
-and that she received a bill of $y_2 = \$250$.
-If someone then asked you how much to expect on their upcoming gunk-removal invoice
-you might make some reasonable assumptions,
-such as more hours worked costs more dollars.
-You might also assume that there's some base charge and that the contractor then charges per hour.
-If these assumptions held, then given these two data points,
-you could already identify the contractor's pricing structure:
-\$100 per hour plus \$50 to show up at your house.
-If you followed that much then you already understand the high-level idea behind linear regression (and you just implicitly designed a linear model with bias).
+しかし、「これは__ですか?」のような問題として簡単に扱える問題であれば、それはおそらく分類問題で、次に説明する全く異なる種類の問題です。たとえ、機械学習をこれまで扱ったことがなかったとしても、形式に沿わない方法で、おそらく回帰問題を扱うことができるでしょう。例えば、下水装置を直すことを考えましょう。工事業者は下水のパイプから汚れを除くのに$x_1=3$時間かかって、あなたに$y_1=350$の請求をしました。友人が同じ工事業者を雇い、$x_2 = 2$時間かかったとき、友人に$y_2=250$の請求をしました。もし、これから汚れを除去する際に、どれくらいの請求が発生するかを尋ねられたら、作業時間が長いほど料金が上がるといった、妥当な想定をすると思います。そして、基本料金があって、１時間当たりの料金もかかるという想定もするでしょう。これらの想定のもと、与えられた2つのデータを利用して、工事業者の値付け方法を特定できるでしょう。1時間当たり\$100で、これに加えて\$50の出張料金です。もし、読者がこの内容についてこれたのであれば、線形回帰のハイレベルな考え方をすでに理解できているでしょう (そして、バイアス項のついた線形モデルを暗に設計したことになります)。
+
 
 In this case, we could produce the parameters that exactly matched the contractor's prices.
 Sometimes that's not possible, e.g., if some of the variance owes to some factors besides your two features.
