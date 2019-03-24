@@ -38,183 +38,92 @@ Muは「ブルーボトルのコーヒーショップへの行き方」と言い
 
 このケースでは、認識器はネコであれば非常に大きな正の値、イヌであれば非常に大きな負の値、どちらかわからない場合はゼロを出力するように学習するでしょう。しかし、機械学習が行うようなイヌとネコを識別するための境界を、ゼロからプログラミングするわけではありません。
 
-## The dizzying versatility of machine learning
+## 機械学習の多機能性
 
-This is the core idea behind machine learning:
-Rather than code programs with fixed behavior,
-we design programs with the ability to improve
-as they acquire more experience.
-This basic idea can take many forms.
-Machine learning can address many different application domains,
-involve many different types of models,
-and update them according to many different learning algorithms.
-In this particular case, we described an instance of *supervised learning*
-applied to a problem in automated speech recognition.
+これは機械学習を支える核となる考え方ですが、ある特定の挙動に関して直接プログラムとして書くよりは、まるで経験を獲得していくように、挙動を改善する能力をプログラミングします。この基本的な考え方は様々な形式で実装されます。機械学習は、多くの異なる分野で利用されており、多様なモデルに関係し、異なるアルゴリズムに応じてモデルを更新してきました。この例として、音声認識の問題に対する*教師あり学習*について述べたいと思います。
 
-Machine Learning is a versatile set of tools that lets you work with data in many different situations where simple rule-based systems would fail or might be very difficult to build. Due to its versatility, machine learning can be quite confusing to newcomers.
-For example, machine learning techniques are already widely used
-in applications as diverse as search engines, self driving cars,
-machine translation, medical diagnosis, spam filtering,
-game playing (*chess*, *go*), face recognition,
-data matching, calculating insurance premiums, and adding filters to photos.
+単純なルールベースのシステムが上手く行かなかったり、構築が非常に難しかったり、といった様々な状況において、私達がデータを利用して作業するための、多数のツール群が機械学習と言えます。例えば、機械学習の技術は検索エンジン、自動運転、機械翻訳、医療診断、スパムフィルタ、ゲームプレイ(チェスや囲碁)、顔認識、データマッチング、保険料の計算、写真の加工フィルタなど、すでに幅広く利用されています。
 
-Despite the superficial differences between these problems many of them share a common structure
-and are addressable with deep learning tools.
-They're mostly similar because they are problems where we wouldn't be able to program their behavior directly in code,
-but we can *program them with data*.
-Often times the most direct language for communicating these kinds of programs is *math*.
-In this book, we'll introduce a minimal amount of mathematical notation,
-but unlike other books on machine learning and neural networks,
-we'll always keep the conversation grounded in real examples and real code.
+これらの問題は表面上は違いますが、多くのものは共通の問題構造をもっていて、Deep Learningで扱えるものもあります。挙動を直接的にコードで記述できませんが、*データでプログラムする*、という点においては似通っています。このようなプログラムは*数学*という共通言語によってつながっています。この書籍では、数学の記述に関して最小限にとどめつつ、他の機械学習やニューラルネットワークの書籍とは違って、実際の例とコードにもとづいて説明をしたいと思います。
 
 
+## 機械学習の基礎
+起動のための言葉を認識するタスクを考えたとき、音声データとラベルからなるデータセットを準備します。そこで、音声からラベルを推定する機械学習モデルをどうやって学習させるかを記述するかもしれません。サンプルからラベルを推定するこのセットアップは機械学習の一種で、*教師あり学習*と呼ばれるものです。Deep Learningにおいても多くのアプローチがありますが、それについては以降の章で述べたいと思います。機械学習を進めるために、以下の４つのことが必要になります。
 
-## Basics of machine learning
-When we considered the task of recognizing wake-words,
-we put together a dataset consisting of snippets and labels.
-We then described (albeit abstractly)
-how you might train a machine learning model
-to predict the label given a snippet.
-This set-up, predicting labels from examples, is just one flavor of ML
-and it's called *supervised learning*.
-Even within deep learning, there are many other approaches,
-and we'll discuss each in subsequent sections.
-To get going with machine learning, we need four things:
+1. データ
+1. データを変換して推定するためのモデル
+1. そのモデルが上手く行っているかどうかを測るためのロス関数
+1. ロス関数を最小化するような、モデルのパラメータを探すアルゴリズム
 
-1. Data
-2. A model of how to transform the data
-3. A loss function to measure how well we're doing
-4. An algorithm to tweak the model parameters such that the loss function is minimized
+### データ
 
-### Data
+一般的に、多くのデータを持っていれば持っているほど、問題を簡単に解くことができます。多くのデータを持っているなら、より性能の良いモデルを構築することができるからです。データはDeep Learningの発達に大きく貢献し、現在の多くのDeep Learningモデルは大規模なデータセットなしには動きません。以下では、機械学習を実践するうえで扱うことが多いデータの例を示します。
 
-Generally, the more data we have, the easier our job becomes.
-When we have more data, we can train more powerful models. Data is at the heart of the resurgence of deep learning and many of most exciting models in deep learning don't work without large data sets. Here are some examples of the kinds of data machine learning practitioners often engage with:
+* **画像** スマートフォンで撮影されたり、Webで収集された画像、衛星画像、超音波やCTやMRIなどのレントゲン画像など
 
-* **Images:** Pictures taken by smartphones or harvested from the web, satellite images, photographs of medical conditions, ultrasounds, and radiologic images like CT scans and MRIs, etc.
-* **Text:** Emails, high school essays, tweets, news articles, doctor's notes, books, and corpora of translated sentences, etc.
-* **Audio:** Voice commands sent to smart devices like Amazon Echo, or iPhone or Android phones, audio books, phone calls, music recordings, etc.
-* **Video:** Television programs and movies, YouTube videos, cell phone footage, home surveillance, multi-camera tracking, etc.
-* **Structured data:** Webpages, electronic medical records, car rental records, electricity bills, etc.
+* **テキスト** Eメール、学校でのエッセイ、tweet、ニュース記事、医者のメモ、書籍、翻訳文のコーパスなど
 
-### Models
+* **音声** Amazon Echo、iPhone、Androidのようなスマートデバイスに送られる音声コマンド、音声つき書籍、通話、音楽など
 
-Usually the data looks quite different from what we want to accomplish with it.
-For example, we might have photos of people and want to know whether they appear to be happy.
-We might desire a model capable of ingesting a high-resolution image and outputting a happiness score.
-While some simple problems might be addressable with simple models, we're asking a lot in this case.
-To do its job, our happiness detector needs to transform hundreds of thousands of low-level features (pixel values)
-into something quite abstract on the other end (happiness scores).
-Choosing the right model is hard, and different models are better suited to different datasets.
-In this book, we'll be focusing mostly on deep neural networks.
-These models consist of many successive transformations of the data that are chained together top to bottom,
-thus the name *deep learning*.
-On our way to discussing deep nets, we'll also discuss some simpler, shallower models.
+* **動画** テレビや映画、Youtubeのビデオ、携帯電話の撮影、自宅の監視カメラ映像、複数カメラによる追跡、など
+
+* **構造化データ** ウェブページ、電子カルテ、レンタカーの記録、デジタルな請求書など
 
 
-###  Loss functions
+### モデル
 
-To assess how well we're doing we need to compare the output from the model with the truth.
-Loss functions give us a way of measuring how *bad* our output is.
-For example, say we trained a model to infer a patient's heart rate from images.
-If the model predicted that a patient's heart rate was 100bpm,
-when the ground truth was actually 60bpm,
-we need a way to communicate to the model that it's doing a lousy job.
+通常、データは私達が達成しようとすることとは大きく異なっています。例えば、人間の写真を持っていて、そこに映る人たちが幸せかどうかを知りたいとします。そのために、高解像度の画像から幸福度を出力するようなモデルを必要とすると思います。簡単な問題がシンプルなモデルで解決できるかもしれないのに対し、このケースではいくつかの問いを投げかけることになります。幸福度を求めるためには、その検出器が数百、数千の低レベルな特徴（画像の場合はピクセル単位）をかなり抽象的な幸福度に変換する必要があります。そして、正しいモデルを選ぶのは難しく、異なるデータセットには異なるモデルが適しています。このコンテンツでは、モデルとしてDeep Neural Networksに着目します。これらのモデルは最初（入力）から最後（出力）までつながった、たくさんのデータ変換で構成されています。従って、*Deep Learning*と呼ばれているのです。Deep Nets、つまりDeep Learningのモデルについて議論するときは、比較的シンプルで浅いモデルを議論するようにしたいと思います。
 
 
-Similarly if the model was assigning scores to emails indicating the probability that they are spam,
-we'd need a way of telling the model when its predictions are bad.
-Typically the *learning* part of machine learning consists of minimizing this loss function.
-Usually, models have many parameters.
-The best values of these parameters is what we need to 'learn', typically by minimizing the loss incurred on a *training data*
-of observed data.
-Unfortunately, doing well on the training data
-doesn't guarantee that we will do well on (unseen) test data,
-so we'll want to keep track of two quantities.
+###  ロス関数
 
- * **Training Error:** This is the error on the dataset used to train our model by minimizing the loss on the training set. This is equivalent to doing well on all the practice exams that a student might use to prepare for the real exam. The results are encouraging, but by no means guarantee success on the final exam.
- * **Test Error:** This is the error incurred on an unseen test set. This can deviate quite a bit from the training error. This condition, when a model fails to generalize to unseen data, is called *overfitting*. In real-life terms, this is the equivalent of screwing up the real exam despite doing well on the practice exams.
+モデルが良いかどうかを評価するためには、モデルの出力と実際の正解を比較する必要があります。ロス関数は、その出力が*悪い*ことを評価する方法です。例えば、画像から患者の心拍数を予測するモデルを学習する場合を考えます。そのモデルが心拍数は100bpmだと推定して、実際は60bpmが正解だったときには、そのモデルに対して推定結果が悪いことを伝えなくてはなりません。
 
+同様に、Eメールがスパムである確率を予測するモデルを作りたいとき、その予測が上手く行っていなかったら、そのモデルに伝える方法が必要になります。一般的に、機械学習の*学習*と呼ばれる部分はロス関数を最小化することです。通常、モデルはたくさんのパラメータをもっています。パラメータの最適な値というのは、私達が学習で必要とするものであり、観測したデータのなかの*学習データ*の上でロスを最小化することによって得られます。残念ながら、学習データ上でいくら上手くロス関数を最小化しても、いまだ見たことがないテストデータにおいて、学習したモデルがうまくいくという保証はありません。従って、以下の2つの指標をチェックする必要があります。
 
-### Optimization algorithms
+* **学習誤差**: これは、学習データ上でロスを最小化してモデルを学習したときの、学習データにおける誤差です。これは、実際の試験に備えて、学生が練習問題をうまく説いているようなものです。その結果は、実際の試験の結果が良いかどうかを期待させますが、最終試験での成功を保証するものではありません。
+* **テスト誤差**: これは、見たことのないテストデータに対する誤差で、学習誤差とは少し異なっています。見たことのないデータに対して、モデルが対応（汎化）できないとき、その状態を *overfitting* (過適合)と呼びます。実生活でも、練習問題に特化して準備したにもかかわらず、本番の試験で失敗するというのと似ています。
 
-Finally, to minimize the loss, we'll need some way of taking the model and its loss functions,
-and searching for a set of parameters that minimizes the loss.
-The most popular optimization algorithms for work on neural networks
-follow an approach called gradient descent.
-In short, they look to see, for each parameter which way the training set loss would move if you jiggled the parameter a little bit. They then update the parameter in the direction that reduces the loss.
+### 最適化アルゴリズム
+最終的にロスを最小化するということは、モデルとそのロス関数に対して、ロスを最小化するようなモデルのパラメータを探索するということになります。ニューラルネットワークにおける最も有名な最適化アルゴリズムは、最急降下法と呼ばれる方法にもとづいています。端的に言えば、パラメーラを少しだけ動かしたとき、学習データに対するロスがどのような方向に変化するかを、パラメータごとに見ることです。ロスが小さくなる方向へパラメータを更新します。
 
-In the following sections, we will discuss a few types of machine learning in some more detail. We begin with a list of *objectives*, i.e. a list of things that machine learning can do. Note that the objectives are complemented with a set of techniques of *how* to accomplish them, i.e. training, types of data, etc. The list below is really only sufficient to whet the readers' appetite and to give us a common language when we talk about problems. We will introduce a larger number of such problems as we go along.
+次の節では、機械学習のいくつかの種類について詳細を議論します。まず、機械学習の*目的*、言い換えれば機械学習ができることに関して、そのリストを紹介します。その目的は、目的を達成するための*手段*、いわば学習やデータの種類と補完的な位置づけであることに気をつけてください。以下のリストは、ひとまず、読者の好奇心をそそり、問題について話し合うための共通言語を理解することを目的としています。より多くの問題については、追って紹介をしていきたいと思います。
 
 ## Supervised learning
 
-Supervised learning addresses the task of predicting *targets* given input data.
-The targets, also commonly called *labels*, are generally denoted *y*.
-The input data points, also commonly called *examples* or *instances*, are typically denoted $\boldsymbol{x}$.
-The goal is to produce a model $f_\theta$ that maps an input $\boldsymbol{x}$ to a prediction $f_{\theta}(\boldsymbol{x})$
+## 教師あり学習
 
-To ground this description in a concrete example,
-if we were working in healthcare,
-then we might want to predict whether or not a patient would have a heart attack.
-This observation, *heart attack* or *no heart attack*,
-would be our label $y$.
-The input data $\boldsymbol{x}$ might be vital signs such as heart rate, diastolic and systolic blood pressure, etc.
+教師あり学習は、入力データが与えられて、何らかの*対象*を予測するものです。その対象というのは、*ラベル*と呼ばれていて、*y*で表現することが多いです。入力データ点は、*example* や *instance* と呼ばれることがあり、$\boldsymbol{x}$で表現されることが多いです。
+教師あり学習の目的は、入力$\boldsymbol{x}$から予測$f_{\theta}(\boldsymbol{x})$を得るようなモデル$f_\theta$を生成することです。
 
-The supervision comes into play because for choosing the parameters $\theta$, we (the supervisors) provide the model with a collection of *labeled examples* ($\boldsymbol{x}_i, y_i$), where each example $\boldsymbol{x}_i$ is matched up against it's correct label.
+この説明を例を使って具体的に説明したいと思います。ヘルスケアの分野で仕事をしているとき、患者が心臓発作を起こすかどうかを予測したいと思います。実際に観測した内容、この場合、*心臓発作*か*心臓発作でない*かがラベル$y$です。入力データ$\boldsymbol{x}$は、心拍数や、最高、最低の血圧といった、いわゆるバイタルサインというものになるでしょう。
 
-In probabilistic terms, we typically are interested estimating
-the conditional probability $P(y|x)$.
-While it's just one among several approaches to machine learning,
-supervised learning accounts for the majority of machine learning in practice.
-Partly, that's because many important tasks
-can be described crisply as estimating the probability of some unknown given some available evidence:
+教師あり学習における、教師するというのは、パラメータ$\theta$を選ぶためのもので、私達が教師となって、ラベルの付いた入力データ($\boldsymbol{x}_i, y_i$)とモデルを与えます。
+各データ$\boldsymbol{x}_i$は正しいラベルと対応しています。
 
-* Predict cancer vs not cancer, given a CT image.
-* Predict the correct translation in French, given a sentence in English.
-* Predict the price of a stock next month based on this month's financial reporting data.
 
-Even with the simple description 'predict targets from inputs'
-supervised learning can take a great many forms and require a great many modeling decisions,
-depending on the type, size, and the number of inputs and outputs.
-For example, we use different models to process sequences (like strings of text or time series data)
-and for processing fixed-length vector representations.
-We'll visit many of these problems in depth throughout the first 9 parts of this book.
 
-Put plainly, the learning process looks something like this.
-Grab a big pile of example inputs, selecting them randomly.
-Acquire the ground truth labels for each.
-Together, these inputs and corresponding labels (the desired outputs)
-comprise the training set.
-We feed the training dataset into a supervised learning algorithm.
-So here the *supervised learning algorithm* is a function that takes as input a dataset,
-and outputs another function, *the learned model*.
-Then, given a learned model,
-we can take a new previously unseen input, and predict the corresponding label.
+
+確率の専門用語を用いれば、私達は条件付き確率$P(y|x)$を求めようとしています。機械学習には、いくつかのアプローチがありますが、教師あり学習は実際に利用されている機械学習の大半を占めると言って良いでしょう。重要なタスクは、与えられた事実から未知の事象の確率を推測すること、と大雑把に言うことができるでしょう。例えば、
+
+* **CT画像からガンかガンでないかを予測する**
+* **英語の文章から正しいフランス語の翻訳を予測する**
+* **今月の財務データから翌月の株価を予測する**
+
+「入力から対象を予測する」というシンプルな説明をしましたが、教師あり学習は、入出力データのタイプ、サイズ、数に応じて、様々な形式やモデル化の方法をとることができます。例えば、文字列や時系列データなどの系列データを処理する場合と、固定長のベクトルで表現されるデータを処理する場合で、異なるモデルを利用することができます。このコンテンツの序盤では、これらの問題の多くについて深く説明したいと思います。
+
+
+簡潔に言うと、機械学習のプロセスというのは、こういったものです。たくさんの入力データ点をランダムに選んで手に入れます。それぞれのデータ点に対して正しいラベルを付与します。入力データ点と対応するラベル（欲しい出力）で学習データセットを作ります。その学習データセットを教師あり学習アルゴリズムに入力します。*教師あり学習アルゴリズム*は一種の関数で、データセットを入力として受け取り、*学習モデル*とよばれる関数を出力します。その学習モデルを利用して、未知の入力データから対応するラベルを予測することができます。
 
 ![](../img/supervised-learning.svg)
 
 
 
-### Regression
+### 回帰
 
-Perhaps the simplest supervised learning task to wrap your head around is Regression.
-Consider, for example a set of data harvested
-from a database of home sales.
-We might construct a table, where each row corresponds to a different house,
-and each column corresponds to some relevant attribute,
-such as the square footage of a house, the number of bedrooms, the number of bathrooms,
-and the number of minutes (walking) to the center of town.
-Formally, we call one row in this dataset a *feature vector*,
-and the object (e.g. a house) it's associated with an *example*.
+最も単純な教師あり学習のタスクとして頭に思い浮かぶものは、おそらく回帰ではないかと思います。例えば、住宅の売上に関するデータベースから、一部のデータセットが得られた場合を考えてみます。各列が異なる住居に、各列は関連する属性、例えば、住宅の面積、寝室の数、トイレの数、中心街まで徒歩でかかる時間に対応するような表を構成するでしょう。形式的に、このようなデータセットの1行を*特徴ベクトル*、関連する対象（今回の事例では1つの家）を*データ例*と呼びます。
 
-If you live in New York or San Francisco, and you are not the CEO of Amazon, Google, Microsoft, or Facebook,
-the (sq. footage, no. of bedrooms, no. of bathrooms, walking distance) feature vector for your home
-might look something like: $[100, 0, .5, 60]$.
-However, if you live in Pittsburgh,
-it might look more like $[3000, 4, 3, 10]$.
-Feature vectors like this are essential for all the classic machine learning problems.
-We'll typically denote the feature vector for any one example $\mathbf{x_i}$
-and the set of feature vectors for all our examples $X$.
+もしニューヨークやサンフランシスコに住んでいて、Amazon、Google、Microsoft、FacebookなどのCEOでなければ、その特徴ベクトル（面積、寝室数、トイレ数、中心街までの距離）は$[100, 0, .5, 60]$といった感じでしょう。一方、もしピッツバーグに住んでいれば、その特徴ベクトルは$[3000, 4, 3, 10]$のようになると思います。 このような特徴ベクトルは、伝統的な機械学習のあらゆる問題において必要不可欠なものでした。あるデータ例に対する特徴ベクトルを$\mathbf{x_i}$で、全てのテータ例の特徴ベクトルを$X$として表します。
 
 What makes a problem *regression* is actually the outputs.
 Say that you're in the market for a new home,
