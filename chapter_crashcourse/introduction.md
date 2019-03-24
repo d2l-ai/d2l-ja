@@ -123,31 +123,12 @@ Muは「ブルーボトルのコーヒーショップへの行き方」と言い
 
 もしニューヨークやサンフランシスコに住んでいて、Amazon、Google、Microsoft、FacebookなどのCEOでなければ、その特徴ベクトル（面積、寝室数、トイレ数、中心街までの距離）は$[100, 0, .5, 60]$といった感じでしょう。一方、もしピッツバーグに住んでいれば、その特徴ベクトルは$[3000, 4, 3, 10]$のようになると思います。 このような特徴ベクトルは、伝統的な機械学習のあらゆる問題において必要不可欠なものでした。あるデータ例に対する特徴ベクトルを$\mathbf{x_i}$で、全てのテータ例の特徴ベクトルを$X$として表します。
 
-What makes a problem *regression* is actually the outputs.
-Say that you're in the market for a new home,
-you might want to estimate the fair market value of a house,
-given some features like these.
-The target value, the price of sale, is a *real number*.
-We denote any individual target $y_i$ (corresponding to example $\mathbf{x_i}$)
-and the set of all targets $\mathbf{y}$ (corresponding to all examples X).
-When our targets take on arbitrary real values in some range,
-we call this a regression problem.
-The goal of our model is to produce predictions (guesses of the price, in our example)
-that closely approximate the actual target values.
-We denote these predictions $\hat{y}_i$
-and if the notation seems unfamiliar, then just ignore it for now.
-We'll unpack it more thoroughly in the subsequent chapters.
+何が問題を回帰させるかというと、実はその出力なのです。もしあなたが、新居のためにマーケットにいて、これらの特徴量を用いて、家の適正な市場価値を推定したいとしましょう。目標値は、販売価格で、これは*実数*です。あるデータ例$\mathbf{x_i}$に対する個別の目標値を$y_i$とし、すべてのデータ例$\mathbf{X}$に対応する全目標を$\mathbf{y}$とします。目標値が、ある範囲内の任意の実数をとるとき、この問題を回帰問題と呼びます。ここで作成するモデルの目的は、実際の目標値に近い予測値(いまの例では、価格の推測値)を生成することです。この予測値を$\hat{y}_i$とします。もしこの表記になじみがなければ、いまのところ無視しても良いです。以降の章では、中身をより徹底的に解説していく予定です。
 
+多くの実践的な問題は、きちんと説明されて、わかりやすい回帰問題となるでしょう。ユーザがある動画につけるレーティングを予測する問題は回帰問題です。もし2009年にその功績をあげるような偉大なアルゴリズムを設計できていれば、[Netflixの100万ドルの賞](https://en.wikipedia.org/wiki/Netflix_Prize)を勝ち取っていたかも知れません。病院での患者の入院日数を予測する問題もまた回帰問題です。上手くいく法則としては、*どれくらい?*という問題は回帰問題を示唆しているでしょう。
 
-Lots of practical problems are well-described regression problems.
-Predicting the rating that a user will assign to a movie is a regression problem,
-and if you designed a great algorithm to accomplish this feat in 2009,
-you might have won the [$1 million Netflix prize](https://en.wikipedia.org/wiki/Netflix_Prize).
-Predicting the length of stay for patients in the hospital is also a regression problem.
-A good rule of thumb is that any *How much?* or *How many?* problem should suggest regression.
-
-* 'How many hours will this surgery take?' - *regression*
-* 'How many dogs are in this photo?' - *regression*.
+* '手術は何時間かかりますか?' - *回帰*
+* 'この写真にイヌは何匹いますか?' - *回帰*.
 
 However, if you can easily pose your problem as 'Is this a _ ?',
 then it's likely, classification, a different fundamental problem type that we'll cover next.
