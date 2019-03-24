@@ -1,31 +1,33 @@
-# Automatic Differentiation
+# 自動微分
 
-In machine learning, we *train* models to get better and better as a function of experience. Usually, *getting better* means minimizing a *loss function*, i.e. a score that answers "how *bad* is our model?" With neural networks, we choose loss functions to be differentiable with respect to our parameters. Put simply, this means that for each of the model's parameters, we can determine how much *increasing* or *decreasing* it might affect the loss. While the calculations are straightforward, for complex models, working it out by hand can be a pain (and often error-prone).
+機械学習では、経験を重ねる関数のように、モデルをだんだん良くするように*学習*させます。通常、*良くする*ことは、モデルがどの程度*悪いか*をスコアとして表す*ロス関数*を最小化することを意味します。ニューラルネットワークとともに、パラメータに関して微分可能なロス関数を選択します。平たく言えば、モデルの各パラメータに対して、ロスをどの程度*増加*または*減少*させるかを決めることができるのです。計算自体は率直なものですが、複雑なモデルに対して人手で行うのは非常に困難で間違いやすいものです。
 
-The autograd package expedites this work by automatically calculating derivatives. And while most other libraries require that we compile a symbolic graph to take automatic derivatives, `autograd` allows you to take derivatives while writing  ordinary imperative code. Every time you make pass through your model, `autograd` builds a graph on the fly, through which it can immediately backpropagate gradients. If you are unfamiliar with some of the math, e.g. gradients, please refer to the [“Mathematical Basics”](../chapter_appendix/math.md) section in the appendix.
+autogradというパッケージは、自動で微分を計算することによって、この作業を加速させました。多くの他のライブラリが、自動微分を行うためにシンボリックなグラフのコンパイルを必要とするのに対し、`autograd`は通常のコードを書くだけで微分をすることができます。モデル全体を計算するときはいつでも、`autograd`はグラフをその都度作成し、勾配を直接逆伝搬することができます。微分のような数学を見慣れていなければ、Appendixの[“Mathematical Basics”](../chapter_appendix/math.md)を参照してください。
 
 ```{.python .input  n=1}
 from mxnet import autograd, nd
 ```
 
-## A Simple Example
+## シンプルな例
 
-As a toy example, let's say that we are interested in differentiating the mapping $y = 2\mathbf{x}^{\top}\mathbf{x}$ with respect to the column vector $\mathbf{x}$. Firstly, we create the variable `x` and assign an initial value.
+単純な例として、$y = 2\mathbf{x}^{\top}\mathbf{x}$を列ベクトル $\mathbf{x}$に関して微分してみましょう。まず、変数`x`を作成して、初期値を与えます。
 
 ```{.python .input  n=2}
 x = nd.arange(4).reshape((4, 1))
 print(x)
 ```
 
-Once we compute the gradient of ``y`` with respect to ``x``, we'll need a place to store it. We can tell an NDArray that we plan to store a gradient by invoking its ``attach_grad()`` method.
+``x``に関する``y``の勾配を計算したら、それを保存するための場所を用意しましょう。NDArrayに対して、``attach_grad()``のメソッドを利用すると、勾配を保存することができます。
+
 
 ```{.python .input  n=3}
 x.attach_grad()
 ```
 
-Now we're going to compute ``y`` and MXNet will generate a computation graph on the fly. It's as if MXNet turned on a recording device and captured the exact path by which each variable was generated.
+いま``y``を計算しようとして、MXNetは計算グラフを作成します。それは、記録用のデバイスを起動して、各変数を生成する正確なパスを取り込むようなものです。
 
-Note that building the computation graph requires a nontrivial amount of computation. So MXNet will *only* build the graph when explicitly told to do so. This happens by placing code inside a ``with autograd.record():`` block.
+計算グラフの作成には些細ではない量の計算を必要とします。そこで陽に計算グラフを作成するよう指示したときだけ、MXNetは計算グラフを作成します。``with autograd.record():``のブロックの中にコードを記述することによって行うことができます。
+
 
 ```{.python .input  n=4}
 with autograd.record():
