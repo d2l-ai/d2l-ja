@@ -145,17 +145,10 @@ $$l(y,y') = \sum_i (y_i - y_i')^2.$$
 
 のちほど紹介しますが、$L_2$ロスはガウスノイズによってばらついているデータを想定しており、$L_1$ロスはラプラス分布のノイズによってばらついていることを想定しています。
 
-### Classification
+### 分類
 
-While regression models are great for addressing *how many?* questions,
-lots of problems don't bend comfortably to this template. For example,
-a bank wants to add check scanning to their mobile app.
-This would involve the customer snapping a photo of a check with their smartphone's camera
-and the machine learning model would need to be able to automatically understand text seen in the image.
-It would also need to understand hand-written text to be even more robust.
-This kind of system is referred to as optical character recognition (OCR),
-and the kind of problem it solves is called a classification.
-It's treated with a distinct set of algorithms than those that are used for regression.
+回帰モデルは「*どれくらい多い?*」という質問に回答する上で、優れたものではありますが、多くの問題はこのテンプレートに都合よく当てはめられるとは限りません。例えば、ある銀行ではモバイルアプリに、領収書をスキャンする機能を追加したいと思っています。これには、スマートフォンのカメラで領収書の写真を撮る顧客と、画像内のテキストを自動で理解できる必要のある機械学習モデルが関係するでしょう。より頑健に手書きのテキストを理解する必要もあるでしょう。この種のシステムは光学文字認識 (Optical Character Recognition, OCR) と呼ばれており、OCRが解くこの種の問題は
+分類と呼ばれています。分類の問題は、回帰に利用されたアルゴリズムとは全く異なるアルゴリズムが利用されます。
 
 In classification, we want to look at a feature vector, like the pixel values in an image,
 and then predict which category (formally called *classes*),
