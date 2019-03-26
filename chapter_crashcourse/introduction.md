@@ -150,17 +150,8 @@ $$l(y,y') = \sum_i (y_i - y_i')^2.$$
 回帰モデルは「*どれくらい多い?*」という質問に回答する上で、優れたものではありますが、多くの問題はこのテンプレートに都合よく当てはめられるとは限りません。例えば、ある銀行ではモバイルアプリに、領収書をスキャンする機能を追加したいと思っています。これには、スマートフォンのカメラで領収書の写真を撮る顧客と、画像内のテキストを自動で理解できる必要のある機械学習モデルが関係するでしょう。より頑健に手書きのテキストを理解する必要もあるでしょう。この種のシステムは光学文字認識 (Optical Character Recognition, OCR) と呼ばれており、OCRが解くこの種の問題は
 分類と呼ばれています。分類の問題は、回帰に利用されたアルゴリズムとは全く異なるアルゴリズムが利用されます。
 
-In classification, we want to look at a feature vector, like the pixel values in an image,
-and then predict which category (formally called *classes*),
-among some set of options, an example belongs.
-For hand-written digits, we might have 10 classes,
-corresponding to the digits 0 through 9.
-The simplest form of classification is when there are only two classes,
-a problem which we call binary classification.
-For example, our dataset $X$ could consist of images of animals
-and our *labels* $Y$ might be the classes $\mathrm{\{cat, dog\}}$.
-While in regression, we sought a regressor to output a real value $\hat{y}$,
-in classification, we seek a *classifier*, whose output $\hat{y}$ is the predicted class assignment.
+分類において、ある画像データのピクセル値のような特徴ベクトルにもとづいて、いくつかの候補の中から、そのデータがどのカテゴリ（正式には*クラス*)を予測したいと思うでしょう。例えば、手書きの数字に対しては、0から9までの数値に対応する10クラスになるでしょう。最も単純な分類というのは、2クラスだけを対象にするとき、すなわち2値分類と呼ばれる問題です。例えば、データセット$X$が動物の画像で構成されていて、*ラベル*$Y$が$\mathrm{\{ネコ, イヌ\}}$のクラスであるとします。回帰の場合、実数$\hat{y}$を出力するような回帰式を求めていたでしょう。分類では、出力$\hat{y}$は予測されるクラスとなるような分類器を求めることになるでしょう。
+
 
 For reasons that we'll get into as the book gets more technical, it's pretty hard to optimize a model that can only output a hard categorical assignment, e.g. either *cat* or *dog*.
 It's a lot easier instead to express the model in the language of probabilities.
