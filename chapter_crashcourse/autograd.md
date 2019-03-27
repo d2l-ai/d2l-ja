@@ -24,9 +24,9 @@ print(x)
 x.attach_grad()
 ```
 
-いま``y``を計算しようとして、MXNetは計算グラフを作成します。それは、記録用のデバイスを起動して、各変数を生成する正確なパスを取り込むようなものです。
+ここで``y``を計算するためにMXNetによって計算グラフを作成します。それは、記録デバイスを起動して、各変数を生成する正確なパスを取り込むようなものです。
 
-計算グラフの作成には些細ではない量の計算を必要とします。そこで陽に計算グラフを作成するよう指示したときだけ、MXNetは計算グラフを作成します。``with autograd.record():``のブロックの中にコードを記述することによって行うことができます。
+計算グラフの作成にはそれなりの計算を必要とします。そこで陽に計算グラフを作成するよう指示したときだけ、MXNetは計算グラフを作成します。``with autograd.record():``のブロックの中にコードを記述することによって行うことができます。
 
 
 ```{.python .input  n=4}
@@ -35,13 +35,13 @@ with autograd.record():
 print(y)
 ```
 
-Since the shape of `x` is (4, 1), `y` is a scalar. Next, we can automatically find the gradient by calling the `backward` function. It should be noted that if `y` is not a scalar, MXNet will first sum the elements in `y` to get the new variable by default, and then find the gradient of the variable with respect to `x`.
+`x`のshapeは(4, 1)なので`y`はスカラーになります。次に、`backward`の関数を呼ぶことで勾配を自動で取得します。`y`がスカラーでなければ、MXNetはデフォルトで`y`の要素の総和をとって新しい変数とし、その変数に対する`x`の勾配を計算します。
 
 ```{.python .input  n=5}
 y.backward()
 ```
 
-The gradient of the function $y = 2\mathbf{x}^{\top}\mathbf{x}$ with respect to $\mathbf{x}$ should be $4\mathbf{x}$. Now let's verify that the gradient produced is correct.
+関数$y = 2\mathbf{x}^{\top}\mathbf{x}$の$\mathbf{x}$に対する勾配は$4\mathbf{x}$です。実際に計算される勾配が正しいか確かめてみましょう。
 
 ```{.python .input  n=6}
 print((x.grad - 4 * x).norm().asscalar() == 0)
