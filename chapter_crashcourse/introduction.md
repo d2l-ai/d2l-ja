@@ -152,62 +152,29 @@ $$l(y,y') = \sum_i (y_i - y_i')^2.$$
 
 分類において、ある画像データのピクセル値のような特徴ベクトルにもとづいて、いくつかの候補の中から、そのデータがどのカテゴリ（正式には*クラス*)を予測したいと思うでしょう。例えば、手書きの数字に対しては、0から9までの数値に対応する10クラスになるでしょう。最も単純な分類というのは、2クラスだけを対象にするとき、すなわち2値分類と呼ばれる問題です。例えば、データセット$X$が動物の画像で構成されていて、*ラベル*$Y$が$\mathrm{\{ネコ, イヌ\}}$のクラスであるとします。回帰の場合、実数$\hat{y}$を出力するような回帰式を求めていたでしょう。分類では、出力$\hat{y}$は予測されるクラスとなるような分類器を求めることになるでしょう。
 
+この本が目的としているように、より技術的な内容に踏み込んでいきましょう。*ネコ*や*イヌ*といったカテゴリに対して、0か1かで判定するようなモデルを最適化することは非常に難しいです。その代わりに、確率を利用してモデルを表現するほうがはるかに簡単です。あるデータ$x$に対して、モデルは、ラベル$k$となる確率$\hat{y}_k$を決定します。これらは確率であるため、正の値であり、その総和は$1$になります。したがって、$K$個のカテゴリの確率を決めるためには、$K-1$の数だけ必要であることがわかります。二値分類の場合がわかりやすいです。表を向く確率が0.6 (60%) の不正なコインでは、0.4 (40%)の確率で裏を向くでしょう。動物を認識する例に戻ると、分類器は画像を見てネコである確率 $\Pr(y=\mathrm{cat}| x) = 0.9$を出力します。その数値は、画像がネコを表していることを、90%の自信をもって分類器が判定したものだと解釈できるでしょう。ある予測されたクラスに対する確率の大きさは信頼度の一つです。そしてこれは、唯一の信頼度というわけではなく、より発展的な章において、異なる不確実性について議論する予定です。
 
-For reasons that we'll get into as the book gets more technical, it's pretty hard to optimize a model that can only output a hard categorical assignment, e.g. either *cat* or *dog*.
-It's a lot easier instead to express the model in the language of probabilities.
-Given an example $x$, the model assigns a probability $\hat{y}_k$ to each label $k$.
-Because these are probabilities, they need to be positive numbers and add up to $1$.
-This means that we only need $K-1$ numbers to give the probabilities of $K$ categories.
-This is easy to see for binary classification.
-If there's a 0.6 (60%) probability that an unfair coin comes up heads,
-then there's a 0.4 (40%) probability that it comes up tails.
-Returning to our animal classification example, a classifier might see an image
-and output the probability that the image is a cat $\Pr(y=\mathrm{cat}| x) = 0.9$.
-We can interpret this number by saying that the classifier is 90% sure that the image depicts a cat.
-The magnitude of the probability for the predicted class is one notion of confidence.
-It's not the only notion of confidence and we'll discuss different notions of uncertainty in more advanced chapters.
+二つより多いクラスが考えられるときは、その問題を*多クラス分類*と呼びます。一般的な例として、 `[0, 1, 2, 3 ... 9, a, b, c, ...]`のような手書き文字の認識があります。L1やL2のロス関数を最小化することで回帰問題を解こうとしてきましたが、分類問題に対する一般的なロス関数はcross-entropyと呼ばれるものです。MXNet Gluonにおいては、対応する関数が[ここ](https://mxnet.incubator.apache.org/api/python/gluon/loss.html#mxnet.gluon.loss.SoftmaxCrossEntropyLoss)に記載されています
 
-When we have more than two possible classes, we call the problem *multiclass classification*.
-Common examples include hand-written character recognition `[0, 1, 2, 3 ... 9, a, b, c, ...]`.
-While we attacked regression problems by trying to minimize the L1 or L2 loss functions,
-the common loss function for classification problems is called cross-entropy.
-In MXNet Gluon, the corresponding loss function can be found [here](https://mxnet.incubator.apache.org/api/python/gluon/loss.html#mxnet.gluon.loss.SoftmaxCrossEntropyLoss).
+分類器が最も可能性が高いと判断したクラスが、行動を決定づけるものになるとは限りません。例えば、裏庭で美しいキノコを発見したとします。
 
-Note that the most likely class is not necessarily the one that you're going to use for your decision. Assume that you find this beautiful mushroom in your backyard:
 
 |![](../img/death_cap.jpg)|
 |:-------:|
-|Death cap - do not eat!|
+|タマゴテングタケという毒キノコ - 決して食べてはいけません!|
 
-Now, assume that you built a classifier and trained it
-to predict if a mushroom is poisonous based on a photograph.
-Say our poison-detection classifier outputs $\Pr(y=\mathrm{death cap}|\mathrm{image}) = 0.2$.
-In other words, the classifier is 80% confident that our mushroom *is not* a death cap.
-Still, you'd have to be a fool to eat it.
-That's because the certain benefit of a delicious dinner isn't worth a 20% risk of dying from it.
-In other words, the effect of the *uncertain risk* by far outweighs the benefit.
-Let's look at this in math. Basically, we need to compute the expected risk that we incur, i.e. we need to multiply the probability of the outcome with the benefit (or harm) associated with it:
+ここで分類器を構築して、画像ののキノコが毒キノコかどうかを判定するように分類器を学習させます。そして、その毒キノコ分類器が毒キノコ(death cap)である確率$\Pr(y=\mathrm{death cap}|\mathrm{image}) = 0.2$を出力したとします。言い換えれば、そのキノコは80%の信頼度で毒キノコではないと判定されているのです。しかし、それを食べるような人はいないでしょう。このキノコでおいしい夕食をとる利益が、これを食べて20%の確率で死ぬリスクに見合わないからです。言い換えれば、*不確実なリスク*が利益よりもはるかに重大だからです。数学でこのことを見てみましょう。基本的には、私たちが引き起こすリスクの期待値を計算する必要があります。つまり、それに関連する利益や損失と、起こりうる確率を掛け合わせます。
 
 $$L(\mathrm{action}| x) = \mathbf{E}_{y \sim p(y| x)}[\mathrm{loss}(\mathrm{action},y)]$$
 
-Hence, the loss $L$ incurred by eating the mushroom is $L(a=\mathrm{eat}| x) = 0.2 * \infty + 0.8 * 0 = \infty$, whereas the cost of discarding it is $L(a=\mathrm{discard}| x) = 0.2 * 0 + 0.8 * 1 = 0.8$.
+そして、キノコを食べることによるロス$L$は$L(a=\mathrm{eat}| x) = 0.2 * \infty + 0.8 * 0 = \infty$で、これに対して、キノコを食べない場合のロス$L$は$L(a=\mathrm{discard}| x) = 0.2 * 0 + 0.8 * 1 = 0.8$です。
 
-Our caution was justified: as any mycologist would tell us, the above actually *is* a death cap.
-Classification can get much more complicated than just binary, multiclass, of even multi-label classification.
-For instance, there are some variants of classification for addressing hierarchies.
-Hierarchies assume that there exist some relationships among the many classes.
-So not all errors are equal - we prefer to misclassify to a related class than to a distant class.
-Usually, this is referred to as *hierarchical classification*.
-One early example is due to [Linnaeus](https://en.wikipedia.org/wiki/Carl_Linnaeus),
-who organized the animals in a hierarchy.
+私たちの注意は正しかったのです。キノコの学者はおそらく、上のキノコは毒キノコであるというでしょう。分類は、そうした二値分類、多クラス分類または、マルチラベル分類よりもずっと複雑になることもあります。例えば、階層構造のような分類を扱うものもあります。階層では、多くのクラスの間に関係性があることを想定しています。そして、すべての誤差は同じではありません。つまり、関係性のない離れたクラスを誤分類することは良くないですが、関係性のあるクラスを誤分類することはまだ許容されます。通常、このような分類は*階層分類*と呼ばれます。初期の例は[リンネ](https://en.wikipedia.org/wiki/Carl_Linnaeus)によるもので、彼は動物を階層的に分類・組織しました。
 
 ![](../img/sharks.png)
 
-In the case of animal classification, it might not be so bad to mistake a poodle for a schnauzer,
-but our model would pay a huge penalty if it confused a poodle for a dinosaur.
-What hierarchy is relevant might depend on how you plan to use the model.
-For example, rattle snakes and garter snakes might be close on the phylogenetic tree,
-but mistaking a rattler for a garter could be deadly.
+動物の階層的分類の場合、プードルをシュナウザーに間違えることはそこまで悪いことでないでしょうが、プードルを恐竜と間違えるようであれば、その分類モデルはペナルティを受けるでしょう。階層における関連性は、そのモデルをどのように使うかに依存します。例えば、ガラガラヘビとガータースネークの2種類のヘビは系統図のなかでは近いかもしれませんが、猛毒をもつガラガラヘビを、そうでないガータースネークと間違えることは命取りになるかもしれません。
+
 
 ### Tagging
 
