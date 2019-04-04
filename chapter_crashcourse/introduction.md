@@ -152,7 +152,7 @@ $$l(y,y') = \sum_i (y_i - y_i')^2.$$
 
 分類において、ある画像データのピクセル値のような特徴ベクトルにもとづいて、いくつかの候補の中から、そのデータがどのカテゴリ（正式には*クラス*)を予測したいと思うでしょう。例えば、手書きの数字に対しては、0から9までの数値に対応する10クラスになるでしょう。最も単純な分類というのは、2クラスだけを対象にするとき、すなわち2値分類と呼ばれる問題です。例えば、データセット$X$が動物の画像で構成されていて、*ラベル*$Y$が$\mathrm{\{ネコ, イヌ\}}$のクラスであるとします。回帰の場合、実数$\hat{y}$を出力するような回帰式を求めていたでしょう。分類では、出力$\hat{y}$は予測されるクラスとなるような分類器を求めることになるでしょう。
 
-この本が目的としているように、より技術的な内容に踏み込んでいきましょう。*ネコ*や*イヌ*といったカテゴリに対して、0か1かで判定するようなモデルを最適化することは非常に難しいです。その代わりに、確率を利用してモデルを表現するほうがはるかに簡単です。あるデータ$x$に対して、モデルは、ラベル$k$となる確率$\hat{y}_k$を決定します。これらは確率であるため、正の値であり、その総和は$1$になります。したがって、$K$個のカテゴリの確率を決めるためには、$K-1$の数だけ必要であることがわかります。二値分類の場合がわかりやすいです。表を向く確率が0.6 (60%) の不正なコインでは、0.4 (40%)の確率で裏を向くでしょう。動物を認識する例に戻ると、分類器は画像を見てネコである確率 $\Pr(y=\mathrm{cat}| x) = 0.9$を出力します。その数値は、画像がネコを表していることを、90%の自信をもって分類器が判定したものだと解釈できるでしょう。ある予測されたクラスに対する確率の大きさは信頼度の一つです。そしてこれは、唯一の信頼度というわけではなく、より発展的な章において、異なる不確実性について議論する予定です。
+この本が目的としているように、より技術的な内容に踏み込んでいきましょう。*ネコ*や*イヌ*といったカテゴリに対して、0か1かで判定するようなモデルを最適化することは非常に難しいです。その代わりに、確率を利用してモデルを表現するほうがはるかに簡単です。あるデータ$x$に対して、モデルは、ラベル$k$となる確率$\hat{y}_k$を決定します。これらは確率であるため、正の値であり、その総和は$1$になります。したがって、$K$個のカテゴリの確率を決めるためには、$K-1$の数だけ必要であることがわかります。2クラス分類の場合がわかりやすいです。表を向く確率が0.6 (60%) の不正なコインでは、0.4 (40%)の確率で裏を向くでしょう。動物を認識する例に戻ると、分類器は画像を見てネコである確率 $\Pr(y=\mathrm{cat}| x) = 0.9$を出力します。その数値は、画像がネコを表していることを、90%の自信をもって分類器が判定したものだと解釈できるでしょう。ある予測されたクラスに対する確率の大きさは信頼度の一つです。そしてこれは、唯一の信頼度というわけではなく、より発展的な章において、異なる不確実性について議論する予定です。
 
 二つより多いクラスが考えられるときは、その問題を*多クラス分類*と呼びます。一般的な例として、 `[0, 1, 2, 3 ... 9, a, b, c, ...]`のような手書き文字の認識があります。L1やL2のロス関数を最小化することで回帰問題を解こうとしてきましたが、分類問題に対する一般的なロス関数はcross-entropyと呼ばれるものです。MXNet Gluonにおいては、対応する関数が[ここ](https://mxnet.incubator.apache.org/api/python/gluon/loss.html#mxnet.gluon.loss.SoftmaxCrossEntropyLoss)に記載されています
 
@@ -163,62 +163,31 @@ $$l(y,y') = \sum_i (y_i - y_i')^2.$$
 |:-------:|
 |タマゴテングタケという毒キノコ - 決して食べてはいけません!|
 
-ここで分類器を構築して、画像ののキノコが毒キノコかどうかを判定するように分類器を学習させます。そして、その毒キノコ分類器が毒キノコ(death cap)である確率$\Pr(y=\mathrm{death cap}|\mathrm{image}) = 0.2$を出力したとします。言い換えれば、そのキノコは80%の信頼度で毒キノコではないと判定されているのです。しかし、それを食べるような人はいないでしょう。このキノコでおいしい夕食をとる利益が、これを食べて20%の確率で死ぬリスクに見合わないからです。言い換えれば、*不確実なリスク*が利益よりもはるかに重大だからです。数学でこのことを見てみましょう。基本的には、私たちが引き起こすリスクの期待値を計算する必要があります。つまり、それに関連する利益や損失と、起こりうる確率を掛け合わせます。
+ここで分類器を構築して、画像のキノコが毒キノコかどうかを判定するように分類器を学習させます。そして、その毒キノコ分類器が毒キノコ(death cap)である確率$\Pr(y=\mathrm{death cap}|\mathrm{image}) = 0.2$を出力したとします。言い換えれば、そのキノコは80%の信頼度で毒キノコではないと判定されているのです。しかし、それを食べるような人はいないでしょう。このキノコでおいしい夕食をとる利益が、これを食べて20%の確率で死ぬリスクに見合わないからです。言い換えれば、*不確実なリスク*が利益よりもはるかに重大だからです。数学でこのことを見てみましょう。基本的には、私たちが引き起こすリスクの期待値を計算する必要があります。つまり、それに関連する利益や損失と、起こりうる確率を掛け合わせます。
 
 $$L(\mathrm{action}| x) = \mathbf{E}_{y \sim p(y| x)}[\mathrm{loss}(\mathrm{action},y)]$$
 
 そして、キノコを食べることによるロス$L$は$L(a=\mathrm{eat}| x) = 0.2 * \infty + 0.8 * 0 = \infty$で、これに対して、キノコを食べない場合のロス$L$は$L(a=\mathrm{discard}| x) = 0.2 * 0 + 0.8 * 1 = 0.8$です。
 
-私たちの注意は正しかったのです。キノコの学者はおそらく、上のキノコは毒キノコであるというでしょう。分類は、そうした二値分類、多クラス分類または、マルチラベル分類よりもずっと複雑になることもあります。例えば、階層構造のような分類を扱うものもあります。階層では、多くのクラスの間に関係性があることを想定しています。そして、すべての誤差は同じではありません。つまり、関係性のない離れたクラスを誤分類することは良くないですが、関係性のあるクラスを誤分類することはまだ許容されます。通常、このような分類は*階層分類*と呼ばれます。初期の例は[リンネ](https://en.wikipedia.org/wiki/Carl_Linnaeus)によるもので、彼は動物を階層的に分類・組織しました。
+私たちの注意は正しかったのです。キノコの学者はおそらく、上のキノコは毒キノコであるというでしょう。分類は、そうした2クラス分類、多クラス分類または、マルチラベル分類よりもずっと複雑になることもあります。例えば、階層構造のような分類を扱うものもあります。階層では、多くのクラスの間に関係性があることを想定しています。そして、すべての誤差は同じではありません。つまり、関係性のない離れたクラスを誤分類することは良くないですが、関係性のあるクラスを誤分類することはまだ許容されます。通常、このような分類は*階層分類*と呼ばれます。初期の例は[リンネ](https://en.wikipedia.org/wiki/Carl_Linnaeus)によるもので、彼は動物を階層的に分類・組織しました。
 
 ![](../img/sharks.png)
 
 動物の階層的分類の場合、プードルをシュナウザーに間違えることはそこまで悪いことでないでしょうが、プードルを恐竜と間違えるようであれば、その分類モデルはペナルティを受けるでしょう。階層における関連性は、そのモデルをどのように使うかに依存します。例えば、ガラガラヘビとガータースネークの2種類のヘビは系統図のなかでは近いかもしれませんが、猛毒をもつガラガラヘビを、そうでないガータースネークと間違えることは命取りになるかもしれません。
 
 
-### Tagging
+### タグ付け
 
-Some classification problems don't fit neatly into the binary or multiclass classification setups.
-For example, we could train a normal binary classifier to distinguish cats from dogs.
-Given the current state of computer vision,
-we can do this easily, with off-the-shelf tools.
-Nonetheless, no matter how accurate our model gets, we might find ourselves in trouble when the classifier encounters an image of the Bremen Town Musicians.
+いくつかの分類問題は、2クラス分類や多クラスのような設定にうまく合わないことがあります。例えば、イヌをネコと区別するための標準的な2クラス分類器を学習するとしましょう。コンピュータービジョンの最新の技術をもって、既存のツールで、これを実現することができます。それにも関わらず、モデルがどれだけ精度が良くなったとしても、ブレーメンの音楽隊のような画像が分類器に入力されると、問題が起こることに気づきます。
+
 
 ![](../img/stackedanimals.jpg)
 
+画像から確認できる通り、画像にはネコ、オンドリ、イヌ、ロバが、背景の木とともに写っています。最終的には、モデルを使ってやりたいことに依存はするのですが、この画像を扱うのに2クラス分類を利用することは意味がないでしょう。代わりに、その画像において、ネコとイヌとオンドリとロバのすべて写っていることを、モデルに判定させたいと考えるでしょう。
 
-As you can see, there's a cat in the picture, and a rooster, a dog and a donkey, with some trees in the background.
-Depending on what we want to do with our model ultimately,
-treating this as a binary classification problem
-might not make a lot of sense.
-Instead, we might want to give the model the option
-of saying the image depicts a cat *and* a dog *and* a donkey *and* a rooster.
+どれか1つを選ぶのではなく、*相互に排他的でない*クラスを予測するように学習する問題は、マルチラベル分類と呼ばれています。ある技術的なブログにタグを付与する場合を考えましょう。例えば、'機械学習'、'技術'、'ガジェット'、'プログラミング言語'、'linux'、'クラウドコンピューティング'、'AWS'です。典型的な記事には5から10のタグが付与されているでしょう。なぜなら、これらの概念は互いに関係しあっているからです。'クラウドコンピューティング'に関する記事は、'AWS'について言及する可能性が高く、'機械学習'に関する記事は'プログラミング言語'も扱う可能性があるでしょう。
 
-The problem of learning to predict classes
-that are *not mutually exclusive*
-is called multi-label classification.
-Auto-tagging problems are typically best described
-as multi-label classification problems.
-Think of the tags people might apply to posts on a tech blog,
-e.g., 'machine learning', 'technology', 'gadgets',
-'programming languages', 'linux', 'cloud computing', 'AWS'.
-A typical article might have 5-10 tags applied
-because these concepts are correlated.
-Posts about 'cloud computing' are likely to mention 'AWS'
-and posts about 'machine learning' could also deal with 'programming languages'.
-
-We also have to deal with this kind of problem when dealing with the biomedical literature,
-where correctly tagging articles is important
-because it allows researchers to do exhaustive reviews of the literature.
-At the National Library of Medicine, a number of professional annotators
-go over each article that gets indexed in PubMed
-to associate each with the relevant terms from MeSH,
-a collection of roughly 28k tags.
-This is a time-consuming process and the annotators typically have a one year lag between archiving and tagging. Machine learning can be used here to provide provisional tags
-until each article can have a proper manual review.
-Indeed, for several years, the BioASQ organization has [hosted a competition](http://bioasq.org/)
-to do precisely this.
-
+また、生体医学の文献を扱うときにこの種の問題を処理する必要があります。論文に正確なタグ付けをすることは重要で、これによって、研究者は文献を徹底的にレビューすることができます。アメリカ国立医学図書館では、たくさんの専門的なタグ付けを行うアノテータが、PubMedにインデックスされる文献一つ一つを見て、2万8千のタグの集合であるMeSHから適切な用語を関連付けます。これは時間のかかる作業で、文献が保管されてからタグ付けが終わるまで、アノテータは通常1年の時間をかけます。個々の文献が人手による正式なレビューを受けるまで、機械学習は暫定的なタグを付与することができるでしょう。実際のところ、この数年間、BioASQという組織がこの作業を正確に実行するための[コンペティションを行っていました](http://bioasq.org/)。
 
 ### Search and ranking
 
