@@ -91,7 +91,7 @@ release = ''
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = 'en'
+language = 'ja'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -143,12 +143,11 @@ html_theme_options = {
     'primary_color': 'blue',
     'accent_color': 'deep_orange',
     'header_links' : [
-        ('Berkeley Course 2019', 'https://courses.d2l.ai/berkeley-stat-157/index.html', True, 'fas fa-user-graduate'),
-        ('PDF', 'https://en.d2l.ai/d2l-en.pdf', True, 'fas fa-file-pdf'),
-        ('Jupyter Notebooks', 'https://en.d2l.ai/d2l-en.zip', True, 'fas fa-download'),
+        # ('PDF', 'https://ja.d2l.ai/d2l-ja.pdf', True, 'fas fa-file-pdf'),
+        ('Jupyter Notebooks', 'https://ja.d2l.ai/d2l-ja.zip', True, 'fas fa-download'),
         ('Discuss', 'https://discuss.mxnet.io', True, 'fab fa-discourse'),
-		('GitHub', 'https://github.com/d2l-ai/d2l-en', True, 'fab fa-github'),
-        ('中文版', 'https://zh.d2l.ai', True, 'fas fa-external-link-alt'),
+	('GitHub', 'https://github.com/d2l-ai/d2l-ja', True, 'fab fa-github'),
+        ('English Version', 'https://d2l.ai', True, 'fas fa-external-link-alt'),
     ],
     'show_footer': True
 }
@@ -233,7 +232,7 @@ html_static_path = ['_static']
 # Sphinx supports the following languages:
 #   'da', 'de', 'en', 'es', 'fi', 'fr', 'h', 'it', 'ja'
 #   'nl', 'no', 'pt', 'ro', 'r', 'sv', 'tr', 'zh'
-html_search_language = 'en'
+html_search_language = 'ja'
 
 # A dictionary with options for the search language support, empty by default.
 # 'ja' uses this config value.
@@ -307,7 +306,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'd2l-en.tex', 'Dive into Deep Learning',
+    (master_doc, 'd2l-ja.tex', 'Dive into Deep Learning',
      author, 'manual'),
 ]
 
