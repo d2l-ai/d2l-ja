@@ -4,3 +4,6 @@
 [submodule "build/utils"]
 	path = build/utils
 	url = git@github.com:d2l-ai/utils.git
+[submodule "data"]
+	path = data
+	url = https://github.com/d2l-ai/data
