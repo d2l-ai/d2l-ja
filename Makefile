@@ -22,11 +22,11 @@ IMG_NOTEBOOK = $(filter-out $(FRONTPAGE_DIR), $(wildcard img/*))
 ORIGIN_DEPS = $(IMG_NOTEBOOK) $(wildcard data/* gluonbook/*) environment.yml README.md
 DEPS = $(patsubst %, build/%, $(ORIGIN_DEPS))
 
-PKG = build/_build/html/d2l-en.zip
+PKG = build/_build/html/d2l-ja.zip
 
 pkg: $(PKG)
 
-build/_build/html/d2l-en.zip: $(OBJ) $(DEPS)
+build/_build/html/d2l-ja.zip: $(OBJ) $(DEPS)
 	cd build; zip -r $(patsubst build/%, %, $@ $(DEPS)) chapter*/*md chapter*/*ipynb
 
 # Copy XX to build/XX if build/XX is depended (e.g., $(DEPS))
@@ -39,7 +39,7 @@ html: $(DEPS) $(FRONTPAGE_DEP) $(OBJ)
 	bash build/post_html.sh
 	cp -r img/frontpage/ build/_build/html/_images/
 
-TEX=build/_build/latex/d2l-en.tex
+TEX=build/_build/latex/d2l-ja.tex
 
 #build/_build/latex/%.pdf: img/%.svg
 #	@mkdir -p $(@D)
@@ -68,8 +68,8 @@ pdf: $(DEPS) $(OBJ)
 
 	cd build/_build/latex && \
 	bash ../../utils/convert_output_svg.sh && \
-	buf_size=10000000 xelatex d2l-en.tex && \
-	buf_size=10000000 xelatex d2l-en.tex
+	buf_size=10000000 xelatex d2l-ja.tex && \
+	buf_size=10000000 xelatex d2l-ja.tex
 
 clean:
 	rm -rf build/chapter* build/_build build/img build/data build/environment.yml build/README.md $(PKG)
