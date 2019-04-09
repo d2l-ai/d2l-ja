@@ -1,6 +1,6 @@
 stage("Build and Publish") {
   node {
-    ws('workspace/d2l-en') {
+    ws('workspace/d2l-ja') {
       checkout scm
       sh "git submodule update --init"
       sh "build/utils/sanity_check.sh"
