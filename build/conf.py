@@ -91,7 +91,7 @@ release = ''
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = 'ja'
+language = 'en'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -258,9 +258,9 @@ latex_elements = {
 \setmainfont{Source Serif Pro}
 \setsansfont{Source Sans Pro}
 \setmonofont{Source Code Pro}
-\setCJKmainfont[BoldFont=Source Han Serif J SemiBold]{Source Han Serif J}
-\setCJKsansfont[BoldFont=Source Han Sans J Medium]{Source Han Sans J Normal}
-\setCJKmonofont{Source Han Sans J Normal}
+\setCJKmainfont[BoldFont=Source Han Serif SemiBold]{Source Han Serif}
+\setCJKsansfont[BoldFont=Source Han Sans Medium]{Source Han Sans Normal}
+\setCJKmonofont{Source Han Sans Normal}
 
 
 \usepackage{setspace}
