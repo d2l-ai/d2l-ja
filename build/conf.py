@@ -143,9 +143,9 @@ html_theme_options = {
     'primary_color': 'blue',
     'accent_color': 'deep_orange',
     'header_links' : [
-        # ('PDF', 'https://ja.d2l.ai/d2l-ja.pdf', True, 'fas fa-file-pdf'),
+        ('PDF', 'https://ja.d2l.ai/d2l-ja.pdf', True, 'fas fa-file-pdf'),
         ('Jupyter Notebooks', 'https://ja.d2l.ai/d2l-ja.zip', True, 'fas fa-download'),
-        ('Discuss', 'https://discuss.mxnet.io', True, 'fab fa-discourse'),
+        # ('Discuss', 'https://discuss.mxnet.io', True, 'fab fa-discourse'),
 	('GitHub', 'https://github.com/d2l-ai/d2l-ja', True, 'fab fa-github'),
         ('English Version', 'https://d2l.ai', True, 'fas fa-external-link-alt'),
     ],
@@ -254,16 +254,13 @@ latex_elements = {
     'inputenc'  : '',
     'babel'     : r'''\usepackage[english]{babel}''',
     'preamble' : r'''
-
-
 \usepackage{ctex}
 \setmainfont{Source Serif Pro}
 \setsansfont{Source Sans Pro}
 \setmonofont{Source Code Pro}
-\setCJKmainfont[BoldFont=Source Han Serif SC SemiBold]{Source Han Serif SC}
-\setCJKsansfont[BoldFont=Source Han Sans SC Medium]{Source Han Sans SC Normal}
-\setCJKmonofont{Source Han Sans SC Normal}
-
+\setCJKmainfont[BoldFont=Source Han Serif J SemiBold]{Source Han Serif J}
+\setCJKsansfont[BoldFont=Source Han Sans J Medium]{Source Han Sans J Normal}
+\setCJKmonofont{Source Han Sans J Normal}
 
 
 \usepackage{setspace}
