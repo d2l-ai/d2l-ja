@@ -38,7 +38,7 @@ html: $(DEPS) $(FRONTPAGE_DEP) $(OBJ)
 	make -C build html
 	# bash build/post_html.sh
 	# replace the chinese font by japanese to avoid download the chinese font
-	sed -i s/SC Sliced/Japanese/g build/_build/html/_static/sphinx_materialdesign_theme.css
+	sed -i s/SC\ Sliced/Japanese/g build/_build/html/_static/sphinx_materialdesign_theme.css
 	cp -r img/frontpage/ build/_build/html/_images/
 
 TEX=build/_build/latex/d2l-ja.tex
