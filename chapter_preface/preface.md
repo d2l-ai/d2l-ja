@@ -48,97 +48,34 @@ Amazonのような多くの企業が1990年代にデータベースを利用し�
 
 ここでは最初から最後まで、MXNetのライブラリを利用して進める予定です。MXNetのライブラリは研究用途にも十分に柔軟で、本番環境の用途にも十分高速であるという得がたい特徴をもっています。深層学習の考え方についてゼロから伝えていく予定で、ときどき、``Gluon``の先進的な特徴によってユーザに隠蔽されたモデルについて、詳細な部分を掘り下げたいと思います。与えられた深層学習のレイヤーの中で起こっているすべてを理解してほしいので、特に基礎的なチュートリアルにおいて掘り下げを行います。この場合に、われわれは次の2種類の例を一般的に提示します。1つはNDArray(多次元配列）や自動微分を利用してゼロか全てを実装するもので、もう1つは``Gluon``によって同じことを簡潔に実装するものです。レイヤーがどのように動くかを伝えたら、以降のチュートリアルでは、``Gluon``を利用したものを使います。
 
-### コンテンツと構成
 
-The book can be roughly divided into three sections:
+## 内容と構成
 
-* The first part covers prerequisites and basics.
-The first chapter offers an [Introduction to Deep Learning](../chapter_introduction/index.md).
-In [Crashcourse](../chapter_crashcourse/index.md),
-we'll quickly bring you up to speed on the prerequisites required for hands-on deep learning,
-such as how to acquire and run the codes covered in the book.
-[Deep Learning Basics](../chapter_deep-learning-basics/index.md)
-covers the most basic concepts and techniques of deep learning,
-such as multi-layer perceptrons and regularization.
-<!--If you are short on time or you only want to learn only
-about the most basic concepts and techniques of deep learning,
-it is sufficient to read the first section only.-->
-* The next three chapters focus on modern deep learning techniques.
-[Deep Learning Computation](../chapter_deep-learning-computation/index.md)
-describes the various key components of deep learning calculations
-and lays the groundwork for the later implementation of more complex models.
-Next we explain [Convolutional Neural Networks](../chapter_convolutional-neural-networks/index.md),
-powerful tools that form the backbone of most modern computer vision systems in recent years.
-Subsequently, we introduce [Recurrent Neural Networks](../chapter_recurrent-neural-networks/index.md),
-models that exploit temporal or sequential structure in data,
-and are commonly used for natural language processing and time series prediction.
-These sections will get you up to speed on the basic tools behind most modern deep learning.
+この本は、おおまかに次の3つのパートにわかれています。
+* 最初のパートは前提条件や基礎の部分を扱います。最初の章では、 [深層学習入門](../chapter_introduction/index.md)やこの本の利用方法を説明します。[深層学習の準備](../chapter_crashcourse/index.md)は、ハンズオン形式の深層学習に必要な準備について、例えば、この書籍で扱うコードの入手方法や実行方法について説明します。 [深層学習の基礎](../chapter_deep-learning-basics/index.md)は、深層学習における最も基本的な考え方と技術、例えば、多層パーセプトロンや正則化について説明します。もし、時間がなかったり、深層学習の基本的なが考え方や技術のみを知りたい場合は、その最初の節だけを読めば十分だと思います。
 
-* Part three discusses scalability, efficiency and applications.
-First we discuss several common [Optimization Algorithms](../chapter_optimization/index.md)
-used to train deep learning models.
-The next chapter, [Performance](../chapter_computational-performance/index.md),
-examines several important factors that affect the computational performance of your deep learning code.
-Chapters 9 and 10  illustrate major applications of deep learning
-in computer vision and natural language processing, respectively.
+* 次の3つの章は現代の深層学習の技術に焦点を当てています。[深層学習の計算](../chapter_deep-learning-computation/index.md)は、
+深層学習における計算に関する重要な要素をいくつか説明し、後に複雑なモデルを実装するための土台を築きます。[畳み込みニューラルネットワーク](../chapter_convolutional-neural-networks/index.md) を次に説明します。近年、コンピュータビジョンにおいて成功した深層学習の技術です。[再帰ニューラルネットワーク](../chapter_recurrent-neural-networks/index.md)は、近年、系列データを処理するために一般的に利用されています。2つ目のパートを読み通せば、現代の深層学習技術について把握することができるでしょう。
 
-An outline of the book together with possible flows for navigating it is given below.
-The arrows provide a graph of prerequisites:
+* パート3は、スケーラビリティ、効率性、アプリケーションについて考察します。特に、深層学習のモデルを学習するために利用される、いくつかの[最適化アルゴリズム](../chapter_optimization/index.md)を考察します。次の章では、深層学習の計算、例えば正則化などの[性能](../chapter_computational-performance/index.md)に影響する重要な要素について調査します。9章と10章は、コンピュータビジョンと自然言語処理のそれぞれについて、深層学習の主要なアプリケーションを説明します。この部分はオプションで、読者の興味におまかせします。
 
+この書籍の構成について以下に示します。矢印は前提条件のグラフを意味しています。
 ![Book structure](../img/book-org.svg)
 
 
-### Code
+## コード
 
-Most sections of this book feature executable code.
-We recognize the importance of an interactive learning experience in deep learning.
-At present certain intuitions can only be developed through trial and error,
-tweaking the code in small ways and observing the results.
-Ideally, an elegant mathematical theory might tell us
-precisely how to tweak our code to achieve a desired result.
-Unfortunately, at present such elegant theories elude us.
-Despite our best attempts, our explanations for of various techniques might be lacking,
-sometimes on account of our shortcomings,
-and equally often on account of the nascent state of the science of deep learning.
-We are hopeful that as the theory of deep learning progresses,
-future editions of this book will be able to provide insights in places the present edition cannot.
+この本の特徴として、すべての節に実行可能なコードがあります。そのコードは修正可能で、修正によって結果がどう変化するかを見るために再実行することもできます。著者らは、深層学習における対話的な学習体験の重要性を認識しています。残念ながら、深層学習は理論的な解釈が十分になされていません。そのため多くの議論は、提供されたコードで実験を行い、上手く得られた結果・現象にもとづいて行われているのです。著者らが頑張ったとしても、文章の説明だけで全ての詳細をカバーすることは難しいかもしれません。著者らは、理論的な発展がさらに進むことで、こうした状況が将来改善することを望んでいます。いまのところ、コードを変更して、出力を確認し、その全体のプロセスを要約することで、読者がさらに理解を深め洞察を得ることを強く勧めます。
 
-Most of the code in this book is based on Apache MXNet.
-MXNet is an open-source framework for deep learning
-and the preferred choice of AWS (Amazon Web Services),
-as well as many colleges and companies.
-All of the code in this book has passed tests under MXNet 1.2.0.
-However, due to the rapid development of deep learning,
-some code *in the print edition* may not work properly in future versions of MXNet.
-However, we plan to keep the online version remain up-to-date.
-In case of such problems, please consult the section
-["Installation and Running"](../chapter_prerequisite/install.md)
-to update the code and runtime environment.
-At times, to avoid unnecessary repetition,
-we encapsulate the frequently-imported and referred-to functions, classes, etc.
-in this book in the `gluonbook` package, version number 1.0.0.
-We give a detailed overview of these functions and classes in the appendix [“gluonbook package index”](../chapter_appendix/gluonbook.md)
+この書籍のコードはApache MXNetを利用しています。MXNetは、AWS (Amazon Web Services)が選んだ、深層学習のためのオープンソースフレームワークで、多くの大学と企業で利用されています。この書籍の全てのコードはMXNet1.2.0にもとづくテストをパスしています。しかし、深層学習の急速な発展にともなって、*印刷版*のコードは、MXNetの将来のバージョンでは動かない可能性があります。一方、オンライン版は常に最新版に維持されるでしょう。そのような問題が生じた場合は、コードと実行環境を更新するために、["Installation and Running"](../chapter_prerequisite/install.md)を見てください。そして、不必要な繰り返し作業を避けるため、頻繁にimportされたり、この本で参照される関数、クラス、その他については、バージョン1.0.0の`gluonbook`のパッケージにカプセル化します。これらの関数やクラスの全体像についての詳細はAppendixの[“gluonbook package index”](../chapter_appendix/gluonbook.md)に記載しています。
 
+この本は、MXNetの入門書としても役に立つでしょう。ここでコードを利用する主な目的は、文章、画像、数式に加えて、深層学習を学ぶ他の手段を提供することです。この書籍は、実データに対する各モデルやアルゴリズムの実際の効果を理解するために、対話的な環境を提供しています。ここでは、
+`ndarray`、`autograd`、`gluon`のようなMXNetのモジュールの中でも基本的な機能のみを利用して、深層学習アルゴリズムの詳細な実装を理解してもらいます。たとえ、研究や仕事で他の深層学習フレームワークを利用しているとしても、ここでのコードは深層学習のアルゴリズムの理解に役立つことを望んでいます。
 
-### Target Audience
+## 対象とする読者
 
-This book is for students (undergraduate or graduate),
-engineers, and researchers, who seek a solid grasp
-of the practical techniques of deep learning.
-Because we explain every concept from scratch,
-no previous background in deep learning or machine learning is required.
-Fully explaining the methods of deep learning
-requires some mathematics and programming,
-but we'll only assume that you come in with some basics,
-including (the very basics of) linear algebra, calculus, probability,
-and Python programming.
-Moreover, this book's appendix provides a refresher
-on most of the mathematics covered in this book.
-Most of the time, we will prioritize intuition and ideas
-over mathematical rigor.
-There are many terrific books which can lead the interested reader further. For instance [Linear Analysis](https://www.amazon.com/Linear-Analysis-Introductory-Cambridge-Mathematical/dp/0521655773) by Bela Bollobas covers linear algebra and functional analysis in great depth. [All of Statistics](https://www.amazon.com/All-Statistics-Statistical-Inference-Springer/dp/0387402721) is a terrific guide to statistics.
-And if you have not used Python before,
-you may want to peruse the [Python tutorial](http://learnpython.org/).
+この本は、深層学習を学びたい大学生、エンジニア、研究者を対象にしており、特に、深層学習の実応用に興味がある人を対象としています。d後者は、深層学習や機械学習に関する知識や経験をもっている必要はありません。
+著者らはゼロからすべての考え方を説明するつもりです。深層学習技術やその応用に関する説明には数学やプログラミングに関わるものもありますが、読者が学ぶべきことはそれらの基礎、すなわち基本的な線形代数、計算、確率、そしてPythonのプログラミングです。付録では、著者らは、読者の参考のために、この本でカバーした数学の内容を説明します。入門的な内容として、厳密な数学にもとづく直感やアイデアを重視します。興味のある読者がさらに学んでいくためのすばらしい書籍がたくさんあります。例えば、Bela Bollobasによる[Linear Analysis](https://www.amazon.com/Linear-Analysis-Introductory-Cambridge-Mathematical/dp/0521655773)は、線形代数と関数解析に関して非常に詳しく書かれています。[All of Statistics](https://www.amazon.com/All-Statistics-Statistical-Inference-Springer/dp/0387402721)は統計学に関する素晴らしい説明を提供しています。もしあなたがPythonを以前に使ったことがなければ、[Python tutorial](http://learnpython.org/)を熟読したくなるかもしれません。もちろん、あなたが数学の部分にのみ興味があれば、プログラミングの部分はスキップしても良いです。逆もまた然りです。
 
 
 ### Forum
