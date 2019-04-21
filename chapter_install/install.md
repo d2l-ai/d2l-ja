@@ -36,9 +36,9 @@ jupyter notebook
 
 この時点で http://localhost:8888 をブラウザで開くと（通常、自動的に開かれます）、この書籍の各節のコードを見たり実行したりすることができます。
 
-### Linux/macOS Users
+### Linux/macOSユーザ
 
-Step 1 is to download and install [Miniconda](https://conda.io/en/master/miniconda.html) according to the operating system in use. It is a sh file. Open the Terminal application and enter the command to execute the sh file, such as
+Step 1は、利用するOSに応じて、[Miniconda](https://conda.io/en/master/miniconda.html)をダウンロードしてインストールします。sh形式のファイルになっています。ターミナルのアプリケーションで開いて、以下のように、shファイルを実行するコマンド入力します
 
 ```
 # The file name is subject to change, always use the one downloaded from the
@@ -46,77 +46,70 @@ Step 1 is to download and install [Miniconda](https://conda.io/en/master/minicon
 sh Miniconda3-latest-Linux-x86_64.sh
 ```
 
-The terms of use will be displayed during installation. Press "↓" to continue reading, press "Q" to exit reading. After that, answer the following questions:
+インストール中に、利用条件が表示されるでしょう。"↓"を押して読み進め、"Q"を押して読むのを終了します。その後、以下のような質問に答えます。
 
 ```
-Do you accept the license terms? [yes|no]
+Do you accept the license terms? [yes|no]　（ライセンス条件に同意しますか? [はい|いいえ])
 [no] >>> yes
 Do you wish the installer to prepend the Miniconda3 install location
 to PATH in your /home/your_name/your_file ? [yes|no]
+(/home/your_name/your_file のPATHの最初に、Miniconda3のインストール位置を追加して良いですか? [はい|いいえ])
 [no] >>> yes
 ```
 
-After the installation is complete, conda should be made to take effect. Linux users need to run `source ~/.bashrc` or restart the command line application; macOS users need to run `source ~/.bash_profile` or restart the command line application.
+インストールが完了した後にcondaを有効化します。Linuxユーザは`source ~/.bashrc`を実行するか、コマンドラインのアプリケーションを再起動する必要があります。macOSのユーザは、`source ~/.bash_profile`を実行するか、コマンドラインのアプリケーションを再起動します。
 
-Step 2 is to download the compressed file containing the code of this book, and extract it into the folder. Run the following commands. For Linux users who do not install `unzip`, they can run the command `sudo apt install unzip` to install it.
+Step 2では、この書籍のコードの圧縮ファイルをダウンロードしてフォルダに展開します。そして次のコマンドを実行します。`unzip`をインストールしていないLinuxユーザは、`sudo apt install unzip`のコマンドを実行することでunzipをインストールすることができます。
 
 ```
 mkdir d2l-en && cd d2l-en
 curl https://www.d2l.ai/d2l-en-1.0.zip -o d2l-en.zip
 unzip d2l-en.zip && rm d2l-en.zip
 ```
+Step 3からStep 5までは、上述しているWindowsユーザ向けのStepを参照してください。
+もし、condaのバージョンが4.4未満であれば、Step 4のコマンドを`source activate gluon`に置きかえて、`source deactivate`のコマンドを利用して仮想環境から抜けます。
 
-For Step 3 to Step 5, refer to the such steps for Windows users as described earlier. If the conda version is lower than 4.4, replace the command in Step 4 with `source activate gluon` and exit the virtual environment using the command `source deactivate`.
+## コードと実行環境の更新
 
+ディープラーニングとMXNetは急速に進化するため、このオープンソースの書籍も定期的に更新されて、リリースされていくでしょう。この書籍のオープンソースのコンテンツ（例えば、コード）を対応する実行環境（例えば、最新版のMXNet)で更新するためには、以下の手順に従ってください。
 
-## Updating Code and Running Environment
+Step 1は、この書籍のコードを含む最新版の圧縮ファイルをダウンロードします。そのファイルは、https://www.d2l.ai/d2l-en.zip からダウンロードできます。zipファイルを展開したら、そのフォルダ `d2l-en` に入ります。
 
-Since deep learning and MXNet grow fast, this open source book will be updated and released regularly. To update the open source content of this book (e.g., code) with corresponding running environment (e.g., MXNet of a later version), follow the steps below.
-
-Step 1 is to re-download the latest compressed file containing the code of this book. It is available at https://www.d2l.ai/d2l-en.zip. After extracting the zip file, enter the folder `d2l-en`.
-
-Step 2 is to update the running environment with the command
+Step 2は、その実行環境を次のコマンドでアップデートします。
 
 ```
 conda env update -f environment.yml
 ```
 
-The subsequent steps for activating the environment and running Jupyter are the same as those described earlier.
+以降の、環境を有効化したり、Jupyterを実行する手順は、すでに説明した手順と同じように行います。
 
-## GPU Support
+## GPUのサポート
 
-By default MXNet is installed without GPU support to ensure that it will run on any computer (including most laptops). Part of this book requires or recommends running with GPU. If your computer has NVIDIA graphics cards and has installed CUDA, you should modify the conda environment to download the CUDA enabled build.
+デフォルトでは、MXNetはあらゆるコンピュータ (ノートパソコンも含む)で実行できるように、GPUを利用しないようにインストールされます。この書籍の一部は、GPUの利用を必要としたり、推薦したりします。もし読者のコンピュータが、NVIDIAのグラフィックカードを備えていて、CUDAがインストールされているのであれば、CUDAを利用可能なビルドをダウンロードするように、conda環境を修正すべきです。
 
-Step 1 is to uninstall MXNet without GPU support. If you have installed the virtual environment for running the book, you need to activate this environment then uninstall MXNet without GPU support:
+Step 1では、GPUをサポートしないMXNetをアンインストールします。もし、この書籍を実行する仮想環境をインストールしていれば、GPUをサポートしないMXNetをアンインストールした環境を有効化する必要があります。
 
 ```
 pip uninstall mxnet
 ```
 
-Then exit the virtual environment.
+そして仮想環境から抜けます。
 
-Step 2 is to update the environment description in `environment.yml`.
-Likely, you'll want to replace `mxnet` by `mxnet-cu90`.
-The number following the hyphen (90 above)
-corresponds to the version of CUDA you installed).
-For instance, if you're on CUDA 8.0,
-you need to replace `mxnet-cu90` with `mxnet-cu80`.
-You should do this *before* creating the conda environment.
-Otherwise you will need to rebuild it later.
+Step 2では、`environment.yml`の環境に関する記述を更新します。おそらく、`mxnet`を`mxnet-cu90`で書き換えるでしょう。ハイフンのあとの数字 (上記の90)は、読者がインストールしているCUDAのバージョンに対応している必要があります。例えば、CUDA 8.0を利用していれば、`mxnet-cu90`ではなく`mxnet-cu80`を利用する必要があります。これを、conda環境を作成する*前*に実行する必要があります。もし作成前に実行しなければ、あとで再度ビルドする必要があるでしょう。
 
-Step 3 is to update the virtual environment. Run the command
+Step 3では、以下のコマンドで仮想環境を更新します。
 
 ```
 conda env update -f environment.yml
 ```
 
-Then we only need to activate the virtual environment to use MXNet with GPU support to run the book. Note that you need to repeat these 3 steps to use MXNet with GPU support if you download the updated code later.
+以上の手順を終えていれば、仮想環境を有効化することで、GPUがサポートされたMXNetを使用して、この書籍の内容を実行できます。もし、更新されたコードを後でダウンロードした場合は、GPUサポートのMXNetを利用するための3ステップを再度実行する必要があります。
 
-## Exercises
+## 練習
 
-1. Download the code for the book and install the runtime environment.
+1. この本のコードをダウンロードして、実行環境をインストールしましょう。
 
 
-## Scan the QR Code to [Discuss](https://discuss.mxnet.io/t/2315)
+## [議論](https://discuss.mxnet.io/t/2315)のためのQRコード
 
 ![](../img/qr_install.svg)
