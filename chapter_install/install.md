@@ -36,9 +36,9 @@ jupyter notebook
 
 この時点で http://localhost:8888 をブラウザで開くと（通常、自動的に開かれます）、この書籍の各節のコードを見たり実行したりすることができます。
 
-### Linux/macOS Users
+### Linux/macOSユーザ
 
-Step 1 is to download and install [Miniconda](https://conda.io/en/master/miniconda.html) according to the operating system in use. It is a sh file. Open the Terminal application and enter the command to execute the sh file, such as
+Step 1は、利用するOSに応じて、[Miniconda](https://conda.io/en/master/miniconda.html)をダウンロードしてインストールします。sh形式のファイルになっています。ターミナルのアプリケーションで開いて、以下のように、shファイルを実行するコマンド入力します
 
 ```
 # The file name is subject to change, always use the one downloaded from the
@@ -46,42 +46,42 @@ Step 1 is to download and install [Miniconda](https://conda.io/en/master/minicon
 sh Miniconda3-latest-Linux-x86_64.sh
 ```
 
-The terms of use will be displayed during installation. Press "↓" to continue reading, press "Q" to exit reading. After that, answer the following questions:
+インストール中に、利用条件が表示されるでしょう。"↓"を押して読み進め、"Q"を押して読むのを終了します。その後、以下のような質問に答えます。
 
 ```
-Do you accept the license terms? [yes|no]
+Do you accept the license terms? [yes|no]　（ライセンス条件に同意しますか? [はい|いいえ])
 [no] >>> yes
 Do you wish the installer to prepend the Miniconda3 install location
 to PATH in your /home/your_name/your_file ? [yes|no]
+(/home/your_name/your_file のPATHの最初に、Miniconda3のインストール位置を追加して良いですか? [はい|いいえ])
 [no] >>> yes
 ```
 
-After the installation is complete, conda should be made to take effect. Linux users need to run `source ~/.bashrc` or restart the command line application; macOS users need to run `source ~/.bash_profile` or restart the command line application.
+インストールが完了した後にcondaを有効化します。Linuxユーザは`source ~/.bashrc`を実行するか、コマンドラインのアプリケーションを再起動する必要があります。macOSのユーザは、`source ~/.bash_profile`を実行するか、コマンドラインのアプリケーションを再起動します。
 
-Step 2 is to download the compressed file containing the code of this book, and extract it into the folder. Run the following commands. For Linux users who do not install `unzip`, they can run the command `sudo apt install unzip` to install it.
+Step 2では、この書籍のコードの圧縮ファイルをダウンロードしてフォルダに展開します。そして次のコマンドを実行します。`unzip`をインストールしていないLinuxユーザは、`sudo apt install unzip`のコマンドを実行することでunzipをインストールすることができます。
 
 ```
 mkdir d2l-en && cd d2l-en
 curl https://www.d2l.ai/d2l-en-1.0.zip -o d2l-en.zip
 unzip d2l-en.zip && rm d2l-en.zip
 ```
+Step 3からStep 5までは、上述しているWindowsユーザ向けのStepを参照してください。
+もし、condaのバージョンが4.4未満であれば、Step 4のコマンドを`source activate gluon`に置きかえて、`source deactivate`のコマンドを利用して仮想環境から抜けます。
 
-For Step 3 to Step 5, refer to the such steps for Windows users as described earlier. If the conda version is lower than 4.4, replace the command in Step 4 with `source activate gluon` and exit the virtual environment using the command `source deactivate`.
+## コードと実行環境の更新
 
+ディープラーニングとMXNetは急速に進化するため、このオープンソースの書籍も定期的に更新されて、リリースされていくでしょう。この書籍のオープンソースのコンテンツ（例えば、コード）を対応する実行環境（例えば、最新版のMXNet)で更新するためには、以下の手順に従ってください。
 
-## Updating Code and Running Environment
+Step 1は、この書籍のコードを含む最新版の圧縮ファイルをダウンロードします。そのファイルは、https://www.d2l.ai/d2l-en.zip からダウンロードできます。zipファイルを展開したら、そのフォルダ `d2l-en` に入ります。
 
-Since deep learning and MXNet grow fast, this open source book will be updated and released regularly. To update the open source content of this book (e.g., code) with corresponding running environment (e.g., MXNet of a later version), follow the steps below.
-
-Step 1 is to re-download the latest compressed file containing the code of this book. It is available at https://www.d2l.ai/d2l-en.zip. After extracting the zip file, enter the folder `d2l-en`.
-
-Step 2 is to update the running environment with the command
+Step 2は、その実行環境を次のコマンドでアップデートします。
 
 ```
 conda env update -f environment.yml
 ```
 
-The subsequent steps for activating the environment and running Jupyter are the same as those described earlier.
+以降の、環境を有効化したり、Jupyterを実行する手順は、すでに説明した手順と同じように行います。
 
 ## GPU Support
 
