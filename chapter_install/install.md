@@ -83,40 +83,33 @@ conda env update -f environment.yml
 
 以降の、環境を有効化したり、Jupyterを実行する手順は、すでに説明した手順と同じように行います。
 
-## GPU Support
+## GPUのサポート
 
-By default MXNet is installed without GPU support to ensure that it will run on any computer (including most laptops). Part of this book requires or recommends running with GPU. If your computer has NVIDIA graphics cards and has installed CUDA, you should modify the conda environment to download the CUDA enabled build.
+デフォルトでは、MXNetはあらゆるコンピュータ (ノートパソコンも含む)で実行できるように、GPUを利用しないようにインストールされます。この書籍の一部は、GPUの利用を必要としたり、推薦したりします。もし読者のコンピュータが、NVIDIAのグラフィックカードを備えていて、CUDAがインストールされているのであれば、CUDAを利用可能なビルドをダウンロードするように、conda環境を修正すべきです。
 
-Step 1 is to uninstall MXNet without GPU support. If you have installed the virtual environment for running the book, you need to activate this environment then uninstall MXNet without GPU support:
+Step 1では、GPUをサポートしないMXNetをアンインストールします。もし、この書籍を実行する仮想環境をインストールしていれば、GPUをサポートしないMXNetをアンインストールした環境を有効化する必要があります。
 
 ```
 pip uninstall mxnet
 ```
 
-Then exit the virtual environment.
+そして仮想環境から抜けます。
 
-Step 2 is to update the environment description in `environment.yml`.
-Likely, you'll want to replace `mxnet` by `mxnet-cu90`.
-The number following the hyphen (90 above)
-corresponds to the version of CUDA you installed).
-For instance, if you're on CUDA 8.0,
-you need to replace `mxnet-cu90` with `mxnet-cu80`.
-You should do this *before* creating the conda environment.
-Otherwise you will need to rebuild it later.
+Step 2では、`environment.yml`の環境に関する記述を更新します。おそらく、`mxnet`を`mxnet-cu90`で書き換えるでしょう。ハイフンのあとの数字 (上記の90)は、読者がインストールしているCUDAのバージョンに対応している必要があります。例えば、CUDA 8.0を利用していれば、`mxnet-cu90`ではなく`mxnet-cu80`を利用する必要があります。これを、conda環境を作成する*前*に実行する必要があります。もし作成前に実行しなければ、あとで再度ビルドする必要があるでしょう。
 
-Step 3 is to update the virtual environment. Run the command
+Step 3では、以下のコマンドで仮想環境を更新します。
 
 ```
 conda env update -f environment.yml
 ```
 
-Then we only need to activate the virtual environment to use MXNet with GPU support to run the book. Note that you need to repeat these 3 steps to use MXNet with GPU support if you download the updated code later.
+以上の手順を終えていれば、仮想環境を有効化することで、GPUがサポートされたMXNetを使用して、この書籍の内容を実行できます。もし、更新されたコードを後でダウンロードした場合は、GPUサポートのMXNetを利用するための3ステップを再度実行する必要があります。
 
-## Exercises
+## 練習
 
-1. Download the code for the book and install the runtime environment.
+1. この本のコードをダウンロードして、実行環境をインストールしましょう。
 
 
-## Scan the QR Code to [Discuss](https://discuss.mxnet.io/t/2315)
+## [議論](https://discuss.mxnet.io/t/2315)のためのQRコード
 
 ![](../img/qr_install.svg)
