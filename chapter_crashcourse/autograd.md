@@ -1,8 +1,10 @@
 # 自動微分
 
-機械学習では、経験を重ねる関数のように、モデルをだんだん良くするように*学習*させます。通常、*良くする*ことは、モデルがどの程度*悪いか*をスコアとして表す*ロス関数*を最小化することを意味します。ニューラルネットワークとともに、パラメータに関して微分可能なロス関数を選択します。平たく言えば、モデルの各パラメータに対して、ロスをどの程度*増加*または*減少*させるかを決めることができるのです。計算自体は率直なものですが、複雑なモデルに対して人手で行うのは非常に困難で間違いやすいものです。
+機械学習では、私達はモデルを学習させ、次々と更新していきます。モデルは、データを見れば見るほど、良くなっていきます。通常、*良くなる*ということは、モデルがどの程度*悪いか*をスコアとして表す*ロス関数*を最小化することを意味します。ニューラルネットワークとともに、パラメータに関して微分可能なロス関数を選択します。平たく言えば、モデルの各パラメータに対して、ロスをどの程度*増加*または*減少*させるかを決めることができるのです。微分をとるという計算自体は率直で、基本的な計算しか必要しませんが、複雑なモデルに対して人手で行うのは非常に困難で間違いやすいものです。
 
-autogradというパッケージは、自動で微分を計算することによって、この作業を加速させました。多くの他のライブラリが、自動微分を行うためにシンボリックなグラフのコンパイルを必要とするのに対し、`autograd`は通常のコードを書くだけで微分をすることができます。モデル全体を計算するときはいつでも、`autograd`はグラフをその都度作成し、勾配を直接逆伝搬することができます。微分のような数学を見慣れていなければ、Appendixの[“Mathematical Basics”](../chapter_appendix/math.md)を参照してください。
+autogradというパッケージは、自動で微分を計算することによって、この作業を加速させました。多くの他のライブラリが、自動微分を行うためにシンボリックなグラフのコンパイルを必要とするのに対し、`autograd`は通常のコードを書くだけで微分をすることができます。モデルにデータを渡すときはいつでも、グラフが`autograd`によってその都度作成され、どのデータにどの演算が実行されて出力を得られるのかが追跡されます。このグラフによって、`autograd`は実行命令を受けると、勾配を逆伝搬します。
+*逆伝搬*は単純に計算グラフを追跡して、各パラメータの偏微分を計算することを意味します。
+微分のような数学を見慣れていなければ、Appendixの[“Mathematical Basics”](../chapter_appendix/math.md)を参照してください。
 
 ```{.python .input  n=1}
 from mxnet import autograd, nd
@@ -58,7 +60,7 @@ with autograd.record():
     print(autograd.is_training())
 ```
 
-In some cases, the same model behaves differently in the training and prediction modes (such as batch normalization). In other cases, some models may store more auxiliary variables to make computing gradients easier. We will cover these differences in detail in later chapters. For now, you need not worry about these details just yet.
+In some cases, the same model behaves differently in the training and prediction modes (e.g. when using neural techniques such as dropout and batch normalization). In other cases, some models may store more auxiliary variables to make computing gradients easier. We will cover these differences in detail in later chapters. For now, you do not need to worry about them.
 
 ## Computing the Gradient of Python Control Flow
 
@@ -76,7 +78,7 @@ def f(a):
     return c
 ```
 
-Note that the number of iterations of the while loop and the execution of the conditional statement (if then else) depend on the value of `a`. To compute gradients, we need to `record` the calculation, and call the `backward` function to find the gradient.
+Note that the number of iterations of the while loop and the execution of the conditional statement (if then else) depend on the value of `a`. To compute gradients, we need to `record` the calculation, and then call the `backward` function to calculate the gradient.
 
 ```{.python .input  n=9}
 a = nd.random.normal(shape=1)
@@ -106,7 +108,7 @@ $\frac{d}{dx} z(y(x))$. Recall that by the chain rule
 
 $$\frac{d}{dx} z(y(x)) = \frac{dz(y)}{dy} \frac{dy(x)}{dx}.$$
 
-So, when ``y`` is part of a larger function ``z``, and we want ``x.grad`` to store $\frac{dz}{dx}$, we can pass in the *head gradient* $\frac{dz}{dy}$ as an input to ``backward()``. The default argument is ``nd.ones_like(y)``. See [Wikipedia](https://en.wikipedia.org/wiki/Chain_rule) for more details.
+So, when ``y`` is part of a larger function ``z`` and we want ``x.grad`` to store $\frac{dz}{dx}$, we can pass in the *head gradient* $\frac{dz}{dy}$ as an input to ``backward()``. The default argument is ``nd.ones_like(y)``. See [Wikipedia](https://en.wikipedia.org/wiki/Chain_rule) for more details.
 
 ```{.python .input  n=11}
 with autograd.record():
@@ -124,15 +126,15 @@ print(x.grad)
 * MXNet's `autograd` package can be used to derive general imperative programs.
 * The running modes of MXNet include the training mode and the prediction mode. We can determine the running mode by `autograd.is_training()`.
 
-## Problems
+## Exercises
 
-1. In the example, finding the gradient of the control flow shown in this section, the variable `a` is changed to a random vector or matrix. At this point, the result of the calculation `c` is no longer a scalar. What happens to the result. How do we analyze this?
+1. In the control flow example where we calculate the derivative of `d` with respect to `a`, what would happen if we changed the variable `a` to a random vector or matrix. At this point, the result of the calculation `f(a)` is no longer a scalar. What happens to the result? How do we analyze this?
 1. Redesign an example of finding the gradient of the control flow. Run and analyze the result.
-1. In a second price auction (such as in eBay or in computational advertising) the winning bidder pays the second highest price. Compute the gradient of the winning bidder with regard to his bid using `autograd`. Why do you get a pathological result? What does this tell us about the mechanism? For more details read the paper by [Edelman, Ostrovski and Schwartz, 2005](https://www.benedelman.org/publications/gsp-060801.pdf).
+1. In a second-price auction (such as in eBay or in computational advertising), the winning bidder pays the second-highest price. Compute the gradient of the final price with respect to the winning bidder's bid using `autograd`. What does the result tell you about the mechanism? If you are curious to learn more about second-price auctions, check out this paper by [Edelman, Ostrovski and Schwartz, 2005](https://www.benedelman.org/publications/gsp-060801.pdf).
 1. Why is the second derivative much more expensive to compute than the first derivative?
-1. Derive the head gradient relationship for the chain rule. If you get stuck, use the  [Wikipedia Chain Rule](https://en.wikipedia.org/wiki/Chain_rule) entry.
+1. Derive the head gradient relationship for the chain rule. If you get stuck, use the ["Chain rule" article on Wikipedia](https://en.wikipedia.org/wiki/Chain_rule).
 1. Assume $f(x) = \sin(x)$. Plot $f(x)$ and $\frac{df(x)}{dx}$ on a graph, where you computed the latter without any symbolic calculations, i.e. without exploiting that $f'(x) = \cos(x)$.
 
-## Discuss on our Forum
+## Scan the QR Code to [Discuss](https://discuss.mxnet.io/t/2318)
 
-<div id="discuss" topic_id="2318"></div>
+![](../img/qr_autograd.svg)
