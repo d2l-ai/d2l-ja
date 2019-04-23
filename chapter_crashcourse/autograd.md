@@ -64,9 +64,10 @@ with autograd.record():
 同じモデルであっても、学習と推論の各モードで違った動きをする場合があります（DropoutやBatch normalizationという技術を利用したときなど）。他にも、いくつかのモデルは勾配をより容易に計算するために、補助的な変数を追加で保存する場合もあります。以降の章では、これらの違いについて詳細を説明いたします。この章では、それらについて心配する必要はありません。
 
 
-## Computing the Gradient of Python Control Flow
+## Pythonの制御フローに対する勾配を計算する
 
-One benefit of using automatic differentiation is that even if the computational graph of the function contains Python's control flow (such as conditional and loop control), we may still be able to find the gradient of a variable. Consider the following program:  It should be emphasized that the number of iterations of the loop (while loop) and the execution of the conditional judgment (if statement) depend on the value of the input `b`.
+自動微分のメリットとして、たとえ関数がPythonの制御フロー（条件分岐やループ）を含んでいたとしても、その変数の微分を得られるかもしれないという点があります。次のような問題を考えてみましょう。ループ (whileループ) のイテレーション数や条件分岐 (if文) の実行が、ある入力`b`に依存しているような問題です。
+
 
 ```{.python .input  n=8}
 def f(a):
@@ -80,7 +81,7 @@ def f(a):
     return c
 ```
 
-Note that the number of iterations of the while loop and the execution of the conditional statement (if then else) depend on the value of `a`. To compute gradients, we need to `record` the calculation, and then call the `backward` function to calculate the gradient.
+whileループのイテレーション数や条件分岐 (if then else)の実行は`a`の値に依存しています。勾配を計算するために、その計算を`record`(保存)する必要があり、また`backward`関数を実行して勾配を計算する必要があります。
 
 ```{.python .input  n=9}
 a = nd.random.normal(shape=1)
@@ -90,7 +91,7 @@ with autograd.record():
 d.backward()
 ```
 
-Let's analyze the `f` function defined above. As you can see, it is piecewise linear in its input `a`. In other words, for any `a` there exists some constant such that for a given range `f(a) = g * a`. Consequently `d / a` allows us to verify that the gradient is correct:
+上で定義された関数`f`を解析してみましょう。関数`f`は入力`a`に対する区分線形関数であることは確認できると思います。言い換えれば、どのような`a`に対しても、ある区間において`f(a) = g * a`となる値が存在します。従って、`d / a`という計算を行うことで、その勾配が正しいかどうかを検証することができます。
 
 ```{.python .input  n=10}
 print(a.grad == (d / a))
