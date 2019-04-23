@@ -50,9 +50,10 @@ print((x.grad - 4 * x).norm().asscalar() == 0)
 print(x.grad)
 ```
 
-## Training Mode and Prediction Mode
+## 学習モードと推論モード
 
-As you can see from the above, after calling the `record` function, MXNet will record and calculate the gradient. In addition, `autograd` will also change the running mode from the prediction mode to the training mode by default. This can be viewed by calling the `is_training` function.
+上記で確認したように、`record`のか関数を呼ぶと、MXNetは勾配を記録して計算します。また、
+`autograd`はデフォルトで推論モードから学習モードへと実行モードを切り替えます。このことは、`is_training`関数を実行すると確認することができます。
 
 ```{.python .input  n=7}
 print(autograd.is_training())
@@ -60,7 +61,8 @@ with autograd.record():
     print(autograd.is_training())
 ```
 
-In some cases, the same model behaves differently in the training and prediction modes (e.g. when using neural techniques such as dropout and batch normalization). In other cases, some models may store more auxiliary variables to make computing gradients easier. We will cover these differences in detail in later chapters. For now, you do not need to worry about them.
+同じモデルであっても、学習と推論の各モードで違った動きをする場合があります（DropoutやBatch normalizationという技術を利用したときなど）。他にも、いくつかのモデルは勾配をより容易に計算するために、補助的な変数を追加で保存する場合もあります。以降の章では、これらの違いについて詳細を説明いたします。この章では、それらについて心配する必要はありません。
+
 
 ## Computing the Gradient of Python Control Flow
 
