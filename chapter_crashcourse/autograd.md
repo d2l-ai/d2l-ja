@@ -97,21 +97,15 @@ d.backward()
 print(a.grad == (d / a))
 ```
 
-## Head gradients and the chain rule
+## Head gradients と chain rule
 
-*Caution: This part is tricky and not necessary to understanding subsequent sections. That said, it is needed if you want to build new layers from scratch. You can skip this on a first read.*
+*注意: この部分はわかりにくく、以降の節を理解するために必ずしも必要というわけではありません。とはいえ、ゼロから新しいレイヤーを作成したい場合には必要になってきます。最初に読む段階ではスキップしても構いません。*
 
-Sometimes when we call the backward method, e.g. `y.backward()`, where
-`y` is a function of `x` we are just interested in the derivative of
-`y` with respect to `x`. Mathematicians write this as
-$\frac{dy(x)}{dx}$. At other times, we may be interested in the
-gradient of `z` with respect to `x`, where `z` is a function of `y`,
-which in turn, is a function of `x`. That is, we are interested in
-$\frac{d}{dx} z(y(x))$. Recall that by the chain rule
+例えば`x`の関数である`y`について`x`に関して微分したい場合、backwardの関数つまり`y.backward()`で呼ぶでしょう。数学者は$\frac{dy(x)}{dx}$と書きます。また、`z`が`y`の関数で、`y`が`x`の関数であるときに、`x`に関する`z`の勾配を求めたい場合もあるでしょう。そうすると、$\frac{dy(x)}{dx}$を求めることになります。ここで、以下のchain ruleを思い出しましょう。
 
 $$\frac{d}{dx} z(y(x)) = \frac{dz(y)}{dy} \frac{dy(x)}{dx}.$$
 
-So, when ``y`` is part of a larger function ``z`` and we want ``x.grad`` to store $\frac{dz}{dx}$, we can pass in the *head gradient* $\frac{dz}{dy}$ as an input to ``backward()``. The default argument is ``nd.ones_like(y)``. See [Wikipedia](https://en.wikipedia.org/wiki/Chain_rule) for more details.
+大きな関数``z``の一部に``y``が含まれていて、$\frac{dz}{dx}$の値をもつ``x.grad``を知りたいとき、*head gradient*(先頭の勾配)である$\frac{dz}{dy}$を``backward()``への入力として渡します。デフォルトの引数は``nd.ones_like(y)``です。詳細に関しては[Wikipedia](https://en.wikipedia.org/wiki/Chain_rule)を見てください。
 
 ```{.python .input  n=11}
 with autograd.record():
