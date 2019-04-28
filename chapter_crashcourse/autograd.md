@@ -117,21 +117,21 @@ z.backward(head_gradient)
 print(x.grad)
 ```
 
-## Summary
+## まとめ
 
-* MXNet provides an `autograd` package to automate the derivation process.
-* MXNet's `autograd` package can be used to derive general imperative programs.
-* The running modes of MXNet include the training mode and the prediction mode. We can determine the running mode by `autograd.is_training()`.
+* MXNetでは微分の処理を自動化する`autograd`パッケージを提供してます。
+* MXNetの`autograd`パッケージでは、一般的な手続き型のプログラムを微分することも可能です。
+* MXNetの実行モードには学習モードと推論モードがあります。`autograd.is_training()`を呼ぶと、実行モードを知ることができます。
 
-## Exercises
+## 練習
 
-1. In the control flow example where we calculate the derivative of `d` with respect to `a`, what would happen if we changed the variable `a` to a random vector or matrix. At this point, the result of the calculation `f(a)` is no longer a scalar. What happens to the result? How do we analyze this?
-1. Redesign an example of finding the gradient of the control flow. Run and analyze the result.
-1. In a second-price auction (such as in eBay or in computational advertising), the winning bidder pays the second-highest price. Compute the gradient of the final price with respect to the winning bidder's bid using `autograd`. What does the result tell you about the mechanism? If you are curious to learn more about second-price auctions, check out this paper by [Edelman, Ostrovski and Schwartz, 2005](https://www.benedelman.org/publications/gsp-060801.pdf).
-1. Why is the second derivative much more expensive to compute than the first derivative?
-1. Derive the head gradient relationship for the chain rule. If you get stuck, use the ["Chain rule" article on Wikipedia](https://en.wikipedia.org/wiki/Chain_rule).
-1. Assume $f(x) = \sin(x)$. Plot $f(x)$ and $\frac{df(x)}{dx}$ on a graph, where you computed the latter without any symbolic calculations, i.e. without exploiting that $f'(x) = \cos(x)$.
+1. `a`に関する`d`の微分を計算する制御フローを例としてとりあげましたが、`a`をランダムなベクトルや行列に変更するとどうなるでしょうか。このとき、`f(a)`の計算結果はスカラーではなくなってしまいます。どういった結果になるでしょうか。どのように解析すれば良いでしょうか。
+1. その制御フローの勾配を計算する例を変えてみましょう。実行して結果を解析してみましょう。
+1. eBayやComputational advertisingのようなセカンド・プライスオークションにおいては、せりに買った人は二番目に高い入札金額を支払います。`autograd`を使って、せりに買った人の入札金額に関する最終的な価格の勾配を計算してみましょう。その結果から、セカンド・プライスオークションのメカニズムについてわかることがありますか? もしセカンド・プライスオークションについてより深く知りたいと思うのであれば、[Edelman, Ostrovski and Schwartz, 2005](https://www.benedelman.org/publications/gsp-060801.pdf)の論文を参照してください。
+1. なぜ2階微分は、1階微分よりもずっと多くの計算を必要とするのでしょうか。
+1. Chain rule と head gradientの関係を導きましょう。もし詰まってしまったら、["Chain rule" article on Wikipedia](https://en.wikipedia.org/wiki/Chain_rule)を見てみてください。
+1. $f(x) = \sin(x)$を考えます。そして、$f(x)$と$\frac{df(x)}{dx}$をグラフ化してください。ただし、$\frac{df(x)}{dx}$については、数式の計算を使わない、つまり $f'(x) = \cos(x)$を使わずにグラフ化しましょう。
 
-## Scan the QR Code to [Discuss](https://discuss.mxnet.io/t/2318)
+## [議論](https://discuss.mxnet.io/t/2318)のためのQRコード
 
 ![](../img/qr_autograd.svg)
