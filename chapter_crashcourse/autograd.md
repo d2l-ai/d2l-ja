@@ -50,9 +50,10 @@ print((x.grad - 4 * x).norm().asscalar() == 0)
 print(x.grad)
 ```
 
-## Training Mode and Prediction Mode
+## 学習モードと推論モード
 
-As you can see from the above, after calling the `record` function, MXNet will record and calculate the gradient. In addition, `autograd` will also change the running mode from the prediction mode to the training mode by default. This can be viewed by calling the `is_training` function.
+上記で確認したように、`record`の関数を呼ぶと、MXNetは勾配を記録して計算します。また、
+`autograd`はデフォルトで推論モードから学習モードへと実行モードを切り替えます。このことは、`is_training`関数を実行すると確認することができます。
 
 ```{.python .input  n=7}
 print(autograd.is_training())
@@ -60,11 +61,13 @@ with autograd.record():
     print(autograd.is_training())
 ```
 
-In some cases, the same model behaves differently in the training and prediction modes (e.g. when using neural techniques such as dropout and batch normalization). In other cases, some models may store more auxiliary variables to make computing gradients easier. We will cover these differences in detail in later chapters. For now, you do not need to worry about them.
+同じモデルであっても、学習と推論の各モードで違った動きをする場合があります（DropoutやBatch normalizationという技術を利用したときなど）。他にも、いくつかのモデルは勾配をより容易に計算するために、補助的な変数を追加で保存する場合もあります。以降の章では、これらの違いについて詳細を説明いたします。この章では、それらについて心配する必要はありません。
 
-## Computing the Gradient of Python Control Flow
 
-One benefit of using automatic differentiation is that even if the computational graph of the function contains Python's control flow (such as conditional and loop control), we may still be able to find the gradient of a variable. Consider the following program:  It should be emphasized that the number of iterations of the loop (while loop) and the execution of the conditional judgment (if statement) depend on the value of the input `b`.
+## Pythonの制御フローに対する勾配を計算する
+
+自動微分のメリットとして、たとえ関数がPythonの制御フロー（条件分岐やループ）を含んでいたとしても、その変数の微分を得られるかもしれないという点があります。次のような問題を考えてみましょう。ループ (whileループ) のイテレーション数や条件分岐 (if文) の実行が、ある入力`b`に依存しているような問題です。
+
 
 ```{.python .input  n=8}
 def f(a):
@@ -78,7 +81,7 @@ def f(a):
     return c
 ```
 
-Note that the number of iterations of the while loop and the execution of the conditional statement (if then else) depend on the value of `a`. To compute gradients, we need to `record` the calculation, and then call the `backward` function to calculate the gradient.
+whileループのイテレーション数や条件分岐 (if then else)の実行は`a`の値に依存しています。勾配を計算するために、その計算を`record`(保存)する必要があり、また`backward`関数を実行して勾配を計算する必要があります。
 
 ```{.python .input  n=9}
 a = nd.random.normal(shape=1)
@@ -88,27 +91,21 @@ with autograd.record():
 d.backward()
 ```
 
-Let's analyze the `f` function defined above. As you can see, it is piecewise linear in its input `a`. In other words, for any `a` there exists some constant such that for a given range `f(a) = g * a`. Consequently `d / a` allows us to verify that the gradient is correct:
+上で定義された関数`f`を解析してみましょう。関数`f`は入力`a`に対する区分線形関数であることは確認できると思います。言い換えれば、どのような`a`に対しても、ある区間において`f(a) = g * a`となる値が存在します。従って、`d / a`という計算を行うことで、その勾配が正しいかどうかを検証することができます。
 
 ```{.python .input  n=10}
 print(a.grad == (d / a))
 ```
 
-## Head gradients and the chain rule
+## Head gradients と chain rule
 
-*Caution: This part is tricky and not necessary to understanding subsequent sections. That said, it is needed if you want to build new layers from scratch. You can skip this on a first read.*
+*注意: この部分はわかりにくく、以降の節を理解するために必ずしも必要というわけではありません。とはいえ、ゼロから新しいレイヤーを作成したい場合には必要になってきます。最初に読む段階ではスキップしても構いません。*
 
-Sometimes when we call the backward method, e.g. `y.backward()`, where
-`y` is a function of `x` we are just interested in the derivative of
-`y` with respect to `x`. Mathematicians write this as
-$\frac{dy(x)}{dx}$. At other times, we may be interested in the
-gradient of `z` with respect to `x`, where `z` is a function of `y`,
-which in turn, is a function of `x`. That is, we are interested in
-$\frac{d}{dx} z(y(x))$. Recall that by the chain rule
+例えば`x`の関数である`y`について`x`に関して微分したい場合、backwardの関数つまり`y.backward()`で呼ぶでしょう。数学者は$\frac{dy(x)}{dx}$と書きます。また、`z`が`y`の関数で、`y`が`x`の関数であるときに、`x`に関する`z`の勾配を求めたい場合もあるでしょう。そうすると、$\frac{dy(x)}{dx}$を求めることになります。ここで、以下のchain ruleを思い出しましょう。
 
 $$\frac{d}{dx} z(y(x)) = \frac{dz(y)}{dy} \frac{dy(x)}{dx}.$$
 
-So, when ``y`` is part of a larger function ``z`` and we want ``x.grad`` to store $\frac{dz}{dx}$, we can pass in the *head gradient* $\frac{dz}{dy}$ as an input to ``backward()``. The default argument is ``nd.ones_like(y)``. See [Wikipedia](https://en.wikipedia.org/wiki/Chain_rule) for more details.
+大きな関数``z``の一部に``y``が含まれていて、$\frac{dz}{dx}$の値をもつ``x.grad``を知りたいとき、*head gradient*(先頭の勾配)である$\frac{dz}{dy}$を``backward()``への入力として渡します。デフォルトの引数は``nd.ones_like(y)``です。詳細に関しては[Wikipedia](https://en.wikipedia.org/wiki/Chain_rule)を見てください。
 
 ```{.python .input  n=11}
 with autograd.record():
@@ -120,21 +117,21 @@ z.backward(head_gradient)
 print(x.grad)
 ```
 
-## Summary
+## まとめ
 
-* MXNet provides an `autograd` package to automate the derivation process.
-* MXNet's `autograd` package can be used to derive general imperative programs.
-* The running modes of MXNet include the training mode and the prediction mode. We can determine the running mode by `autograd.is_training()`.
+* MXNetでは微分の処理を自動化する`autograd`パッケージを提供してます。
+* MXNetの`autograd`パッケージでは、一般的な手続き型のプログラムを微分することも可能です。
+* MXNetの実行モードには学習モードと推論モードがあります。`autograd.is_training()`を呼ぶと、実行モードを知ることができます。
 
-## Exercises
+## 練習
 
-1. In the control flow example where we calculate the derivative of `d` with respect to `a`, what would happen if we changed the variable `a` to a random vector or matrix. At this point, the result of the calculation `f(a)` is no longer a scalar. What happens to the result? How do we analyze this?
-1. Redesign an example of finding the gradient of the control flow. Run and analyze the result.
-1. In a second-price auction (such as in eBay or in computational advertising), the winning bidder pays the second-highest price. Compute the gradient of the final price with respect to the winning bidder's bid using `autograd`. What does the result tell you about the mechanism? If you are curious to learn more about second-price auctions, check out this paper by [Edelman, Ostrovski and Schwartz, 2005](https://www.benedelman.org/publications/gsp-060801.pdf).
-1. Why is the second derivative much more expensive to compute than the first derivative?
-1. Derive the head gradient relationship for the chain rule. If you get stuck, use the ["Chain rule" article on Wikipedia](https://en.wikipedia.org/wiki/Chain_rule).
-1. Assume $f(x) = \sin(x)$. Plot $f(x)$ and $\frac{df(x)}{dx}$ on a graph, where you computed the latter without any symbolic calculations, i.e. without exploiting that $f'(x) = \cos(x)$.
+1. `a`に関する`d`の微分を計算する制御フローを例としてとりあげましたが、`a`をランダムなベクトルや行列に変更するとどうなるでしょうか。このとき、`f(a)`の計算結果はスカラーではなくなってしまいます。どういった結果になるでしょうか。どのように解析すれば良いでしょうか。
+1. その制御フローの勾配を計算する例を変えてみましょう。実行して結果を解析してみましょう。
+1. eBayやComputational advertisingのようなセカンド・プライスオークションにおいては、せりに買った人は二番目に高い入札金額を支払います。`autograd`を使って、せりに買った人の入札金額に関する最終的な価格の勾配を計算してみましょう。その結果から、セカンド・プライスオークションのメカニズムについてわかることがありますか? もしセカンド・プライスオークションについてより深く知りたいと思うのであれば、[Edelman, Ostrovski and Schwartz, 2005](https://www.benedelman.org/publications/gsp-060801.pdf)の論文を参照してください。
+1. なぜ2階微分は、1階微分よりもずっと多くの計算を必要とするのでしょうか。
+1. Chain rule と head gradientの関係を導きましょう。もし詰まってしまったら、["Chain rule" article on Wikipedia](https://en.wikipedia.org/wiki/Chain_rule)を見てみてください。
+1. $f(x) = \sin(x)$を考えます。そして、$f(x)$と$\frac{df(x)}{dx}$をグラフ化してください。ただし、$\frac{df(x)}{dx}$については、数式の計算を使わない、つまり $f'(x) = \cos(x)$を使わずにグラフ化しましょう。
 
-## Scan the QR Code to [Discuss](https://discuss.mxnet.io/t/2318)
+## [議論](https://discuss.mxnet.io/t/2318)のためのQRコード
 
 ![](../img/qr_autograd.svg)
