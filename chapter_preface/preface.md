@@ -78,15 +78,9 @@ Amazonのような多くの企業が1990年代にデータベースを利用し�
 著者らはゼロからすべての考え方を説明するつもりです。深層学習技術やその応用に関する説明には数学やプログラミングに関わるものもありますが、読者が学ぶべきことはそれらの基礎、すなわち基本的な線形代数、計算、確率、そしてPythonのプログラミングです。付録では、著者らは、読者の参考のために、この本でカバーした数学の内容を説明します。入門的な内容として、厳密な数学にもとづく直感やアイデアを重視します。興味のある読者がさらに学んでいくためのすばらしい書籍がたくさんあります。例えば、Bela Bollobasによる[Linear Analysis](https://www.amazon.com/Linear-Analysis-Introductory-Cambridge-Mathematical/dp/0521655773)は、線形代数と関数解析に関して非常に詳しく書かれています。[All of Statistics](https://www.amazon.com/All-Statistics-Statistical-Inference-Springer/dp/0387402721)は統計学に関する素晴らしい説明を提供しています。もしあなたがPythonを以前に使ったことがなければ、[Python tutorial](http://learnpython.org/)を熟読したくなるかもしれません。もちろん、あなたが数学の部分にのみ興味があれば、プログラミングの部分はスキップしても良いです。逆もまた然りです。
 
 
-### Forum
+### フォーラム
 
-Associated with this book, we've launched a discussion forum,
-located at [discuss.mxnet.io](https://discuss.mxnet.io/).
-When you have questions on any section of the book,
-you can find the associated discussion page by scanning the QR code
-at the end of the section to participate in its discussions.
-The authors of this book and broader MXNet developer community
-frequently participate in forum discussions.
+この書籍に関連して、[discuss.mxnet.io](https://discuss.mxnet.io/)に議論のためのフォーラムを立ち上げています。この書籍のどの部分でも、もし質問があれば、各節の最後にあるQRコードをスキャンして関連する議論のページにたどり着き、議論に参加することができます。この書籍の著者と、幅広いMXNet開発者コミュニティは、このフォーラムでの議論によく参加しています。
 
 
 ## 謝辞
@@ -104,29 +98,25 @@ topecongiro, tpdi, vermicelli, Vishaal Kapoor, vishwesh5, YaYaB, Yuhong Chen, Ev
 
 
 
-## Summary
+## まとめ
 
-* Deep learning has revolutionized pattern recognition, introducing technology that now powers a wide range of  technologies, including computer vision, natural language processing, automatic speech recognition.
-* To successfully apply deep learning, you must understand how to cast a problem, the mathematics of modeling, the algorithms for fitting your models to data, and the engineering techniques to implement it all.
-* This book presents a comprehensive resource, including prose, figures, mathematics, and code, all in one place.
-* To answer questions related to this book, visit our forum at https://discuss.mxnet.io/.
-* Apache MXNet is a powerful library for coding up deep learning models and running them in parallel across GPU cores.
-* Gluon is a high level library that makes it easy to code up deep learning models using Apache MXNet.
-* Conda is a Python package manager that ensures that all software dependencies are met.
-* All notebooks are available for download on GitHub and  the conda configurations needed to run this book's code are expressed in the `environment.yml` file.
-* If you plan to run this code on GPUs, don't forget to install the necessary drivers and update your configuration.
+* 深層学習は、パターン認識を革新し、コンピュータビジョン、自然言語処理、自動音声認識などの幅広い分野に力を与える技術を導入しました。
+* うまく深層学習を適用するためには、問題を明らかにする方法、数学的なモデリング、モデルをデータに当てはめるためのアルゴリズム、それらすべてを実装する工学的な技術が必要です。
+* この書籍は、文章、図表、数学、コード、これらすべてを1箇所にまとめた、包括的なリソースを提供します。
+* この書籍に関する質問に回答するために、https://discuss.mxnet.io/ のフォーラムに参加してください。
+* Apache MXNetは深層学習モデルのコードを実装し、複数のGPUコアで並列に実行するための強力なライブラリです。
+* Gluonという高レベルなライブラリを利用することで、Apache MXNetを利用した深層学習モデルの実装を簡単に行うことができます。
+* Condaは、すべてのソフトウェアの依存関係が満たされることを保証するPythonのパッケージ管理ツールです。
+* すべてのノートブックはGithub上でダウンロードすることが可能で、この書籍のコードを実行するために必要なcondaの設定ファイルは`environment.yml`のファイルの中に記述されています。
+* もしここでのコードをGPU上で実行しようと考えているのであれば、必要なドライバをインストールして、構成を更新することを忘れないようにしましょう。
 
+## 練習
 
-## Exercises
+1. この書籍のフォーラム[discuss.mxnet.io](https://discuss.mxnet.io/)でアカウントを登録しましょう。
+1. コンピュータにPythonをインストールしましょう。
+1. 各セクションの最後にあるフォーラムへのリンクをたどりましょう。フォーラムでは、著者や広いコミュニティに関わることで、助けを求めたり、書籍の内容を議論したり、疑問に対する答えを探すことができるでしょう。
+1. フォーラムのアカウントを作成して自己紹介をしましょう。
 
-1. Register an account on the discussion forum of this book [discuss.mxnet.io](https://discuss.mxnet.io/).
-1. Install Python on your computer.
-1. Follow the links at the bottom of the section to the forum,
-where you'll be able to seek out help and discuss the book and find answers to your questions
-by engaging the authors and broader community.
-1. Create an account on the forum and introduce yourself.
-
-
-## Scan the QR Code to [Discuss](https://discuss.mxnet.io/t/2311)
+## [議論](https://discuss.mxnet.io/t/2311)のためのQRコードをスキャン
 
 ![](../img/qr_preface.svg)
