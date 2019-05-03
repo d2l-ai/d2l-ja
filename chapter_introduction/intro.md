@@ -151,8 +151,71 @@ In our wake-word example, we described a dataset consisting of audio snippets an
 
 ### データ
 
-一般的に、多くのデータを持っていれば持っているほど、問題を簡単に解くことができます。多くのデータを持っているなら、より性能の良いモデルを構築することができるからです。データはDeep Learningの発達に大きく貢献し、現在の多くのDeep Learningモデルは大規模なデータセットなしには動きません。以下では、機械学習を実践するうえで扱うことが多いデータの例を示します。
+It might go without saying that you cannot do data science without data.
+We could lose hundreds of pages pondering the precise nature of data
+but for now we'll err on the practical side and focus on the key properties
+to be concerned with.
+Generally we are concerned with a collection of *examples*
+(also called *data points*, *samples*, or *instances*).
+In order to work with data usefully, we typically
+need to come up with a suitable numerical representation.
+Each *example* typically consists of a collection
+of numerical attributes called *features* or *covariates*.
 
+If we were working with image data,
+each individual photograph might constitute an *example*,
+each represented by an ordered list of numerical values
+corresponding to the brightness of each pixel.
+A $200\times200$ color photograph would consist of $200\times200\times3=120000$
+numerical values, corresponding to the brightness
+of the red, green, and blue channels corresponding to each spatial location.
+In a more traditional task, we might try to predict
+whether or not a patient will survive,
+given a standard set of features such as age, vital signs, diagnoses, etc.
+
+When every example is characterized by the same number of numerical values,
+we say that the data consists of *fixed-length* vectors
+and we describe the (constant) length of the vectors
+as the *dimensionality* of the data.
+As you might imagine, fixed length can be a convenient property.
+If we wanted to train a model to recognize cancer in microscopy images,
+fixed-length inputs means we have one less thing to worry about.
+
+However, not all data can easily be represented as fixed length vectors.
+While we might expect microscrope images to come from standard equipment,
+we can't expect images mined from the internet to all show up in the same size.
+While we might imagine cropping images to a standard size,
+text data resists fixed-length representations even more stubbornly.
+Consider the product reviews left on e-commerce sites like Amazon or TripAdvisor. Some are short: "it stinks!". Others ramble for pages.
+One major advantage of deep learning over traditional methods
+is the comparative grace with which modern models
+can handle *varying-length* data.
+
+
+一般的に、多くのデータを持っていれば持っているほど、問題を簡単に解くことができます。多くのデータを持っているなら、より性能の良いモデルを構築することができるからです。比較的小規模なデータからビッグデータと呼ばれる時代への移り変わりによって、現代の深層学習は成り立っているといえます。話をもとに戻しますが、深層学習における最も素晴らしいモデルの多くは大規模なデータセットなしには機能しません。
+いくつかは小規模なデータの時代においても有効でしたが、従来からのアプローチと大差はありません。
+
+
+Finally it's not enough to have lots of data and to process it cleverly.
+We need the *right* data.
+If the data is full of mistakes, or if the chosen features are not predictive of the target quantity of interest, learning is going to fail.
+The situation is well captured by the cliché: *garbage in, garbage out*.
+Moreover, poor predictive performance isn't the only potential consequence.
+In sensitive applications of machine learning,
+like predictive policing, resumé screening, and risk models used for lending,
+we must be especially alert to the consequences of garbage data.
+One common failure mode occurs in datasets where some groups of people
+are unrepresented in the training data.
+Imagine applying a skin cancer recognition system in the wild
+that had never seen black skin before.
+Failure can also occur when the data doesn't merely under-represent some groups,
+but reflects societal prejudices.
+For example if past hiring decisions are used to train a predictive model
+that will be used to screen resumes, then machine learning models could inadvertently capture and automate historical injustices.
+Note that this can all happen without the data scientist being complicit,
+or even aware.
+
+<!--
 * **画像** スマートフォンで撮影されたり、Webで収集された画像、衛星画像、超音波やCTやMRIなどのレントゲン画像など
 
 * **テキスト** Eメール、学校でのエッセイ、tweet、ニュース記事、医者のメモ、書籍、翻訳文のコーパスなど
@@ -161,29 +224,47 @@ In our wake-word example, we described a dataset consisting of audio snippets an
 
 * **動画** テレビや映画、Youtubeのビデオ、携帯電話の撮影、自宅の監視カメラ映像、複数カメラによる追跡、など
 
-* **構造化データ** ウェブページ、電子カルテ、レンタカーの記録、デジタルな請求書など
+* **構造化データ** ウェブページ、電子カルテ、レンタカーの記録、デジタルな請求書など -->
 
 
 ### モデル
 
-通常、データは私達が達成しようとすることとは大きく異なっています。例えば、人間の写真を持っていて、そこに映る人たちが幸せかどうかを知りたいとします。そのために、高解像度の画像から幸福度を出力するようなモデルを必要とすると思います。簡単な問題がシンプルなモデルで解決できるかもしれないのに対し、このケースではいくつかの問いを投げかけることになります。幸福度を求めるためには、その検出器が数百、数千の低レベルな特徴（画像の場合はピクセル単位）をかなり抽象的な幸福度に変換する必要があります。そして、正しいモデルを選ぶのは難しく、異なるデータセットには異なるモデルが適しています。このコンテンツでは、モデルとしてDeep Neural Networksに着目します。これらのモデルは最初（入力）から最後（出力）までつながった、たくさんのデータ変換で構成されています。従って、*Deep Learning*と呼ばれているのです。Deep Nets、つまりDeep Learningのモデルについて議論するときは、比較的シンプルで浅いモデルを議論するようにしたいと思います。
+Most machine learning involves *transforming* the data in some sense.
+We might want to build a system that ingests photos and predicts *smiley-ness*.
+Alternatively, we might want to ingest a set of sensor readings
+and predict how *normal* vs *anomalous* the readings are.
+By *model*, we denote the computational machinery for ingesting data
+of one type, and spitting out predictions of a possibly different type.
+In particular, we are interested in statistical models
+that can be estimated from data.
+While simple models are perfectly capable of addressing
+appropriately simple problems the problems
+that we focus on in this book stretch the limits of classical methods.
+Deep learning is differentiated from classical approaches
+principally by the set of powerful models that it focuses on.
+These models consist of many successive transformations of the data
+that are chained together top to bottom, thus the name *deep learning*.
+On our way to discussing deep neural networks, we'll discuss some more traditional methods.
 
-
-###  ロス関数
+###  目的関数
 
 モデルが良いかどうかを評価するためには、モデルの出力と実際の正解を比較する必要があります。ロス関数は、その出力が*悪い*ことを評価する方法です。例えば、画像から患者の心拍数を予測するモデルを学習する場合を考えます。そのモデルが心拍数は100bpmだと推定して、実際は60bpmが正解だったときには、そのモデルに対して推定結果が悪いことを伝えなくてはなりません。
 
-同様に、Eメールがスパムである確率を予測するモデルを作りたいとき、その予測が上手く行っていなかったら、そのモデルに伝える方法が必要になります。一般的に、機械学習の*学習*と呼ばれる部分はロス関数を最小化することです。通常、モデルはたくさんのパラメータをもっています。パラメータの最適な値というのは、私達が学習で必要とするものであり、観測したデータのなかの*学習データ*の上でロスを最小化することによって得られます。残念ながら、学習データ上でいくら上手くロス関数を最小化しても、いまだ見たことがないテストデータにおいて、学習したモデルがうまくいくという保証はありません。従って、以下の2つの指標をチェックする必要があります。
+同様に、Eメールがスパムである確率を予測するモデルを作りたいとき、その予測が上手く行っていなかったら、そのモデルに伝える方法が必要になります。一般的に、機械学習の*学習*と呼ばれる部分はロス関数を最小化することです。通常、モデルはたくさんのパラメータをもっています。
+パラメータの最適な値というのは、私達が学習で必要とするものであり、観測したデータのなかの*学習データ*の上でロスを最小化することによって得られます。残念ながら、学習データ上でいくら上手くロス関数を最小化しても、いまだ見たことがないテストデータにおいて、学習したモデルがうまくいくという保証はありません。従って、利用できるデータを、学習データ (モデルパラメータ決定用) とテストデータ (評価用)に分けることが一般的で、それらから以下の2種類の値を求めることができます。
 
-* **学習誤差**: これは、学習データ上でロスを最小化してモデルを学習したときの、学習データにおける誤差です。これは、実際の試験に備えて、学生が練習問題をうまく説いているようなものです。その結果は、実際の試験の結果が良いかどうかを期待させますが、最終試験での成功を保証するものではありません。
-* **テスト誤差**: これは、見たことのないテストデータに対する誤差で、学習誤差とは少し異なっています。見たことのないデータに対して、モデルが対応（汎化）できないとき、その状態を *overfitting* (過適合)と呼びます。実生活でも、練習問題に特化して準備したにもかかわらず、本番の試験で失敗するというのと似ています。
+* **学習誤差**: 学習済みモデルにおける学習データの誤差です。これは、実際の試験に備えるための練習問題に対する学生の得点のようなものです。その結果は、実際の試験の結果が良いことを期待させますが、最終試験での成功を保証するものではありません。
+* **テスト誤差**: たことのないテストデータに対する誤差で、学習誤差とは大きく異なる場合があります。見たことのないデータに対して、モデルが対応（汎化）できないとき、その状態を *overfitting* (過適合)と呼びます。実生活でも、練習問題に特化して準備したにもかかわらず、本番の試験で失敗するというのと似ています。
 
 ### 最適化アルゴリズム
-最終的にロスを最小化するということは、モデルとそのロス関数に対して、ロスを最小化するようなモデルのパラメータを探索するということになります。ニューラルネットワークにおける最も有名な最適化アルゴリズムは、最急降下法と呼ばれる方法にもとづいています。端的に言えば、パラメーラを少しだけ動かしたとき、学習データに対するロスがどのような方向に変化するかを、パラメータごとに見ることです。ロスが小さくなる方向へパラメータを更新します。
 
-次の節では、機械学習のいくつかの種類について詳細を議論します。まず、機械学習の*目的*、言い換えれば機械学習ができることに関して、そのリストを紹介します。その目的は、目的を達成するための*手段*、いわば学習やデータの種類と補完的な位置づけであることに気をつけてください。以下のリストは、ひとまず、読者の好奇心をそそり、問題について話し合うための共通言語を理解することを目的としています。より多くの問題については、追って紹介をしていきたいと思います。
+元データとその数値的な表現、モデル、上手く定義された目的関数があれば、ロスを最小化するような最適なパラメータを探索するアルゴリズムが必要になります。
+ニューラルネットワークにおける最も有名な最適化アルゴリズムは、最急降下法と呼ばれる方法にもとづいています。端的に言えば、パラメーラを少しだけ動かしたとき、学習データに対するロスがどのような方向に変化するかを、パラメータごとに見ることです。ロスが小さくなる方向へパラメータを更新します。
 
-## 機械学習の種類
+## さまざまな機械学習
+
+In the following sections, we will discuss a few types of machine learning in some more detail. We begin with a list of *objectives*, i.e. a list of things that machine learning can do. Note that the objectives are complemented with a set of techniques of *how* to accomplish them, i.e. training, types of data, etc. The list below is really only sufficient to whet the readers' appetite and to give us a common language when we talk about problems. We will introduce a larger number of such problems as we go along.
+
 
 ### 教師あり学習
 
@@ -213,17 +294,17 @@ In our wake-word example, we described a dataset consisting of audio snippets an
 
 
 
-### 回帰
+#### 回帰
 
 最も単純な教師あり学習のタスクとして頭に思い浮かぶものは、おそらく回帰ではないかと思います。例えば、住宅の売上に関するデータベースから、一部のデータセットが得られた場合を考えてみます。各列が異なる住居に、各列は関連する属性、例えば、住宅の面積、寝室の数、トイレの数、中心街まで徒歩でかかる時間に対応するような表を構成するでしょう。形式的に、このようなデータセットの1行を*特徴ベクトル*、関連する対象（今回の事例では1つの家）を*データ例*と呼びます。
 
-もしニューヨークやサンフランシスコに住んでいて、Amazon、Google、Microsoft、FacebookなどのCEOでなければ、その特徴ベクトル（面積、寝室数、トイレ数、中心街までの距離）は$[100, 0, .5, 60]$といった感じでしょう。一方、もしピッツバーグに住んでいれば、その特徴ベクトルは$[3000, 4, 3, 10]$のようになると思います。 このような特徴ベクトルは、伝統的な機械学習のあらゆる問題において必要不可欠なものでした。あるデータ例に対する特徴ベクトルを$\mathbf{x_i}$で、全てのテータ例の特徴ベクトルを$X$として表します。
+もしニューヨークやサンフランシスコに住んでいて、Amazon、Google、Microsoft、FacebookなどのCEOでなければ、その特徴ベクトル（面積、寝室数、トイレ数、中心街までの距離）は$[100, 0, .5, 60]$といった感じでしょう。一方、もしピッツバーグに住んでいれば、その特徴ベクトルは$[3000, 4, 3, 10]$のようになると思います。 このような*特徴ベクトル*は、伝統的な機械学習のあらゆる問題において必要不可欠なものでした。あるデータ例に対する特徴ベクトルを$\mathbf{x_i}$で、全てのテータ例の特徴ベクトルを$X$として表します。
 
-何が問題を回帰させるかというと、実はその出力なのです。もしあなたが、新居を購入しようと思っていて、上記のような特徴量を用いて、家の適正な市場価値を推定したいとしましょう。目標値は、販売価格で、これは*実数*です。あるデータ例$\mathbf{x_i}$に対する個別の目標値を$y_i$とし、すべてのデータ例$\mathbf{X}$に対応する全目標を$\mathbf{y}$とします。目標値が、ある範囲内の任意の実数をとるとき、この問題を回帰問題と呼びます。ここで作成するモデルの目的は、実際の目標値に近い予測値(いまの例では、価格の推測値)を生成することです。この予測値を$\hat{y}_i$とします。もしこの表記になじみがなければ、いまのところ無視しても良いです。以降の章では、中身をより徹底的に解説していく予定です。
+何が問題を*回帰*させるかというと、実はその出力なのです。もしあなたが、新居を購入しようと思っていて、上記のような特徴量を用いて、家の適正な市場価値を推定したいとしましょう。目標値は、販売価格で、これは*実数*です。あるデータ例$\mathbf{x_i}$に対する個別の目標値を$y_i$とし、すべてのデータ例$\mathbf{X}$に対応する全目標を$\mathbf{y}$とします。目標値が、ある範囲内の任意の実数をとるとき、この問題を回帰問題と呼びます。ここで作成するモデルの目的は、実際の目標値に近い予測値(いまの例では、価格の推測値)を生成することです。この予測値を$\hat{y}_i$とします。もしこの表記になじみがなければ、いまのところ無視しても良いです。以降の章では、中身をより徹底的に解説していく予定です。
 
 多くの実践的な問題は、きちんと説明されて、わかりやすい回帰問題となるでしょう。ユーザがある動画につけるレーティングを予測する問題は回帰問題です。もし2009年にその功績をあげるような偉大なアルゴリズムを設計できていれば、[Netflixの100万ドルの賞](https://en.wikipedia.org/wiki/Netflix_Prize)を勝ち取っていたかも知れません。病院での患者の入院日数を予測する問題もまた回帰問題です。ある1つの法則として、*どれくらい?*という問題は回帰問題を示唆している、と判断することは良いかも知れません。
 
-* '手術は何時間かかりますか?' - *回帰*
+* 'この手術は何時間かかりますか?' - *回帰*
 * 'この写真にイヌは何匹いますか?' - *回帰*.
 
 しかし、「これは__ですか?」のような問題として簡単に扱える問題であれば、それはおそらく分類問題で、次に説明する全く異なる種類の問題です。たとえ、機械学習をこれまで扱ったことがなかったとしても、形式に沿わない方法で、おそらく回帰問題を扱うことができるでしょう。例えば、下水装置を直すことを考えましょう。工事業者は下水のパイプから汚れを除くのに$x_1=3$時間かかって、あなたに$y_1=350$の請求をしました。友人が同じ工事業者を雇い、$x_2 = 2$時間かかったとき、友人に$y_2=250$の請求をしました。もし、これから汚れを除去する際に、どれくらいの請求が発生するかを尋ねられたら、作業時間が長いほど料金が上がるといった、妥当な想定をすると思います。そして、基本料金があって、１時間当たりの料金もかかるという想定もするでしょう。これらの想定のもと、与えられた2つのデータを利用して、工事業者の値付け方法を特定できるでしょう。1時間当たり\$100で、これに加えて\$50の出張料金です。もし、読者がこの内容についてこれたのであれば、線形回帰のハイレベルな考え方をすでに理解できているでしょう (そして、バイアス項のついた線形モデルを暗に設計したことになります)。
@@ -241,7 +322,7 @@ $$l(y,y') = \sum_i (y_i - y_i')^2.$$
 
 のちほど紹介しますが、$L_2$ロスはガウスノイズによってばらついているデータを想定しており、$L_1$ロスはラプラス分布のノイズによってばらついていることを想定しています。
 
-### 分類
+#### 分類
 
 回帰モデルは「*どれくらい多い?*」という質問に回答する上で、優れたものではありますが、多くの問題はこのテンプレートに都合よく当てはめられるとは限りません。例えば、ある銀行ではモバイルアプリに、領収書をスキャンする機能を追加したいと思っています。これには、スマートフォンのカメラで領収書の写真を撮る顧客と、画像内のテキストを自動で理解できる必要のある機械学習モデルが関係するでしょう。より頑健に手書きのテキストを理解する必要もあるでしょう。この種のシステムは光学文字認識 (Optical Character Recognition, OCR) と呼ばれており、OCRが解くこの種の問題は
 分類と呼ばれています。分類の問題は、回帰に利用されたアルゴリズムとは全く異なるアルゴリズムが利用されます。
@@ -272,10 +353,9 @@ $$L(\mathrm{action}| x) = \mathbf{E}_{y \sim p(y| x)}[\mathrm{loss}(\mathrm{acti
 動物の階層的分類の場合、プードルをシュナウザーに間違えることはそこまで悪いことでないでしょうが、プードルを恐竜と間違えるようであれば、その分類モデルはペナルティを受けるでしょう。階層における関連性は、そのモデルをどのように使うかに依存します。例えば、ガラガラヘビとガータースネークの2種類のヘビは系統図のなかでは近いかもしれませんが、猛毒をもつガラガラヘビを、そうでないガータースネークと間違えることは命取りになるかもしれません。
 
 
-### タグ付け
+#### タグ付け
 
-いくつかの分類問題は、2クラス分類や多クラスのような設定にうまく合わないことがあります。例えば、イヌをネコと区別するための標準的な2クラス分類器を学習するとしましょう。コンピュータービジョンの最新の技術をもって、既存のツールで、これを実現することができます。それにも関わらず、モデルがどれだけ精度が良くなったとしても、ブレーメンの音楽隊のような画像が分類器に入力されると、問題が起こることに気づきます。
-
+いくつかの分類問題は、2クラス分類や多クラスのような設定にうまく合わないことがあります。例えば、イヌをネコと区別するための標準的な2クラス分類器を学習するとしましょう。コンピュータービジョンの最新の技術をもって、既存のツールで、これを実現することができます。それにも関わらず、モデルがどれだけ精度が良くなったとしても、ブレーメンの音楽隊のような画像が分類器に入力されると、問題が起こることに気づきませんか。
 
 ![](../img/stackedanimals.jpg)
 
@@ -285,7 +365,7 @@ $$L(\mathrm{action}| x) = \mathbf{E}_{y \sim p(y| x)}[\mathrm{loss}(\mathrm{acti
 
 また、生体医学の文献を扱うときにこの種の問題を処理する必要があります。論文に正確なタグ付けをすることは重要で、これによって、研究者は文献を徹底的にレビューすることができます。アメリカ国立医学図書館では、たくさんの専門的なタグ付けを行うアノテータが、PubMedにインデックスされる文献一つ一つを見て、2万8千のタグの集合であるMeSHから適切な用語を関連付けます。これは時間のかかる作業で、文献が保管されてからタグ付けが終わるまで、アノテータは通常1年の時間をかけます。個々の文献が人手による正式なレビューを受けるまで、機械学習は暫定的なタグを付与することができるでしょう。実際のところ、この数年間、BioASQという組織がこの作業を正確に実行するための[コンペティションを行っていました](http://bioasq.org/)。
 
-### 検索とランキング
+#### 検索とランキング
 
 上記の回帰や分類のように、データをある実数値やカテゴリに割り当てない場合もあるでしょう。情報検索の分野では、ある商品の集合に対するランキングを作成することになります。Web検索を例にとると、その目的はクエリに関係する特定のページを決定するだけでは十分ではなく、むしろ、大量の検索結果からユーザに提示すべきページを決定することにあります。私達はその検索結果の順番を非常に気にします。学習アルゴリズムは、大きな集合から取り出した一部の集合について、要素に順序をつける必要があります。言い換えれば、アルファベットの最初の5文字を対象としたときに、``A B C D E`` と ``C A B E D``には違いがあるということです。たとえ、その集合が同じであっても、その集合の中の順序は重要です。
 
@@ -293,7 +373,7 @@ $$L(\mathrm{action}| x) = \mathbf{E}_{y \sim p(y| x)}[\mathrm{loss}(\mathrm{acti
 
 <!-- Add / clean up-->
 
-### 推薦システム
+#### 推薦システム
 
 推薦システムは、検索とランキングに関係するもう一つの問題です。その問題は、ユーザに関連する商品群を提示するという目的においては似ています。主な違いは、推薦システムにおいて特定のユーザの好みに合わせる(*Personalization*)に重きをおいているところです。例えば、映画の推薦の場合、SFのファン向けの推薦結果は、Woody Allenのコメディに詳しい人向けの推薦結果とは大きく異なるでしょう。
 
@@ -303,8 +383,7 @@ $$L(\mathrm{action}| x) = \mathbf{E}_{y \sim p(y| x)}[\mathrm{loss}(\mathrm{acti
 
 ![](../img/deeplearning_amazon.png)
 
-
-### Sequence Learning
+#### Sequence Learning
 
 So far we've looked at problems where we have some fixed number of inputs
 and produce a fixed number of outputs.
@@ -344,7 +423,7 @@ Transcribing text from spoken speech is also a ``seq2seq`` problem.
 While it is impossible to consider all types of sequence transformations,
 a number of special cases are worth mentioning:
 
-#### Tagging and Parsing
+##### Tagging and Parsing
 
 This involves annotating a text sequence with attributes. In other words, the number of inputs and outputs is essentially the same. For instance, we might want to know where the verbs and subjects are. Alternatively, we might want to know which words are the named entities. In general, the goal is to decompose and annotate text based on structural and grammatical assumptions to get some annotation. This sounds more complex than it actually is. Below is a very simple example of annotating a sentence with tags indicating which words refer to named entities.
 
@@ -353,28 +432,28 @@ This involves annotating a text sequence with attributes. In other words, the nu
 |Ent | - | - | - | Ent | - | Ent|
 
 
-#### Automatic Speech Recognition
+##### Automatic Speech Recognition
 
 With speech recognition, the input sequence $x$ is the sound of a speaker,
 and the output $y$ is the textual transcript of what the speaker said.
 The challenge is that there are many more audio frames (sound is typically sampled at 8kHz or 16kHz) than text, i.e. there is no 1:1 correspondence between audio and text,
 since thousands of samples correspond to a single spoken word.
-These are seq2seq problems where the output is much shorter than the input.
+These are ``seq2seq`` problems where the output is much shorter than the input.
 
 |`-D-e-e-p- L-ea-r-ni-ng-`|
 |:--------------:|
 |![Deep Learning](../img/speech.png)|
 
-#### Text to Speech
+##### Text to Speech
 
-Text to Speech (TTS) is the inverse of speech recognition.
+Text-to-Speech (TTS) is the inverse of speech recognition.
 In other words, the input $x$ is text
 and the output $y$ is an audio file.
 In this case, the output is *much longer* than the input.
 While it is easy for *humans* to recognize a bad audio file,
 this isn't quite so trivial for computers.
 
-#### Machine Translation
+##### Machine Translation
 
 Unlike the case of speech recognition, where corresponding inputs and outputs occur in the same order (after alignment),
 in machine translation, order inversion can be vital.
@@ -399,7 +478,7 @@ we need to take world-knowledge and prior state into account.
 This is an active area of research.
 
 
-## Unsupervised learning
+### Unsupervised learning
 
 All the examples so far were related to *Supervised Learning*,
 i.e. situations where we feed the model
@@ -412,7 +491,7 @@ On the other hand, it's easy to please this boss. You just recognize the pattern
 In a completely opposite way,
 it could be frustrating to work for a boss
 who has no idea what they want you to do.
-However, if you plan to be a data scientist, you had better get used to it.
+However, if you plan to be a data scientist, you'd better get used to it.
 The boss might just hand you a giant dump of data and tell you to *do some data science with it!*
 This sounds vague because it is.
 We call this class of problems *unsupervised learning*,
@@ -427,7 +506,7 @@ We will address a number of unsupervised learning techniques in later chapters. 
 * An important and exciting recent development is **generative adversarial networks**. They are basically a procedural way of synthesizing data. The underlying statistical mechanisms are tests to check whether real and fake data are the same. We will devote a few notebooks to them.
 
 
-## Interacting with an environment
+### Interacting with an Environment
 
 So far, we haven't discussed where data actually comes from,
 or what actually *happens* when a machine learning model generates an output.
@@ -462,13 +541,13 @@ Considering the interaction with an environment opens a whole set of new modelin
 * want to help us, e.g. a user reading text into a speech recognizer?
 * want to beat us, i.e. an adversarial setting like spam filtering (against spammers) or playing a game (vs an opponent)?
 * not  care (as in most cases)?
-* have shifting dynamics (steady vs shifting over time)?
+* have shifting dynamics (steady vs. shifting over time)?
 
 This last question raises the problem of *covariate shift*,
 (when training and test data are different).
 It's a problem that most of us have experienced when taking exams written by a lecturer,
 while the homeworks were composed by his TAs.
-We'll briefly describe reinforcement learning, and adversarial learning,
+We'll briefly describe reinforcement learning and adversarial learning,
 two settings that explicitly consider interaction with an environment.
 
 
@@ -531,7 +610,7 @@ or to *explore* the space of strategies,
 potentially giving up some short-run reward in exchange for knowledge.
 
 
-### MDPs, bandits, and friends
+#### MDPs, bandits, and friends
 
 The general reinforcement learning problem
 is a very general setting.
@@ -542,55 +621,47 @@ Accounting for all this complexity at once may ask too much of researchers.
 Moreover not every practical problem exhibits all this complexity.
 As a result, researchers have studied a number of *special cases* of reinforcement learning problems.
 
-When the environment is fully observed, we call the RL problem a *Markov Decision Process* (MDP).
+When the environment is fully observed,
+we call the RL problem a *Markov Decision Process* (MDP).
 When the state does not depend on the previous actions,
 we call the problem a *contextual bandit problem*.
 When there is no state, just a set of available actions with initially unknown rewards,
 this problem is the classic *multi-armed bandit problem*.
 
-<!--
-## 機械学習の多機能性
-
-これは機械学習を支える核となる考え方ですが、ある特定の挙動に関して直接プログラムとして書くよりは、まるで経験を獲得していくように、挙動を改善する能力をプログラミングします。この基本的な考え方は様々な形式で実装されます。機械学習は、多くの異なる分野で利用されており、多様なモデルに関係し、異なるアルゴリズムに応じてモデルを更新してきました。この例として、音声認識の問題に対する*教師あり学習*について述べたいと思います。
-
-単純なルールベースのシステムが上手く行かなかったり、構築が非常に難しかったり、といった様々な状況において、私達がデータを利用して作業するための、多数のツール群が機械学習と言えます。例えば、機械学習の技術は検索エンジン、自動運転、機械翻訳、医療診断、スパムフィルタ、ゲームプレイ(チェスや囲碁)、顔認識、データマッチング、保険料の計算、写真の加工フィルタなど、すでに幅広く利用されています。
-
-これらの問題は表面上は違いますが、多くのものは共通の問題構造をもっていて、Deep Learningで扱えるものもあります。挙動を直接的にコードで記述できませんが、*データでプログラムする*、という点においては似通っています。このようなプログラムは*数学*という共通言語によってつながっています。この書籍では、数学の記述に関して最小限にとどめつつ、他の機械学習やニューラルネットワークの書籍とは違って、実際の例とコードにもとづいて説明をしたいと思います。 -->
 
 
-## 起源
+## Roots
 
-深層学習は最近の発明ですが、人間は何世紀にも渡って、データの分析や将来の予測をしたいと考えてきました。実際、自然科学の多くが深層学習の起源になっています。例えば、ベルヌーイ分布は[Jacob Bernoulli (1655-1705)](https://en.wikipedia.org/wiki/Jacob_Bernoulli)の名をとっており、ガウス分布は[Carl Friedrich Gauss (1777-1855)](https://en.wikipedia.org/wiki/Carl_Friedrich_Gauss)によって発見されました。彼は、例えば最小二乗法を発見し、今日でも保険の計算や医療診断に至る様々な問題に利用されています。これらのツールは自然科学における実験的なアプローチによってうまれたものです。例えば、抵抗における電流と電圧に関係するオームの法則は、完全に線形モデルとして記述することができます。
+Although deep learning is a recent invention, humans have held the desire to analyze data and to predict future outcomes for centuries. In fact, much of natural science has its roots in this. For instance, the Bernoulli distribution is named after [Jacob Bernoulli (1655-1705)](https://en.wikipedia.org/wiki/Jacob_Bernoulli), and the Gaussian distribution was discovered by [Carl Friedrich Gauss (1777-1855)](https://en.wikipedia.org/wiki/Carl_Friedrich_Gauss). He invented for instance the least mean squares algorithm, which is still used today for a range of problems from insurance calculations to medical diagnostics. These tools gave rise to an experimental approach in natural sciences - for instance, Ohm's law relating current and voltage in a resistor is perfectly described by a linear model.
 
-中世においても、数学者は予測に対して熱意を注いできました。例えば、[Jacob Köbel (1460-1533)](https://www.maa.org/press/periodicals/convergence/mathematical-treasures-jacob-kobels-geometry)による幾何学の本は、平均的な足の長さを得るために、16人の成人男性の足の長さの平均を計算することを記述しています。
+Even in the middle ages mathematicians had a keen intuition of estimates. For instance, the geometry book of [Jacob Köbel (1460-1533)](https://www.maa.org/press/periodicals/convergence/mathematical-treasures-jacob-kobels-geometry) illustrates averaging the length of 16 adult men's feet to obtain the average foot length.
 
 ![Estimating the length of a foot](../img/koebel.jpg)
 
-図1.1 はこの予測がどの機能するのかを示しています。16人の成人男性が、教会から出る際に1列に並ぶように言われていました。1フィートの値を見積もるために、彼らの足の長さの総和を16で割ったのでした。そのアルゴリズムは後に、特異な長さを処理するように改善されており、最も短いものと最も長いものを取り除き、残りについて平均をとっています。これはtrimmed mean とよばれる推定手法の始まりといえます。
+Figure 1.1 illustrates how this estimator works. 16 adult men were asked to line up in a row, when leaving church. Their aggregate length was then divided by 16 to obtain an estimate for what now amounts to 1 foot. This 'algorithm' was later improved to deal with misshapen feet - the 2 men with the shortest and longest feet respectively were sent away, averaging only over the remainder. This is one of the earliest examples of the trimmed mean estimate.
 
-統計学者は、データを収集して、利用できるようにするところからはじめました。偉大な統計学者の一人、[Ronald Fisher (1890-1962)](https://en.wikipedia.org/wiki/Ronald_Fisher)は、その理論と遺伝学への応用に関して多大な貢献をしました。彼の多くの線形判別分析のようなアルゴリズムやフィッシャー情報行列といった数式は、今日でも頻繁に利用されています（そして、彼が1936年にリリースしたIrisのデータセットも、機械学習を図解するために利用されています）。
+Statistics really took off with the collection and availability of data. One of its titans, [Ronald Fisher (1890-1962)](https://en.wikipedia.org/wiki/Ronald_Fisher), contributed significantly to its theory and also its applications in genetics. Many of his algorithms (such as Linear Discriminant Analysis) and formulae (such as the Fisher Information Matrix) are still in frequent use today (even the Iris dataset that he released in 1936 is still used sometimes to illustrate machine learning algorithms).
 
-機械学習にとって2番目の影響は、 [(Claude Shannon, 1916-2001)](https://en.wikipedia.org/wiki/Claude_Shannon)による情報理論と[Alan Turing (1912-1954)](https://en.wikipedia.org/wiki/Alan_Turing)による計算理論によるものでしょう。Turingは、[Computing machinery and intelligence](https://www.jstor.org/stable/2251299) (Mind, October 1950)という著名な論文の中で、「機械は考えることができるか?」という質問を投げかけました。彼がTuring testと述べていたものは、もし人間が文章で対話をしているときに、相手からの返答が機械か人間かどちらか判別がつかなければ、機械は知能があるとみなすものでした。今日に至るまで、知的な機械の開発は急速かつ継続的に変わり続けています。
+A second influence for machine learning came from Information Theory [(Claude Shannon, 1916-2001)](https://en.wikipedia.org/wiki/Claude_Shannon) and the Theory of computation via [Alan Turing (1912-1954)](https://en.wikipedia.org/wiki/Alan_Turing). Turing posed the question "can machines think?” in his famous paper [Computing machinery and intelligence](https://www.jstor.org/stable/2251299) (Mind, October 1950). In what he described as the Turing test, a machine can be considered intelligent if it is difficult for a human evaluator to distinguish between the replies from a machine and a human being through textual interactions. To this day, the development of intelligent machines is changing rapidly and continuously.
 
-もう一つの影響は神経科学や心理学の分野にみられるでしょう。人間というものは知的な行動をはっきりと示します。そこで、知的な行動を説明したり、その本質を逆解析したりできないかと考えることは当然のように思います。これを達成した最古のアルゴリズムの1つは[Donald Hebb (1904-1985)](https://en.wikipedia.org/wiki/Donald_O._Hebb)によって定式化されました。
+Another influence can be found in neuroscience and psychology. After all, humans clearly exhibit intelligent behavior. It is thus only reasonable to ask whether one could explain and possibly reverse engineer these insights. One of the oldest algorithms to accomplish this was formulated by [Donald Hebb (1904-1985)](https://en.wikipedia.org/wiki/Donald_O._Hebb).
 
-彼の革新的な書籍 [The Organization of Behavior](http://s-f-walker.org.uk/pubsebooks/pdfs/The_Organization_of_Behavior-Donald_O._Hebb.pdf) (John Wiley & Sons, 1949)では、ニューロンは正の強化 (Positive reinforcement)によって学習すると彼は断言しています。このことは、Hebbian learning rule として知られるようになりました。。それは、Rosenblatt のパーセプトロンの学習アルゴリズムのプロトタイプであり、今日の深層学習を支えている確率的勾配降下法の多くの基礎を築きました。つまり、ニューラルネットワークにおいて適切な重みを学習するために、求められる行動を強化し、求められない行動を減らすことなのです。
+In his groundbreaking book [The Organization of Behavior](http://s-f-walker.org.uk/pubsebooks/pdfs/The_Organization_of_Behavior-Donald_O._Hebb.pdf) (John Wiley & Sons, 1949) he posited that neurons learn by positive reinforcement. This became known as the Hebbian learning rule. It is the prototype of Rosenblatt's perceptron learning algorithm and it laid the foundations of many stochastic gradient descent algorithms that underpin deep learning today: reinforce desirable behavior and diminish undesirable behavior to obtain good weights in a neural network.
 
-生物学的な観点からの着想という意味では、まず、ニューラルネットワークが名前として与えられている通りです。1世紀以上にわたって （1873年のAlexander Bainや1890年のJames Sherringtonにさかのぼります）、研究者はニューロンを相互作用させるネットワークに類似した計算回路を組み立てようとしていました。時代をこえ、生物学にの解釈はやや薄まってしまいましたが、名前は依然として残っています。その核となる部分には、今日のたいていのネットワークにもみられる重要な原理がわずかに残っています。
+Biological inspiration is what gave Neural Networks its name. For over a century (dating back to the models of Alexander Bain, 1873 and James Sherrington, 1890) researchers have tried to assemble computational circuits that resemble networks of interacting neurons. Over time the interpretation of biology became more loose but the name stuck. At its heart lie a few key principles that can be found in most networks today:
 
-* 線形あるいは非線形の演算ユニットについて、しばしば「レイヤー」と呼ばれます。
-* 全体のネットワークのパラメータをただちに調整するために連鎖律 (Chain rule, 誤差逆伝播法とも呼ばれる)を使用します。
+* The alternation of linear and nonlinear processing units, often referred to as 'layers'.
+* The use of the chain rule (aka backpropagation) for adjusting parameters in the entire network at once.
 
+After initial rapid progress, research in Neural Networks languished from around 1995 until 2005. This was due to a number of reasons. Training a network is computationally very expensive. While RAM was plentiful at the end of the past century, computational power was scarce. Secondly, datasets were relatively small. In fact, Fisher's 'Iris dataset' from 1932 was a popular tool for testing the efficacy of algorithms. MNIST with its 60,000 handwritten digits was considered huge.
 
-最初の急速な進歩のあと、ニューラルネットワークの研究は1995年から2005年まで衰えてしまいました。これにはたくさんの理由があります。まず、ネットワークを学習することは膨大な計算量を必要とします。RAMは20世紀の終わりには十分なものとなりましたが、計算力は乏しいものでした。次に、データセットが比較的小さいものでした。実際のところ、1932年から存在するFisherの'Iris dataset'はアルゴリズムの能力をテストするためによく利用されたツールでした。60,000もの手書き数字からなるMNISTは巨大なものと捉えられていました。
+Given the scarcity of data and computation, strong statistical tools such as Kernel Methods, Decision Trees and Graphical Models proved empirically superior. Unlike Neural Networks they did not require weeks to train and provided predictable results with strong theoretical guarantees.
 
-データや計算力が乏しいがゆえに、カーネル法や決定木、グラフィカルモデルといった強力な統計的ツールが、経験的に優れていることを示していました。これらのツールは、ニューラルネットワークとは違って、学習に数週間もかかりませんし、強力な理論的保証のもと予測結果をもたらしてくれました。
+## The Road to Deep Learning
 
-## 深層学習への道程
+Much of this changed with the ready availability of large amounts of data, due to the World Wide Web, the advent of companies serving hundreds of millions of users online, a dissemination of cheap, high quality sensors, cheap data storage (Kryder's law), and cheap computation (Moore's law), in particular in the form of GPUs, originally engineered for computer gaming. Suddenly algorithms and models that seemed computationally infeasible became relevant (and vice versa). This is best illustrated in the table below:
 
-World Wide Web、数百万のオンラインユーザをかかえる企業の到来、安価で高性能なセンサー、安価なストレージ (Kryderの法則)、安価な計算機 (Mooreの法則)、特に当初はコンピュータゲーム用に開発されたGPUの普及によって、大量のデータを利用することが可能になり、多くのことが変わりました。突然、これまでは計算量的に実行困難と思われたアルゴリズムやモデルが価値をもつようになったのです（逆もまた然りで、このようなアルゴリズム、モデルがあったからこそ、データが価値をもったのです）。以下の表は、このことを最も良く表しています。
-
-|年代|データセット|メモリ|1秒あたりの浮動小数点演算|
+|Decade|Dataset|Memory|Floating Point Calculations per Second|
 |:--|:-|:-|:-|
 |1970|100 (Iris)|1 KB|100 KF (Intel 8080)|
 |1980|1 K (House prices in Boston)|100 KB|1 MF (Intel 80186)|
@@ -599,85 +670,56 @@ World Wide Web、数百万のオンラインユーザをかかえる企業の到
 |2010|10 G (advertising)|1 GB|1 TF (Nvidia C2050)|
 |2020|1 T (social network)|100 GB|1 PF (Nvidia DGX-2)|
 
+It is quite evident that RAM has not kept pace with the growth in data. At the same time, the increase in computational power has outpaced that of the data available. This means that statistical models needed to become more memory efficient (this is typically achieved by adding nonlinearities) while simultaneously being able to spend more time on optimizing these parameters, due to an increased compute budget. Consequently the sweet spot in machine learning and statistics moved from (generalized) linear models and kernel methods to deep networks. This is also one of the reasons why many of the mainstays of deep learning, such as Multilayer Perceptrons (e.g. McCulloch & Pitts, 1943), Convolutional Neural Networks (Le Cun, 1992), Long Short Term Memory (Hochreiter & Schmidhuber, 1997), Q-Learning (Watkins, 1989), were essentially 'rediscovered' in the past decade, after laying dormant for considerable time.
 
-非常に明白な点としては、RAMはデータの成長に追いついていないということです。同時に、演算能力は利用可能なデータよりも、速い速度で進歩しています。従って、統計モデルはメモリ効率がより良いものである必要があります（これは通常、非線形性を導入することで実現されます）。また同時に、向上した演算能力によって、より多くの時間をパラメータの最適化に使用することができます。次に、機械学習と統計学の大きな強みは、（一般化）線形モデルやカーネル法から深層学習へと移りました。この理由の一つとしては、深層学習の主力である多層パーセプトロン (例えば、McCulloch & Pitts, 1943)ｍ畳み込みニューラルネットワーク (Le Cun, 1992)、Long Short Term Memory (Hochreiter & Schmidhuber, 1997)、Q-Learning (Watkins, 1989)が、長い間眠っていた後に、ここ10年で根本的に*再発見*されたことが挙げられます。
+The recent progress in statistical models, applications, and algorithms, has sometimes been likened to the Cambrian Explosion: a moment of rapid progress in the evolution of species. Indeed, the state of the art is not just a mere consequence of available resources, applied to decades old algorithms. Note that the list below barely scratches the surface of the ideas that have helped researchers achieve tremendous progress over the past decade.
 
-統計モデル、アプリケーション、そしてアルゴリズムにおける最近の進歩は、カンブリア紀の爆発、つまり生命の種の進化における急速な発展とリンクするかもしれません。実際のところ、現在の最新の技術というものは、利用可能なリソースから成り行きでできあがったものではなく、過去数十年のアルゴリズムにも利用されているのです。
+* Novel methods for capacity control, such as Dropout [3] allowed for training of relatively large networks without the danger of overfitting, i.e. without the danger of merely memorizing large parts of the training data. This was achieved by applying noise injection [4] throughout the network, replacing weights by random variables for training purposes.
+* Attention mechanisms solved a second problem that had plagued statistics for over a century: how to increase the memory and complexity of a system without increasing the number of learnable parameters. [5] found an elegant solution by using what can only be viewed as a learnable pointer structure. That is, rather than having to remember an entire sentence, e.g. for machine translation in a fixed-dimensional representation, all that needed to be stored was a pointer to the intermediate state of the translation process. This allowed for significantly increased accuracy for long sentences, since the model no longer needed to remember the entire sentence before beginning to generate sentences.
+* Multi-stage designs, e.g. via the Memory Networks [6] and the Neural Programmer-Interpreter [7] allowed statistical modelers to describe iterative approaches to reasoning. These tools allow for an internal state of the deep network to be modified repeatedly, thus carrying out subsequent steps in a chain of reasoning, similar to how a processor can modify memory for a computation.
+* Another key development was the invention of Generative Adversarial Networks [8]. Traditionally statistical methods for density estimation and generative models focused on finding proper probability distributions and (often approximate) algorithms for sampling from them. As a result, these algorithms were largely limited by the lack of flexibility inherent in the statistical models. The crucial innovation in GANs was to replace the sampler by an arbitrary algorithm with differentiable parameters. These are then adjusted in such a way that the discriminator (effectively a two-sample test) cannot distinguish fake from real data. Through the ability to use arbitrary algorithms to generate data it opened up density estimation to a wide variety of techniques. Examples of galloping Zebras [9] and of fake celebrity faces [10] are both testimony to this progress.
+* In many cases a single GPU is insufficient to process the large amounts of data available for training. Over the past decade the ability to build parallel distributed training algorithms has improved significantly. One of the key challenges in designing scalable algorithms is that the workhorse of deep learning optimization, stochastic gradient descent, relies on relatively small minibatches of data to be processed. At the same time, small batches limit the efficiency of GPUs. Hence, training on 1024 GPUs with a minibatch size of, say 32 images per batch amounts to an aggregate minibatch of 32k images. Recent work, first by Li [11],  and subsequently by You et al. [12] and Jia et al. [13] pushed the size up to 64k observations, reducing training time for ResNet50 on ImageNet to less than 7 minutes. For comparison - initially training times were measured in the order of days.
+* The ability to parallelize computation has also contributed quite crucially to progress in reinforcement learning, at least whenever simulation is an option. This has led to significant progress in computers achieving superhuman performance in Go, Atari games, Starcraft, and in physics simulations (e.g. using MuJoCo). See e.g. Silver et al. [18] for a description of how to achieve this in AlphaGo. In a nutshell, reinforcement learning works best if plenty of (state, action, reward) triples are available, i.e. whenever it is possible to try out lots of things to learn how they relate to each other. Simulation provides such an avenue.
+* Deep Learning frameworks have played a crucial role in disseminating ideas. The first generation of frameworks allowing for easy modeling encompassed [Caffe](https://github.com/BVLC/caffe), [Torch](https://github.com/torch), and [Theano](https://github.com/Theano/Theano). Many seminal papers were written using these tools. By now they have been superseded by [TensorFlow](https://github.com/tensorflow/tensorflow), often used via its high level API [Keras](https://github.com/keras-team/keras), [CNTK](https://github.com/Microsoft/CNTK), [Caffe 2](https://github.com/caffe2/caffe2), and [Apache MxNet](https://github.com/apache/incubator-mxnet). The third generation of tools, namely imperative tools for deep learning, was arguably spearheaded by [Chainer](https://github.com/chainer/chainer), which used a syntax similar to Python NumPy to describe models. This idea was adopted by [PyTorch](https://github.com/pytorch/pytorch) and the [Gluon API](https://github.com/apache/incubator-mxnet) of MxNet. It is the latter that this course uses to teach Deep Learning.
 
-* ネットワークの能力を制御する新しい手法の一例であるDropout [3] は、過学習のリスクをおさえる、つまり大部分の学習データをそのまま記憶してしまうことを避けて、比較的大きなネットワークを学習することを可能にします。これは、ノイズをネットワークに追加 することによって実現され [4]、学習のために重みを確率変数に置き換えます。
+The division of labor between systems researchers building better tools for training and statistical modelers building better networks has greatly simplified things. For instance, training a linear logistic regression model used to be a nontrivial homework problem, worthy to give to new Machine Learning PhD students at Carnegie Mellon University in 2014. By now, this task can be accomplished with less than 10 lines of code, putting it firmly into the grasp of programmers.
 
-* Attentionの仕組みは、1世紀に渡って統計学の分野で悩みとなっていた問題を解決しました。その問題とは、学習可能なパラメータの数を増やすこと無く、システムの記憶量や複雑性を向上させるというものです。Bahdanauらは、学習可能なポインタ構造とみなせる方法を利用した、洗練された解法を発見しました [5]。ある固定次元の表現を利用した機械翻訳を例にとると、全体の文章を記憶するというよりはむしろ、翻訳プロセスにおける中間表現へのポインタを保存すればよいということを意味します。翻訳文のような文章を生成するまえに、翻訳前の文章全体を記憶する必要がもはやなくなり、長文に対して
-大きな精度の向上を可能にしました。
+## Success Stories
 
-* Memory Networks[6]やNeural Programmer-Interpreter[7]のような多段階設計は、統計的なモデル化を行う人々に対して、推論のための反復的なアプローチを記述可能にします。
-これらの手法は、繰り返し修正される深層学習の内部状態を想定し、推論の連鎖において以降のステップを実行します。それは、計算のためにメモリの内容が変化するプロセッサに似ています。
+Artificial Intelligence has a long history of delivering results that would be difficult to accomplish otherwise. For instance, mail is sorted using optical character recognition. These systems have been deployed since the 90s (this is, after all, the source of the famous MNIST and USPS sets of handwritten digits). The same applies to reading checks for bank deposits and scoring creditworthiness of applicants. Financial transactions are checked for fraud automatically. This forms the backbone of many e-commerce payment systems, such as PayPal, Stripe, AliPay, WeChat, Apple, Visa, MasterCard. Computer programs for chess have been competitive for decades. Machine learning feeds search, recommendation, personalization and ranking on the internet. In other words, artificial intelligence and machine learning are pervasive, albeit often hidden from sight.
 
-* もうひとつの重要な成果は、Generative Adversarial Networks [8]の発明でしょう。従来、確率密度を推定する統計的手法と生成モデルは、妥当な確率分布を発見することと、その確率分布からサンプリングを行う（しばしば近似的な）アルゴリズムに着目してきました。結果としてこれらのアルゴリズムは、統計的モデルにみられるように柔軟性が欠けており、大きく制限されたものになっていました。GANにおける重要な発明は、そのサンプリングを行うsamplerを、微分可能なパラメータをもつ任意のアルゴリズムで置き換えたことにあります。これらのパラメータは、discriminator (真偽を判別するテスト)が、真のデータと偽のデータの区別がつかないように調整されます。任意のアルゴリズムでそのデータを生成できるため、様々な種類の技術において、確率密度の推定が可能になりました。人が乗って走るシマウマ[9]や偽の有名人の顔[10]の例は、両方とも、この技術の進歩のおかげです。
+It is only recently that AI has been in the limelight, mostly due to solutions to problems that were considered intractable previously.
 
-* 多くの場合において、学習に利用可能な大量のデータを処理するにあたって、単一のGPUは不十分です。過去10年にわたって、並列分散学習を実装する能力は非常に進歩しました。スケーラブルなアルゴリズムを設計する際に、最も重要な課題のうちの一つとなったのは、確率的勾配降下法のような深層学習の最適化の能力が、処理される比較的小さなミニバッチに依存するという点です。同時に、小さなバッチはGPUの効率を制限します。それゆえに、ミニバッチのサイズが、例えば1バッチあたり32画像で、それを1024個のGPUで学習することは、32,000枚の画像の集約されたミニバッチと等しくなります。最近の研究として、まずはじめにLi [11]、次にYouら[12]、そしてJiaら[13]が、そのサイズを64,000の観測データにまで向上させ、ImageNetを利用したResNet50の学習時間を7分以下にまで短縮しました。比較のため、当初の学習時間は日単位で計測されるようなものでした。
+* Intelligent assistants, such as Apple's Siri, Amazon's Alexa, or Google's assistant are able to answer spoken questions with a reasonable degree of accuracy. This includes menial tasks such as turning on light switches (a boon to the disabled) up to making barber's appointments and offering phone support dialog. This is likely the most noticeable sign that AI is affecting our lives.
 
-* 計算を並列化する能力は、強化学習の発展、少なくともシミュレーションが必要となる場面において、大きな貢献を果たしています。これによって、碁、Atariのゲーム、Starcraftにおいてコンピュータが人間の能力を超え、物理シミュレーション(例えば、MuJoCoの利用)においても大きな発展をもたらしました。AlphaGoがこれをどのように達成したかを知りたい場合は、Silverらの文献[18]を見てください。強化学習が最も上手くいくのは、(状態, 行動, 報酬)の3つ組が十分に利用できるとき、つまり、それらの3つ組が互いにどう関係し合うかを学習するために多くの試行が可能なときなのです。シミュレーションはそのための手段を与えてくれます。
+* A key ingredient in digital assistants is the ability to recognize speech accurately. Gradually the accuracy of such systems has increased to the point where they reach human parity [14] for certain applications.
+* Object recognition likewise has come a long way. Estimating the object in a picture was a fairly challenging task in 2010. On the ImageNet benchmark Lin et al. [15] achieved a top-5 error rate of 28%. By 2017 Hu et al. [16] reduced this error rate to 2.25%. Similarly stunning results have been achieved for identifying birds, or diagnosing skin cancer.
+* Games used to be a bastion of human intelligence. Starting from TDGammon [23], a program for playing Backgammon using temporal difference (TD) reinforcement learning, algorithmic and computational progress has led to algorithms for a wide range of applications. Unlike Backgammon, chess has a much more complex state space and set of actions. DeepBlue beat Gary Kasparov, Campbell et al. [17], using massive parallelism, special purpose hardware and efficient search through the game tree. Go is more difficult still, due to its huge state space. AlphaGo reached human parity in 2015,  Silver et al. [18] using Deep Learning combined with Monte Carlo tree sampling. The challenge in Poker was that the state space is large and it is not fully observed (we don't know the opponents' cards). Libratus exceeded human performance in Poker using efficiently structured strategies; Brown and Sandholm [19]. This illustrates the impressive progress in games and the fact that advanced algorithms played a crucial part in them.
+* Another indication of progress in AI is the advent of self-driving cars and trucks. While full autonomy is not quite within reach yet, excellent progress has been made in this direction, with companies such as [Momenta](https://www.momenta.ai/en), [Tesla](http://www.tesla.com), [NVIDIA](http://www.nvidia.com), [MobilEye](http://www.mobileye.com) and [Waymo](http://www.waymo.com) shipping products that enable at least partial autonomy. What makes full autonomy so challenging is that proper driving requires the ability to perceive, to reason and to incorporate rules into a system. At present, Deep Learning is used primarily in the computer vision aspect of these problems. The rest is heavily tuned by engineers.
 
-* 深層学習のフレームワークは、考えを広める上で重要な役割を果たしてきました。容易なモデリングを可能にする最初の世代のフレームワークとしては、[Caffe](https://github.com/BVLC/caffe)、[Torch](https://github.com/torch)、  [Theano](https://github.com/Theano/Theano)があります。
-多くの影響力のある論文はこれらのフレームワークを用いて記述されました。今までに、こうしたフレームワークは[TensorFlow](https://github.com/tensorflow/tensorflow)や、そのハイレベルなAPIとして利用される[Keras](https://github.com/keras-team/keras)、 [CNTK](https://github.com/Microsoft/CNTK)、[Caffe 2](https://github.com/caffe2/caffe2)、そして[Apache MXNet](https://github.com/apache/incubator-mxnet)によって置き換えられてきました。第3世代のフレームワークは、主に深層学習のために必要な指示を記述していくimperativeな手法で、おそらく[Chainer](https://github.com/chainer/chainer)によって普及し、それはPython NumPyを利用してモデルを記述するのに似た文法を使用しました。この考え方は[PyTorch](https://github.com/pytorch/pytorch)やMXNetの[Gluon API](https://github.com/apache/incubator-mxnet)にも採用されています。後者のGluon APIは、このコースで深層学習を教えるために利用します。
+Again, the above list barely scratches the surface of what is considered intelligent and where machine learning has led to impressive progress in a field. For instance, robotics, logistics, computational biology, particle physics and astronomy owe some of their most impressive recent advances at least in parts to machine learning. ML is thus becoming a ubiquitous tool for engineers and scientists.
 
-学習のためにより良い手法を構築するシステム研究者と、より良いネットワークを構築する統計的なモデル化を行う人々の仕事を分けることは、ものごとを非常にシンプルにしてきました。例えば、線形ロジスティック回帰モデルを学習することは簡単な宿題とはいえず、2014年のカーネギーメロン大学における、機械学習を専門とする博士課程の新しい学生に与えるようなものでした。今では、このタスクは10行以下のコードで実装でき、このことはプログラマーによって確かに理解されるようになりました。
+Frequently the question of the AI apocalypse, or the AI singularity has been raised in non-technical articles on AI. The fear is that somehow machine learning systems will become sentient and decide independently from their programmers (and masters) about things that directly affect the livelihood of humans. To some extent AI already affects the livelihood of humans in an immediate way - creditworthiness is assessed automatically, autopilots mostly navigate cars safely, decisions about whether to grant bail use statistical data as input. More frivolously, we can ask Alexa to switch on the coffee machine and she will happily oblige, provided that the appliance is internet enabled.
 
-## サクセスストーリー
+Fortunately we are far from a sentient AI system that is ready to enslave its human creators (or burn their coffee). Firstly, AI systems are engineered, trained and deployed in a specific, goal oriented manner. While their behavior might give the illusion of general intelligence, it is a combination of rules, heuristics and statistical models that underlie the design. Second, at present tools for general Artificial Intelligence simply do not exist that are able to improve themselves, reason about themselves, and that are able to modify, extend and improve their own architecture while trying to solve general tasks.
 
-人工知能は、他の方法では実現困難だったものに対して、成果を残してきた長い歴史があります。例えば、郵便は光学式文字読取装置(OCR)によって並び替えらています。これらのシステムは（有名なMNISTやUSPSといった手書き数字のデータセットをもとにして）、90年台に登場したものです。同様のことが、預金額の読み取りや、申込者の信用力の評価にt形容されています。金融の取引は不正検知のために自動でチェックされています。これによって、PayPal、 Stripe、AliPay、WeChat、Apple、Visa、MasterCardといった多くの電子商取引の支払いシステムの基幹ができあがりました。機械学習は、インターネット上の検索、レコメンデーション、パーソナライゼーション、ランキングも動かしています。言い換えれば、人工知能と機械学習はあらゆるところに浸透していて、しばしば見えないところで動いているのです。
+A much more realistic concern is how AI is being used in our daily lives. It is likely that many menial tasks fulfilled by truck drivers and shop assistants can and will be automated. Farm robots will likely reduce the cost for organic farming but they will also automate harvesting operations. This phase of the industrial revolution will have profound consequences on large swaths of society (truck drivers and shop assistants are some of the most common jobs in many states). Furthermore, statistical models, when applied without care can lead to racial, gender or age bias. It is important to ensure that these algorithms are used with great care. This is a much bigger concern than to worry about a potentially malevolent superintelligence intent on destroying humanity.
 
-最近になって、以前は解くことが困難と思われた問題へのソリューションとして、AIが脚光を浴びています。
+## Summary
 
-* AppleのSiri、AmazonのAlexa、Google assistantといった知的なアシスタントは、利用可能なレベルの精度で話し言葉の質問に回答することができます。これらは、証明のスイッチをONにする（身体障害者にとってはありがたい）、理髪店の予約をする、電話サポートにおける会話を提供する、といった技術を必要としないタスクをこなします。これは、AIがわれわれの生活に影響をもたらしている最も顕著なサインであるように思えます。
+* Machine learning studies how computer systems can use data to improve performance. It combines ideas from statistics, data mining, artificial intelligence and optimization. Often it is used as a means of implementing artificially intelligent solutions.
+* As a class of machine learning, representational learning focuses on how to automatically find the appropriate way to represent data. This is often accomplished by a progression of learned transformations.
+* Much of the recent progress has been triggered by an abundance of data arising from cheap sensors and internet scale applications, and by significant progress in computation, mostly through GPUs.
+* Whole system optimization is a key component in obtaining good performance. The availability of efficient deep learning frameworks has made design and implementation of this significantly easier.
 
-* デジタルなアシスタントなかで重要な構成要素となっているのは、音声を精度よく認識する能力です。音声認識の精度は、特定のアプリケーションにおいて、人間と同等の精度にまで徐々に改善してきました [14]。
-
-* 同様に物体の認識も長い道のりを経ています。画像内の物体を推定することは2010年においては全く困難なタスクでした。ImageNetのベンチーマークにおいては、Linら[15]がtop-5のエラー率 (推定結果の上位5件に正解がない割合)は28%でした。2017年までには、Huら[16]がこのエラー率を2.25%まで低減しました。同様に素晴らしい結果が、鳥の認識や皮膚がんの診断においても達成されています。
-
-* 以前はゲームは人間の知性の砦だったでしょう。Temporal difference (TD)を利用した強化学習でBackgrammonをプレイするTDGammon[23]から始まり、アルゴリズムや演算能力の進歩は、幅広いアプリケーションを対象としたアルゴリズムをリードしてきました。Backgammonとは異なり、チェスはさらに複雑な状態空間と行動集合をもっています。DeepBlueは、Campbellら[17]らが巨大な並列処理、特別なハードウェア、ゲーム木による効率な探索を利用し、Gary Kasparovを破りました。囲碁はその巨大な状態空間のためにさらに困難です。AlphaGoは2015年に人間と肩を並べるようになり、Silverら[18]はモンテカルロ木のサンプリングと深層学習を組み合わせて利用しました。ポーカーにおいては、その状態空間は大規模で完全に観測されない（相手のカードを知ることができない）という難しさがあります。Libratusは、BrownとSandholm[19]による、効率的で構造化された戦略を用いることで、ポーカーにおいて人間の能力を超えました。このことは、ゲームにおける優れた進歩と、先進的なアルゴリズムがゲームにおける重要な部分で機能した事実を表しています。
-
-* AIの進歩における別の兆候としては、車やトラックの自動運転の登場でしょう。完全自動化には全く及んでいないとはいえ、この方向性には重要な進歩がありました。例えば、[Momenta](https://www.momenta.ai/en)、[Tesla](http://www.tesla.com), [NVIDIA](http://www.nvidia.com)、[MobilEye](http://www.mobileye.com)、[Waymo](http://www.waymo.com)は、少なくとも部分的な自動化を可能にした商品を販売しています。完全自動化がなぜ難しいかというと、正しい運転にはルールを認識して論理的に考え、システムに組み込むことが必要だからです。現在は、深層学習はこれらの問題のうち、コンピュータビジョンの側面で主に利用されています。残りはエンジニアによって非常に調整されているのです。
-
-繰り返しますが、上記のリストは知性というものがとういうもので、機械学習がある分野において素晴らしい進歩をもたらしたということについて、表面的な内容を走り書きしたに過ぎません。例えば、ロボティクス、ロジスティクス、計算生物学、粒子物理学、天文学においては、それらの優れた近年の進歩に関して、部分的にでも機械学習によるところがあります。機械学習は、こうしてエンジニアやサイエンティストにとって、広く利用されるツールになったのです。
-
-しばしば、AIの黙示録や特異点に関する質問が、AIに関する技術的でない
-記事に取り上げられることがあります。機械学習システムが知覚を持ち、プログラマー（や管理者）の意図にかかわらず、人間の生活に直接的に影響を及ぼすものごとを決定することについて、恐れられているのです。ある程度は、AIはすでに人間の生活に直接的に影響を与えています。つまり、信用力は自動で評価されえいますし、自動パイロットは車をほとんど安全にナビゲーションしますし、保釈をしてよいかどうかを決める際には統計データが利用されています。取るに足らない例ではありますが、われわれは、インターネットにつながってさえいれば、AlexaにコーヒーマシンのスイッチをONにするようお願いでき、Alexaは要望に応えることができるでしょう。
-
-幸運にも人間を奴隷として扱う（もしくはコーヒーを焦がしてしまう）ような知覚のあるAIシステムはまだ遠い未来にあります。まず、AIシステムは、ある目的に特化した方法で開発され、学習され、展開されます。AIシステムの行動はあたかも汎用的な知性をもっているかのように幻想をみせるかもしれませんが、それらは設計されたルールや経験則、統計モデルの組み合わせになっています。次に現時点では、あらゆるタスクを解決するために、自分自身を改善し、それらを論理的に考え、アーキテクチャを修正、拡張、改善するような、汎用人工知能の方法というのは存在していません。
-
-さらに現実的な心配ごととしては、AIがどのように日々の生活に利用されるかです。トラックの運転手や店舗のアシスタントが担っている、技術を必要としないたくさんのタスクは自動化されるでしょう。農業ロボットは有機栽培のコストを下げるでしょうが、収穫作業も自動化してしまうしょう。この産業革命となるフェーズでは、社会における広い範囲に重大な結果を及ぼすでしょう（トラックの運転手や店舗のアシスタントは、多くの州において最も広く行われている仕事です）。さらに、統計モデルは注意せずに利用されれば、人種、性別、年齢による差別を生じる可能性があります。これらのアルゴリズムを、必ず注意して利用ことは重要です。このことは、人類を滅亡させるような悪意ある超人的な知能や意思を心配するよりもずっと、懸念されることなのです。
-
-## まとめ
-
-* 機械学習は、コンピュータのシステムが性能を改善するために、データの利用方法を研究するものです。それは、統計学、データマイニング、人工知能、最適化の考え方を組み合わせています。そして、人工知能的なソリューションを実装するためによく利用されます。
-
-* 機械学習の一種で、表現学習というものは、データの最適な表現を自動的に探す方法に焦点を当てています。多くの場合、これは学習によるデータ変換の発展によって実現されました。
-
-* 最近の進歩の多くは、安価なセンサー、インターネット上に広がるアプリケーションから得られる豊富なデータと、GPUを主にする演算能力の素晴らしい進歩がきっかけになっています。
-
-* 全体のシステム最適化は、良い性能を得るために重要な構成要素です。効率的な深層学習フレームワークによって、最適化を非常に簡単に設計して、実装することができます。
-
-## 課題
+## Exercises
 
 1. Which parts of code that you are currently writing could be 'learned', i.e. improved by learning and automatically determining design choices that are made in your code? Does your code include heuristic design choices?
 1. Which problems that you encounter have many examples for how to solve them, yet no specific way to automate them? These may be prime candidates for using Deep Learning.
 1. Viewing the development of Artificial Intelligence as a new industrial revolution, what is the relationship between algorithms and data? Is it similar to steam engines and coal (what is the fundamental difference)?
 1. Where else can you apply the end-to-end training approach? Physics? Engineering? Econometrics?
 
-<!--
-1. あなたが現在書いているコードの中で、学習可能な部分はどこでしょうか。言い換えれば、コードの中で設計に関する選択をしている部分で、学習によって改善できて、自動的に決定できる部分がありますか?あなたのコードは、経験則にもとづいて設計に関する選択する部分を含んでいますか?
-
-1. あなたが直面した問題で、その問題を解くのに十分なデータがあるけども、自動化する手法がないような問題はどういうものでしょうか？これらは、深層学習を適用できる最初の候補になるかもしれません。
-
-1. 人工知能の発展を新たな産業革命としてみたとき、アルゴリズムとデータの関係は何にあたるでしょうか?それは蒸気機関と石炭に似ています。根本的な違いは何でしょうか。
-
-1. End-to-endの学習を適用できる他の分野はどこでしょうか? 物理学?
-工学?経済学?
-
-1. なぜ人間の脳のような構造をした深層学習のネットワークを構築したいのでしょうか? その利点はなんでしょうか? そうしたくないとしたらなぜでしょうか (マイクロプロセッサとニューロンの決定的な違いは何でしょうか)? -->
-
-## 参考文献
+## References
 
 [1] Turing, A. M. (1950). Computing machinery and intelligence. Mind, 59(236), 433.
 
@@ -725,6 +767,7 @@ World Wide Web、数百万のオンラインユーザをかかえる企業の到
 
 [23] Tesauro, G. (1995), Transactions of the ACM, (38) 3, 58-68
 
-## フォーラムでの議論
 
-<div id="discuss" topic_id="2310"></div>
+## Scan the QR Code to [Discuss](https://discuss.mxnet.io/t/2310)
+
+![](../img/qr_intro.svg)
