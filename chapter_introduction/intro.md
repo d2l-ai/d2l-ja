@@ -111,22 +111,9 @@ In our wake-word example, we described a dataset consisting of audio snippets an
 
 ### モデル
 
-Most machine learning involves *transforming* the data in some sense.
-We might want to build a system that ingests photos and predicts *smiley-ness*.
-Alternatively, we might want to ingest a set of sensor readings
-and predict how *normal* vs *anomalous* the readings are.
-By *model*, we denote the computational machinery for ingesting data
-of one type, and spitting out predictions of a possibly different type.
-In particular, we are interested in statistical models
-that can be estimated from data.
-While simple models are perfectly capable of addressing
-appropriately simple problems the problems
-that we focus on in this book stretch the limits of classical methods.
-Deep learning is differentiated from classical approaches
-principally by the set of powerful models that it focuses on.
-These models consist of many successive transformations of the data
-that are chained together top to bottom, thus the name *deep learning*.
-On our way to discussing deep neural networks, we'll discuss some more traditional methods.
+ほとんどの機械学習はある意味でデータを*変換*します。
+例えば、写真を取り込んで*笑顔の度合い*を予測するシステムを構築したいと思うかもしれません。あるいは、センサーの測定値が正常なのか異常なのかを予測したいと思うかもしれません。
+モデルは、あるタイプのデータを取り込んで、おそらく異なるタイプの予測を出力する計算機構を表します。ここでは特に、データから推定できる統計モデルに興味があります。単純なモデルは適切な単純な問題に完全に対処することができますが、この本で焦点を当てる問題は古典的な方法の限界を広げます。深層学習は、主に焦点を当てている一連の強力なモデルによって、古典的なアプローチとは区別されます。これらのモデルは、最初(上)から最後(下)までつながった、連続した多くのデータ変換で成り立っています。したがって、*深層学習*という名前なのです。深層学習を議論する過程において、古くからの方法についてもより議論するでしょう。
 
 ###  目的関数
 
