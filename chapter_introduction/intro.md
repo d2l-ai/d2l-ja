@@ -132,8 +132,9 @@ In our wake-word example, we described a dataset consisting of audio snippets an
 
 ## さまざまな機械学習
 
-In the following sections, we will discuss a few types of machine learning in some more detail. We begin with a list of *objectives*, i.e. a list of things that machine learning can do. Note that the objectives are complemented with a set of techniques of *how* to accomplish them, i.e. training, types of data, etc. The list below is really only sufficient to whet the readers' appetite and to give us a common language when we talk about problems. We will introduce a larger number of such problems as we go along.
-
+以下の節では、機械学習の一部の種類についてもう少し詳しく説明します。まず、*目的*のリスト、すなわち機械学習ができることのリストから始めます。
+その目的は実現のための一連の技術、言い換えれば、学習やデータの種類などによって補完的に記述されています。
+以下のリストは、読者を動機づけるために、そして問題について会話するための共通言語を示すためのものです。より多くの問題については、この書籍を進めていく上で紹介していきます。
 
 ### 教師あり学習
 
