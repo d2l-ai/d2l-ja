@@ -66,7 +66,9 @@ Muは「ブルーボトルのコーヒーショップへの行き方」と言い
 
 ## 機械学習の核となる要素: データ・モデル・アルゴリズム
 
-In our wake-word example, we described a dataset consisting of audio snippets and binary labels gave a hand-wavy sense of how we might train a model to approximate a mapping from snippets to classifications. This sort of problem, where we try to predict a designated unknown label given known inputs (also called features or covariates), and examples of both is called supervised learning, and it's just one among many kinds of machine learning problems. In the next section, we'll take a deep dive into the different ML problems. First, we'd like to shed more light on some core components that will follow us around, no matter what kind of ML problem we take on:
+起動語に関する例では、音声の一部と2値のラベルからなるデータセットによって、その音声からラベルの分類へのマッピングを近似するモデルが学習されることを述べました。この種の問題は、ある入力 (特徴や共変量とも呼ばれる) から、事前に定義されたラベルで未知なものを推測しようとするもので、教師あり学習と呼ばれ、多くの機械学習の問題の一つです。次の節では、異なる機械学習の問題について深く考えます。まず、これから取り組むMLの問題の種別にかかわらず、知っておくべき重要な次の要素に光を当てたいと思います。
+<!--
+In our wake-word example, we described a dataset consisting of audio snippets and binary labels gave a hand-wavy sense of how we might train a model to approximate a mapping from snippets to classifications. This sort of problem, where we try to predict a designated unknown label given known inputs (also called features or covariates), and examples of both is called supervised learning, and it's just one among many kinds of machine learning problems. In the next section, we'll take a deep dive into the different ML problems. First, we'd like to shed more light on some core components that will follow us around, no matter what kind of ML problem we take on: -->
 
 <!-- 起動のための言葉を認識するタスクを考えたとき、音声データとラベルからなるデータセットを準備します。そこで、音声からラベルを推定する機械学習モデルをどうやって学習させるかを記述するかもしれません。サンプルからラベルを推定するこのセットアップは機械学習の一種で、*教師あり学習*と呼ばれるものです。Deep Learningにおいても多くのアプローチがありますが、それについては以降の章で述べたいと思います。機械学習を進めるために、以下の４つのことが必要になります。 -->
 
@@ -78,69 +80,22 @@ In our wake-word example, we described a dataset consisting of audio snippets an
 
 ### データ
 
-It might go without saying that you cannot do data science without data.
-We could lose hundreds of pages pondering the precise nature of data
-but for now we'll err on the practical side and focus on the key properties
-to be concerned with.
-Generally we are concerned with a collection of *examples*
-(also called *data points*, *samples*, or *instances*).
-In order to work with data usefully, we typically
-need to come up with a suitable numerical representation.
-Each *example* typically consists of a collection
-of numerical attributes called *features* or *covariates*.
+データなしでデータサイエンスはできない、というのは常識的なことかもしれません。データの細かい性質について考えるための数百のページを手放すことができましたが、ここでは、実践的な側面から過ちを犯してしまったときのために、注意すべき重要な特徴について注目しましょう。
+一般的に、*データ例 (examples, データ点、サンプル、インスタンスとも)*の集合に関心があります。うまくデータを利用するには、適した数値表現を持ち出す必要があります。それぞれのデータ例は、*特徴*や*共変量*と呼ばれる数値属性の集合です。
 
-If we were working with image data,
-each individual photograph might constitute an *example*,
-each represented by an ordered list of numerical values
-corresponding to the brightness of each pixel.
-A $200\times200$ color photograph would consist of $200\times200\times3=120000$
-numerical values, corresponding to the brightness
-of the red, green, and blue channels corresponding to each spatial location.
-In a more traditional task, we might try to predict
-whether or not a patient will survive,
-given a standard set of features such as age, vital signs, diagnoses, etc.
+画像データを利用する場合、各写真はデータ例を構成していて、それぞれは各ピクセルの輝度に対応した数値データの順序付きのリストで表現されます。$200\times200$のカラー写真は、$200\times200\times3=120000$個の数値をもっていて、それらは赤、緑、青のチャンネルの輝度と、空間的な位置に対応しています。より古くからあるタスクには、年齢、バイタルサイン、診断などの特徴から、患者が生存するかしないかを予測するというのもあります。
 
-When every example is characterized by the same number of numerical values,
-we say that the data consists of *fixed-length* vectors
-and we describe the (constant) length of the vectors
-as the *dimensionality* of the data.
-As you might imagine, fixed length can be a convenient property.
-If we wanted to train a model to recognize cancer in microscopy images,
-fixed-length inputs means we have one less thing to worry about.
+すべてのデータ例が、同じ数の数値データで表現される場合、そのデータは*固定長*のベクトルで構成されていると言え、そのベクトルの (一定の) 長さはデータの次元と表現することができます。想像できるかもしれませんが、固定長というのは便利な性質です。顕微鏡検査の画像のなかから、がんを認識するモデルを学習する場合、固定長の入力は心配事項を1つ減らすことができます。
 
-However, not all data can easily be represented as fixed length vectors.
-While we might expect microscrope images to come from standard equipment,
-we can't expect images mined from the internet to all show up in the same size.
-While we might imagine cropping images to a standard size,
-text data resists fixed-length representations even more stubbornly.
-Consider the product reviews left on e-commerce sites like Amazon or TripAdvisor. Some are short: "it stinks!". Others ramble for pages.
-One major advantage of deep learning over traditional methods
-is the comparative grace with which modern models
-can handle *varying-length* data.
-
+しかし、すべてのデータが固定長のベクトルで簡単に表現されるわけではありません。顕微鏡の画像については、標準的な機器から撮影されたものを期待できるかもしれませんが、インターネットから収集された画像は、すべて同じサイズで現れるとは限りません。標準的なサイズに画像を切り落とすことを考えることもできるでしょう。しかし、テキストデータは固定長の表現がさらに難しいものです。AmazonやTrip Advisorのような電子商取引のサイトにおける、商品レビューを考えてみましょう。何人かは「ひどい！」のように短く、ほかには数ページに渡るレビューもあるでしょう。古くからの方式に比べて、深層学習の主要な利点として、*可変長*のデータを扱える最新のモデルと親和性が高いことです。
 
 一般的に、多くのデータを持っていれば持っているほど、問題を簡単に解くことができます。多くのデータを持っているなら、より性能の良いモデルを構築することができるからです。比較的小規模なデータからビッグデータと呼ばれる時代への移り変わりによって、現代の深層学習は成り立っているといえます。話をもとに戻しますが、深層学習における最も素晴らしいモデルの多くは大規模なデータセットなしには機能しません。
 いくつかは小規模なデータの時代においても有効でしたが、従来からのアプローチと大差はありません。
 
+最後に、データをたくさん集めて、それを適切に処理することは十分とは限りません。必要なのは*正しい*データなのです。データが間違いだらけだったり、選んだ特徴が興味ある指標を予測しえないものであれば、学習は失敗するでしょう。その状況はよくある決まり文句で、*garbage in, garbage out (不正確なデータを入れると不正確なデータが出力される)*といわれています。 さらに、不十分な予測能力は、それだけが重大な結果というだけではありません。機械学習のセンシティブなアプリケーション、例えば、予測警備、レジュメの書類審査、貸付のリスクモデルでは、不正確なデータの結果に対して、特に警戒しなければなりません。いくつかのグループの人々が、学習データのなかに表現されていないようなデータセットにおいて、ある失敗が発生しました。これまで黒人の皮膚を見たことがない、皮膚がんの認識システムをあらゆる人に適用することを考えてみてください。
+データが一部のグループを過小評価してなくとも、社会的な偏見を含む場合には、失敗が起こりうるでしょう。例えば、過去の採用判定が、履歴書を審査するための予測モデルの学習に利用されている場合、機械学習モデルは注意なくこれまでの偏見を取り入れて、自動的に審査するでしょう。
+このことは、データサイエンティストが意図的でなくとも、気づかないうちに起こってしまう可能性があります。
 
-Finally it's not enough to have lots of data and to process it cleverly.
-We need the *right* data.
-If the data is full of mistakes, or if the chosen features are not predictive of the target quantity of interest, learning is going to fail.
-The situation is well captured by the cliché: *garbage in, garbage out*.
-Moreover, poor predictive performance isn't the only potential consequence.
-In sensitive applications of machine learning,
-like predictive policing, resumé screening, and risk models used for lending,
-we must be especially alert to the consequences of garbage data.
-One common failure mode occurs in datasets where some groups of people
-are unrepresented in the training data.
-Imagine applying a skin cancer recognition system in the wild
-that had never seen black skin before.
-Failure can also occur when the data doesn't merely under-represent some groups,
-but reflects societal prejudices.
-For example if past hiring decisions are used to train a predictive model
-that will be used to screen resumes, then machine learning models could inadvertently capture and automate historical injustices.
-Note that this can all happen without the data scientist being complicit,
-or even aware.
 
 <!--
 * **画像** スマートフォンで撮影されたり、Webで収集された画像、衛星画像、超音波やCTやMRIなどのレントゲン画像など
