@@ -1,80 +1,26 @@
-# Introduction
+# はじめに
 
-Until recently, nearly all of the computer programs
-that we interacted with every day were coded
-by software developers from first principles.
-Say that we wanted to write an application to manage an e-commerce platform.
-After huddling around a whiteboard for a few hours to ponder the problem,
-we would come up with the broad strokes of a working solution
-that would probably look something like this:
-(i) users would interact with the application
-through an interface running in a web browser or mobile application
-(ii) our application would rely on a commerical database engine
-to keep track of each user's state and maintain records
-of all historical transactions
-(ii) at the heart of our application, running in parallel across many servers, the *business logic* (you might say, the *brains*)
-would map out in methodical details the appropriate action to take
-in every conceivable circumstance.
+日々利用しているほとんどすべてのコンピュータのプログラムは、最近になるまで、ソフトウェア開発者によって第一原理にもとづいて開発されています。e-commerceのぷらっとをフォームを管理するアプリケーションを作成したい場合を考えましょう。その問題を考えるために数時間、ホワイトボードに集まって、以下のような上手くいきそうなソリューションを書いたとします。
 
-To build the *brains* of our application,
-we'd have to step through every possible corner case
-that we anticipate encountering, devising appropriate rules.
-Each time a customer clicks to add an item to their shopping cart,
-we add an entry to the shopping cart database table,
-associating that user's ID with the requested product’s ID.
-While few developers ever get it completely right the first time
-(it might take some test runs to work out the kinks),
-for the most part, we could write such a program from first principles
-and confidently launch it *before ever seeing a real customer*.
-Our ability to design automated systems from first principles
-that drive functioning products and systems,
-often in novel situations, is a remarkable cognitive feat.
-And when you're able to devise solutions that work $100\%$ of the time.
-*you should not be using machine learning*.
+(i) ユーザはウェブブラウザやモバイルのアプリケーションからインターフェースを介して、そのアプリケーションとやり取りする
 
-Fortunately—for the growing community of ML scientists—many
-problems in automation don't bend so easily to human ingenuity.
-Imagine huddling around the whiteboard with the smartest minds you know,
-but this time you are tackling any of the following problems:
- * Write a program that predicts tomorrow's weather
-given geographic information, satellite images,
-and a trailing window of past weather.
- * Write a program that takes in a question,
- expressed in free-form text, and answers it correctly.
- * Write a program that given an image
- can identify all the people it contains,
- drawing outlines around each.
-  * Write a program that presents users with products
-  that they are likely to enjoy but unlikely,
-  in the natural course of browsing, to encounter.
+(ii) そのアプリケーションは、ユーザの状態を追跡したり、すべての処理履歴を管理するために商用のデータベースを利用する
 
-In each of these cases, even elite programmers
-are incapable of coding up solutions from scratch.
-The reasons for this can vary.
-Sometimes the program that we are looking for
-follows a pattern that changes over time,
-and we need our programs to adapt.
-In other cases, the relationship
-(say between pixels, and abstract categories)
-may be too complicated, requiring thousands or millions of computations
-that are beyond our conscious understanding
-(even if our eyes manage the task effortlessly).
-Machine learning (ML) is the study of powerful techniques
-that can *learn behavior* from *experience*.
-As ML algorithm accumulates more experience,
-typically in the form of observational data
-or interactions with an environment, their performance improves.
-Contrast this with our deterministic e-commerce platform,
-which performs according to the same business logic,
-no matter how much experience accrues,
-until the developers themselves *learn* and decide
-that it's time to update the software.
-In this book, we will teach you the fundamentals of machine learning,
-and focus in particular on deep learning,
-a powerful set of techniques driving innovations
-in areas as diverse as computer vision, natural language processing,
-healthcare, and genomics.
+(iii) アプリケーションの中心に、複数のサーバ上で並列実行される、*ビジネスロジック* (*ブレーン*と呼ぶかもしれません)が、考えられる状況に応じた適切なアクションを緻密に計画する
 
+そうした*ブレーン*をもつアプリケーションを構築するためには、起こりうるすべての特別なケースを考慮して、適切なルールを作成しなければなりません。顧客が商品を買い物かごに入れるためにクリックするたびに、買い物かごデータベースにエントリを追加し、購入する商品のIDと顧客IDを関連付けます。これを一度で完全に理解できる開発者はほとんどいないでしょう（問題を解決するために、何度かテストを実行する必要があるでしょう）。そして、多くの場合、このようなプログラムを第一原理 (First Principles)に従って書くことができ、*実際のお客様を見る前に*構築することができるでしょう。人間には全く新しい状況においても、製品やシステムを動かす第一原理から、自動的に動くシステムを設計する能力があり、これは素晴らしい認知能力です。そして、$100\%$動くようなソリューションを開発できるのであれば、*機械学習を使わないほうがよいでしょう*。
+
+ますます成長している機械学習サイエンティストのコミュニティにとっては幸運なことですが、自動化における多くの問題は、そうした人間の創意工夫だけではまだ簡単に解決されていません。ホワイトボードにあなたが思いつく賢いプログラムを書き出してみましょう。例えば、以下のようなプログラムを書くことを考えます。
+
+* 地理情報、衛星画像、一定間隔の過去の天気データから、明日の天気を予測するプログラムを書く
+
+* フリーフォーマットのテキストで書かれた質問を理解して、適切に回答するプログラムを書く
+
+* 画像に含まれる全ての人間を認識して、それらを枠で囲むプログラムを書く
+
+* ユーザが楽しむような製品で、通常の閲覧の過程ではまだ見ていない製品を提示するプログラムを書く
+
+これらの場合では、優秀なプログラマーであってもゼロからプログラムを書くことはできないでしょう。その理由としては様々なものが考えられます。求められるプログラムが時間によって変化するようなパターンをもつこともあり、それに適応するプログラムも必要になります。また、関係性 (例えば、ピクセル値と抽象的なカテゴリとの関係性) が複雑すぎて、私達の意識的な理解を超える数千、数百万の計算を必要とすることもあります (私達の目はこのようなタスクを難なくこなしますが)。機械学習 (Machine Learning, ML) は*経験*から*挙動を学習*できる協力な技術の学問です。MLのアルゴリズムは、観測データや環境とのインタラクションから経験を蓄積することで、性能が改善します。さきほどの決定的な電子商取引のプラットフォームは、どれだけ経験が蓄積されても、開発者自身が*学習して*、ソフトウェアを改修することを決めないかぎり、同じビジネスロジックに従って実行するため、これとは対照的です。この書籍では、機械学習の基礎について説明し、特に深層学習に焦点を当てます。深層学習は、コンピュータビジョン、自然言語処理、ヘルスケア、ゲノミクスのような幅広い領域において、イノベーションを実現している強力な技術です。
 
 ## 身近な例
 
