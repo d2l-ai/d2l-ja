@@ -32,31 +32,11 @@ Muは「ブルーボトルのコーヒーショップへの行き方」と言い
 
 ひとつの考え方を紹介したいと思います。私達が、入力と出力を対応付ける方法をコンピュータに陽に伝えることができなくても、私達自身はそのような認識を行う素晴らしい能力を持っています。言い換えれば、たとえ"Alexa"といった言葉を認識するようにコンピュータのプログラムを書けなくても、あなた自身は"Alexa"の言葉を認識できます。従って、私達人間は、音声のデータと起動の言葉を含んでいるか否かのラベルをサンプルとして含む巨大なデータセットをつくることができます。
 機械学習のアプローチでは、起動の言葉を認識するようなシステムを陽に実装しません。
-代わりに、膨大なパラメータによって挙動を決められるような、柔軟なプログラムを実装します。Then we use the dataset to determine
-the best possible set of parameters,
-those that improve the performance of our program
-with respect to some measure of performance on the task of interest.
+代わりに、膨大なパラメータによって挙動を決められるような、柔軟なプログラムを実装します。そして、興味あるタスクの性能を測る指標に関して、プログラムの性能を改善するような、もっともらしいパラメータを決定するため、データセットを利用します。
 
+パラメータは、プログラムの挙動を決めるために、私達が回すことのできるノブのようなものと考えられるでしょう。パラメータを確定すると、そのプログラムは*モデル*と呼ばれます。異なるプログラム (入力と出力のマッピング) をパラメータを変更するだけで生成可能な場合、それらをモデルの*ファミリ (familiy)* と呼ばれます。パラメータを選ぶために、データセットを利用する*メタなプログラム*を*学習アルゴリズム*と呼びます。
 
-You can think of the parameters as knobs that we can turn,
-manipulating the behavior of the program.
-Fixing the parameters, we call the program a *model*.
-The set of all distinct programs (input-output mappings)
-that we can produce just by manipulating the parameters
-is called a *family* of models.
-And the *meta-program* that uses our dataset
-to choose the parameters is called a *learning algorithm*.
-
-Before we can go ahead and engage the learning algorithm,
-we have to define the problem precisely,
-pinning down the exact nature of the inputs and outputs,
-and choosing an appropriate model family.
-In this case, our model receives a snippet of audio as *input*,
-and it generates a selection among ``{yes, no}`` as *output*—which,
-if all goes according to plan,
-will closely approximate whether (or not)
-the snippet contains the wake word.
-
+機械学習アルゴリズムに進んで取り組んでいく前に、問題を正確に定義する必要があり、つまり、入力と出力の性質を正確にはっきりさせ、モデルのファミリを適切に選ぶことが必要です。この場合、モデルは*入力*として音声の一部を受け取って、*出力*として``{はい、いいえ}``からの選択を生成します。そして、このあとの書籍の内容通りに進むのであれば、音声の一部が起動語を含んでいそうか（そうでないか）を近似的に決定すること、といえます。
 
 もし私達が、正しいモデルを選んだのであれば、そのモデルは'Alexa'という言葉を聞いたときにyesを起動するような、1つの設定を切り替えるノブが存在するでしょう。起動する言葉は任意なので、'Apricot'ということばで起動するような別のノブもありえます。入出力が変われば根本的に別のモデルを必要とする場合もあります。例えば、画像とラベルを対応付けるタスクと、英語と中国語を対応付けるタスクには、異なるモデルを利用する必要があるでしょう。
 
@@ -80,8 +60,9 @@ the snippet contains the wake word.
 
 このケースでは、認識器はネコであれば非常に大きな正の値、イヌであれば非常に大きな負の値、どちらかわからない場合はゼロを出力するように学習するでしょう。そしてこれは、MLが行っていることを、ゼロからプログラミングしているわけではありません。
 
-Deep learning is just one among many popular frameworks for solving machine learning problems. While thus far, we've only talked about machine learning broadly and not deep learning, there's a couple points worth sneaking in here: First, the problems that we've discussed thus far: learning from raw audio signal, directly from the pixels in images, and mapping between sentences of arbitrary lengths and across languages are problems where deep learning excels and traditional ML tools faltered. Deep models are deep in precisely the sense that they learn many layers of computation. It turns out that these many-layered (or hierarchical) models are capable of addressing low-level perceptual data in a way that previous tools could not. In bygone days, the crucial part of applying ML to these problems consisted of coming up with manually engineered ways of transforming the data into some form amenable to shallow models. One key advantage of deep learning is that it replaces not only the shallow models at the end of traditional learning pipelines, but also the labor-intensive feature engineering. Secondly, by replacing much of the domain-specific preprocessing, deep learning has eliminated many of the boundaries that previously separated computer vision, speech recognition, natural language processing, medical informatics, and other application areas, offering a unified set of tools for tackling diverse problems.
+深層学習は、機械学習の問題を解く最も有名なフレームワークのたった一つです。ここまで、機械学習について広く話をしてきましたが、深層学習については話をしていません。ここで、少しだけ紹介しておきたい点があります。まず、これまで議論した問題として、音声情報の生データ、画像のピクセル値、任意の長さの文章や言語間の関係からの学習を議論しましたが、これらの問題では深層学習が優れており、古くからの機械学習ツールは影響力がなくなりつつあります。深層学習モデルは、多くの計算レイヤーを学習することで高い精度を実現しています。これらの多くのレイヤーからなるモデル (もしくは階層的なモデル) は、これまでのツールではできない方法で、低レベルな認識に関わるデータを取り扱うことが可能です。
 
+過去には、これらの問題にMLを適用する際の重要な部分として、データを浅いモデルでも扱える形式に変換する方法を人手で構築することがありました。深層学習の1つの重要な利点として、古くからの機械学習パイプラインの最後に利用されていた浅いモデルを置き換えただけでなく、負荷の大きい特徴作成（feature engineering) も置き換えた点があります。また、ドメインに特化した前処理の多くを置き換え、コンピュータビジョン、音声認識、自然言語処理、医療情報学、それ以外にも様々な分野を分割していた境界を多く取り除き、多様な問題を扱える統一的なツールとなりつつあります。
 
 ## 機械学習の核となる要素: データ・モデル・アルゴリズム
 
