@@ -253,45 +253,16 @@ $$L(\mathrm{action}| x) = \mathbf{E}_{y \sim p(y| x)}[\mathrm{loss}(\mathrm{acti
 
 ![](../img/deeplearning_amazon.png)
 
-#### Sequence Learning
+#### 系列学習
 
-So far we've looked at problems where we have some fixed number of inputs
-and produce a fixed number of outputs.
-Before we considered predicting home prices from a fixed set of features:
-square footage, number of bedrooms, number of bathrooms, walking time to downtown.
-We also discussed mapping from an image (of fixed dimension),
-to the predicted probabilities that it belongs to each of a fixed number of classes,
-or taking a user ID and a product ID, and predicting a star rating.
-In these cases, once we feed our fixed-length input into the model to generate an output,
-the model immediately forgets what it just saw.
+これまで、固定長の入力に対して、固定長の出力を生成する問題について見てきました。これまでに、広さ、ベッドルームの数、バスルームの数、ダウンタウンまでの徒歩時間といった特徴の決められた集合から住宅価格を予測することを考えました。また、（固定次元の）画像から、それが固定数のクラスに属する確率へのマッピング、またはユーザーIDと製品IDからユーザのレーティングを予測することも説明しました。このような場合、固定長の入力をモデルに渡して出力を生成すると、モデルはさきほど見たデータをすぐに忘れてしまいます。
 
-This might be fine if our inputs truly all have the same dimensions
-and if successive inputs truly have nothing to do with each other.
-But how would we deal with video snippets?
-In this case, each snippet might consist of a different number of frames.
-And our guess of what's going on in each frame
-might be much stronger if we take into account
-the previous or succeeding frames.
-Same goes for language.
-One popular deep learning problem is machine translation:
-the task of ingesting sentences in some source language
-and predicting their translation in another language.
+入力が実際にすべて同じ次元をもち、連続する入力が本当に互いに何の関係もない場合、問題はないでしょう。しかし、断片的な動画を扱う場合はどうでしょうか。この場合、各動画は異なる数のフレームで構成される場合があります。そして、各フレームで起こっていることを推測する際、前後のフレームを考慮に入れることによって、より強い推測とすることができるでしょう。言語についても同様です。よく知られている深層学習の問題の1つに機械翻訳があります。それは、ある翻訳元の言語の文を取り込んで、別の言語への翻訳を予測するタスクです。
 
-These problems also occur in medicine.
-We might want a model to monitor patients in the intensive care unit and to fire off alerts
-if their risk of death in the next 24 hours exceeds some threshold.
-We definitely wouldn't want this model to throw away everything it knows about the patient history each hour,
-and just make its predictions based on the most recent measurements.
+これらの問題は医療の分野でも起こります。集中治療室で患者を監視し、次の24時間以内に死亡するリスクがあるしきい値を超えた場合、警告を発するモデルを望んでいるとしましょう。この場合、モデルが過去の1時間ごとに患者の状況を全て捨て去り、ただ最新の測定値にもとづいて予測する、といったことはきっと望まないはずです。
 
-These problems are among the more exciting applications of machine learning
-and they are instances of *sequence learning*.
-They require a model to either ingest sequences of inputs
-or to emit sequences of outputs (or both!).
-These latter problems are sometimes referred to as ``seq2seq`` problems.
-Language translation is a ``seq2seq`` problem.
-Transcribing text from spoken speech is also a ``seq2seq`` problem.
-While it is impossible to consider all types of sequence transformations,
-a number of special cases are worth mentioning:
+これらの問題は、機械学習のより刺激的なアプリケーションの1つであり、それらは*系列学習*の一つです。入力の系列を取り込むか、または出力の系列を生成する（あるいはその両方）モデルが必要です。系列を生成する後者の問題は ``seq2seq``の問題と呼ばれることがあります。言語翻訳は ``seq2seq``の問題です。会話の音声をテキストを書き起こすことも``seq2seq``問題です。すべてのタイプの系列変換を考慮することは不可能ですが、いくつかの特別な場合について以下で述べます。
+
 
 ##### Tagging and Parsing
 
