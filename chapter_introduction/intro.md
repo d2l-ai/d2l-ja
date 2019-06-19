@@ -264,9 +264,9 @@ $$L(\mathrm{action}| x) = \mathbf{E}_{y \sim p(y| x)}[\mathrm{loss}(\mathrm{acti
 これらの問題は、機械学習のより刺激的なアプリケーションの1つであり、それらは*系列学習*の一つです。入力の系列を取り込むか、または出力の系列を生成する（あるいはその両方）モデルが必要です。系列を生成する後者の問題は ``seq2seq``の問題と呼ばれることがあります。言語翻訳は ``seq2seq``の問題です。会話の音声をテキストを書き起こすことも``seq2seq``問題です。すべてのタイプの系列変換を考慮することは不可能ですが、いくつかの特別な場合について以下で述べます。
 
 
-##### Tagging and Parsing
+##### 文章のタグ付けとパース
 
-This involves annotating a text sequence with attributes. In other words, the number of inputs and outputs is essentially the same. For instance, we might want to know where the verbs and subjects are. Alternatively, we might want to know which words are the named entities. In general, the goal is to decompose and annotate text based on structural and grammatical assumptions to get some annotation. This sounds more complex than it actually is. Below is a very simple example of annotating a sentence with tags indicating which words refer to named entities.
+文章のタグ付けとパースには、テキストの系列に属性を付けることも含みます。言い換えれば、入力と出力の数は基本的に同じです。例えば、動詞と主語がどこにあるかを知りたいと思うかもしれません。あるいは、どの単語が固有表現であるかを知りたいと思うかもしれません。一般に、アノテーションを行うための構造や文法に関する前提にもとづいて、文章を分解したりアノテーションしたりすることが目標になります。これは実際よりも複雑に聞こえます。以下は、どの単語が固有表現であるかを示すタグで、文にアノテーションを行う非常に簡単な例です。
 
 |Tom | has | dinner | in | Washington | with | Sally.|
 |:--:|:--:|:--:|:--:|:--:|:--:|:--:|
