@@ -273,53 +273,34 @@ $$L(\mathrm{action}| x) = \mathbf{E}_{y \sim p(y| x)}[\mathrm{loss}(\mathrm{acti
 |Ent | - | - | - | Ent | - | Ent|
 
 
-##### Automatic Speech Recognition
+##### 自動音声認識
 
-With speech recognition, the input sequence $x$ is the sound of a speaker,
-and the output $y$ is the textual transcript of what the speaker said.
-The challenge is that there are many more audio frames (sound is typically sampled at 8kHz or 16kHz) than text, i.e. there is no 1:1 correspondence between audio and text,
-since thousands of samples correspond to a single spoken word.
-These are ``seq2seq`` problems where the output is much shorter than the input.
+音声認識では、入力の系列データ$x$は話者の音声であり、出力$y$は話者が話した内容を書き起こしたテキストです。難しい点としては、テキストよりもはるかに多くの音声フレーム（音声は通常8kHzまたは16kHzでサンプリングされる）があることです。すなわち何千もの音声サンプルが、話された単語の一つに対応するので、オーディオとテキストとの間に1:1の対応がありません。これらは ``seq2seq``の問題ですが、出力は入力よりずっと短い系列です。
 
 |`-D-e-e-p- L-ea-r-ni-ng-`|
 |:--------------:|
 |![Deep Learning](../img/speech.png)|
 
-##### Text to Speech
+##### テキスト読み上げ
 
-Text-to-Speech (TTS) is the inverse of speech recognition.
-In other words, the input $x$ is text
-and the output $y$ is an audio file.
-In this case, the output is *much longer* than the input.
-While it is easy for *humans* to recognize a bad audio file,
-this isn't quite so trivial for computers.
+テキスト読み上げ (TTS, Text-To-Speech)は音声認識の逆です。
+つまり、入力$x$はテキストで、出力$y$は音声です。この場合、出力は入力よりも*はるかに長い*系列となります。 *人間*にとっては品質の悪い音声を認識するのは簡単ですが、コンピュータにとってそれほど簡単ではありません。
 
-##### Machine Translation
 
-Unlike the case of speech recognition, where corresponding inputs and outputs occur in the same order (after alignment),
-in machine translation, order inversion can be vital.
-In other words, while we are still converting one sequence into another,
-neither the number of inputs and outputs
-nor the order of corresponding data points
-are assumed to be the same.
-Consider the following illustrative example of the obnoxious tendency of Germans
-(*Alex writing here*)
-to place the verbs at the end of sentences.
+##### 機械翻訳
+
+音声認識では、対応する入力および出力が同じ順序で発生しますが (ある程度、整列は必要ですが)、機械翻訳では、順序の逆転を生じる可能性があります。言い換えれば、ある系列データを別の系列データに変換している間は、入力と出力の数も、対応するデータの順序も、同じと考えてはいけません。
+以下の例は、動詞を文の末尾に置くというドイツ語の傾向を表したものです。
 
 |German |Haben Sie sich schon dieses grossartige Lehrwerk angeschaut?|
 |:------|:---------|
 |English|Did you already check out this excellent tutorial?|
 |Wrong alignment |Did you yourself already this excellent tutorial looked-at?|
 
-A number of related problems exist.
-For instance, determining the order in which a user reads a webpage
-is a two-dimensional layout analysis problem.
-Likewise, for dialogue problems,
-we need to take world-knowledge and prior state into account.
-This is an active area of research.
+他にも関連する問題はあります。例えば、ユーザがウェブページを読む順序を決定する問題は、二次元の配置分析問題と考えることができます。同様に、自動的な対話を実現するためには、実世界の知識であったり、あるいは事前知識のようなものを考慮する必要があり、活発な研究分野となっています。
 
 
-### Unsupervised learning
+### 教師なし学習
 
 All the examples so far were related to *Supervised Learning*,
 i.e. situations where we feed the model
