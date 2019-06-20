@@ -302,30 +302,19 @@ $$L(\mathrm{action}| x) = \mathbf{E}_{y \sim p(y| x)}[\mathrm{loss}(\mathrm{acti
 
 ### 教師なし学習
 
-All the examples so far were related to *Supervised Learning*,
-i.e. situations where we feed the model
-a bunch of examples and a bunch of *corresponding target values*.
-You could think of supervised learning as having an extremely specialized job and an extremely anal boss.
-The boss stands over your shoulder and tells you exactly what to do in every situation until you learn to map from situations to actions.
-Working for such a boss sounds pretty lame.
-On the other hand, it's easy to please this boss. You just recognize the pattern as quickly as possible and imitate their actions.
+これまでのすべての例は*教師あり学習*、つまり一連のデータと*対応する目標値*をモデルに与えるというものでした。教師あり学習は、非常に専門的な仕事をもっていて、非常に神経質な上司がいるような状況とみなせるでしょう。上司はあなたを見張って、あなたが状況に対応する行動を学習するまで、あらゆる状況に対して取るべき行動を伝えるでしょう。そのような上司のもとで働くことは、かなり不自由に思えます。一方、この上司を喜ばせるのは簡単です。ただそのパターンをできるだけ早く認識し、その行動を真似するだけです。
 
-In a completely opposite way,
-it could be frustrating to work for a boss
-who has no idea what they want you to do.
-However, if you plan to be a data scientist, you'd better get used to it.
-The boss might just hand you a giant dump of data and tell you to *do some data science with it!*
-This sounds vague because it is.
-We call this class of problems *unsupervised learning*,
-and the type and number of questions we could ask
-is limited only by our creativity.
-We will address a number of unsupervised learning techniques in later chapters. To whet your appetite for now, we describe a few of the questions you might ask:
+まったく正反対のこととして、あなたに何を望んでいるのかわからない上司のもとで働くことはイライラするかもしれません。しかし、データサイエンティストになろうと思っていれば、それに慣れたほうがいいでしょう。ボスはあなたに巨大なデータを渡して、それを使って*データサイエンスをやるように指示するかもしれません*。
+このような指示は曖昧に思えるでしょう。このクラスの問題は*教師なし学習*と呼ばれていて、どのような質問の種類あるいは数に対応できるかは、使う人の創造性に委ねられているのです。以降の章では、教師なしの学習手法について、いくつか取り上げます。ここではみなさんの動機づけのために、私達はあなたが尋ねるかもしれない質問のいくつかを説明します。
 
-* Can we find a small number of prototypes that accurately summarize the data? Given a set of photos, can we group them into landscape photos, pictures of dogs, babies, cats, mountain peaks, etc.? Likewise, given a collection of users' browsing activity, can we group them into users with similar behavior? This problem is typically known as **clustering**.
-* Can we find a small number of parameters that accurately capture the relevant properties of the data? The trajectories of a ball are quite well described by velocity, diameter, and mass of the ball. Tailors have developed a small number of parameters that describe human body shape fairly accurately for the purpose of fitting clothes. These problems are referred to as **subspace estimation** problems. If the dependence is linear, it is called **principal component analysis**.
-* Is there a representation of (arbitrarily structured) objects in Euclidean space (i.e. the space of vectors in $\mathbb{R}^n$) such that symbolic properties can be well matched? This is called **representation learning** and it is used to describe entities and their relations, such as Rome - Italy + France = Paris.
-* Is there a description of the root causes of much of the data that we observe? For instance, if we have demographic data about house prices, pollution, crime, location, education, salaries, etc., can we discover how they are related simply based on empirical data? The field of **directed graphical models** and **causality** deals with this.
-* An important and exciting recent development is **generative adversarial networks**. They are basically a procedural way of synthesizing data. The underlying statistical mechanisms are tests to check whether real and fake data are the same. We will devote a few notebooks to them.
+* データを正確に要約して、それらの模範的な少数のデータを見つけることができますか?ある写真の集まりを考えると、それらを風景写真、犬、赤ちゃん、猫、山頂などの写真にグループ分けすることができますか? 同様に、たくさんのユーザーの閲覧動作を考えたとき、同じような動作を行うユーザーへとグループ化できますか? この問題は通常**クラスタリング**として知られています。
+
+* データに関連する特性を正確にとらえた、少数のパラメータを見つけることができますか? ボールの軌道は、ボールの速度、直径、および質量によってうまく説明することができます。仕立て屋は、服を身体に合わせるために、人間の形状をかなり正確に記述するパラメータをいくつか作成しました。これらの問題は**部分空間推定**問題と呼ばれます。依存性が線形の場合、特に**主成分分析**と呼ばれます。
+* ユークリッド空間（つまり、$\mathbb{R}^n$のベクトルの空間）において、シンボルの性質がよく適合するような、（任意の構造をもつ）オブジェクトの表現はありますか? これは**表現学習**と呼ばれ、ローマ - イタリア+フランス=パリなど、エンティティとその関係を記述するために利用されます。
+
+* 観察したデータの多くを構成する、根本的な原因を説明できるでしょうか? たとえば、住宅価格、公害、犯罪、場所、教育、給与などに関する人口統計データがある場合、それらがどのように関連しているのか、経験的なデータにもとづいて発見できますか。 **有向グラフィカルモデル**と**因果関係**の分野はこれを扱います。
+
+* 最近、重要かつ活発に開発されているものとして**敵対的生成ネットワーク**があります。敵対的生成ネットワークとは、基本的にデータを合成する方法です。根底にある統計的メカニズムとしては、実際のデータと偽のデータが同じかどうかを確認するためのテストを行うというものです。これらに関するノートブックを紹介する予定です。
 
 
 ### Interacting with an Environment
