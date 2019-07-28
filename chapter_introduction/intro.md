@@ -66,7 +66,9 @@ Muは「ブルーボトルのコーヒーショップへの行き方」と言い
 
 ## 機械学習の核となる要素: データ・モデル・アルゴリズム
 
-In our wake-word example, we described a dataset consisting of audio snippets and binary labels gave a hand-wavy sense of how we might train a model to approximate a mapping from snippets to classifications. This sort of problem, where we try to predict a designated unknown label given known inputs (also called features or covariates), and examples of both is called supervised learning, and it's just one among many kinds of machine learning problems. In the next section, we'll take a deep dive into the different ML problems. First, we'd like to shed more light on some core components that will follow us around, no matter what kind of ML problem we take on:
+起動語に関する例では、音声の一部と2値のラベルからなるデータセットによって、その音声からラベルの分類へのマッピングを近似するモデルが学習されることを述べました。この種の問題は、ある入力 (特徴や共変量とも呼ばれる) から、事前に定義されたラベルで未知なものを推測しようとするもので、教師あり学習と呼ばれ、多くの機械学習の問題の一つです。次の節では、異なる機械学習の問題について深く考えます。まず、これから取り組むMLの問題の種別にかかわらず、知っておくべき重要な次の要素に光を当てたいと思います。
+<!--
+In our wake-word example, we described a dataset consisting of audio snippets and binary labels gave a hand-wavy sense of how we might train a model to approximate a mapping from snippets to classifications. This sort of problem, where we try to predict a designated unknown label given known inputs (also called features or covariates), and examples of both is called supervised learning, and it's just one among many kinds of machine learning problems. In the next section, we'll take a deep dive into the different ML problems. First, we'd like to shed more light on some core components that will follow us around, no matter what kind of ML problem we take on: -->
 
 <!-- 起動のための言葉を認識するタスクを考えたとき、音声データとラベルからなるデータセットを準備します。そこで、音声からラベルを推定する機械学習モデルをどうやって学習させるかを記述するかもしれません。サンプルからラベルを推定するこのセットアップは機械学習の一種で、*教師あり学習*と呼ばれるものです。Deep Learningにおいても多くのアプローチがありますが、それについては以降の章で述べたいと思います。機械学習を進めるために、以下の４つのことが必要になります。 -->
 
@@ -78,69 +80,22 @@ In our wake-word example, we described a dataset consisting of audio snippets an
 
 ### データ
 
-It might go without saying that you cannot do data science without data.
-We could lose hundreds of pages pondering the precise nature of data
-but for now we'll err on the practical side and focus on the key properties
-to be concerned with.
-Generally we are concerned with a collection of *examples*
-(also called *data points*, *samples*, or *instances*).
-In order to work with data usefully, we typically
-need to come up with a suitable numerical representation.
-Each *example* typically consists of a collection
-of numerical attributes called *features* or *covariates*.
+データなしでデータサイエンスはできない、というのは常識的なことかもしれません。データの細かい性質について考えるための数百のページを手放すことができましたが、ここでは、実践的な側面から過ちを犯してしまったときのために、注意すべき重要な特徴について注目しましょう。
+一般的に、*データ例 (examples, データ点、サンプル、インスタンスとも)*の集合に関心があります。うまくデータを利用するには、適した数値表現を持ち出す必要があります。それぞれのデータ例は、*特徴*や*共変量*と呼ばれる数値属性の集合です。
 
-If we were working with image data,
-each individual photograph might constitute an *example*,
-each represented by an ordered list of numerical values
-corresponding to the brightness of each pixel.
-A $200\times200$ color photograph would consist of $200\times200\times3=120000$
-numerical values, corresponding to the brightness
-of the red, green, and blue channels corresponding to each spatial location.
-In a more traditional task, we might try to predict
-whether or not a patient will survive,
-given a standard set of features such as age, vital signs, diagnoses, etc.
+画像データを利用する場合、各写真はデータ例を構成していて、それぞれは各ピクセルの輝度に対応した数値データの順序付きのリストで表現されます。$200\times200$のカラー写真は、$200\times200\times3=120000$個の数値をもっていて、それらは赤、緑、青のチャンネルの輝度と、空間的な位置に対応しています。より古くからあるタスクには、年齢、バイタルサイン、診断などの特徴から、患者が生存するかしないかを予測するというのもあります。
 
-When every example is characterized by the same number of numerical values,
-we say that the data consists of *fixed-length* vectors
-and we describe the (constant) length of the vectors
-as the *dimensionality* of the data.
-As you might imagine, fixed length can be a convenient property.
-If we wanted to train a model to recognize cancer in microscopy images,
-fixed-length inputs means we have one less thing to worry about.
+すべてのデータ例が、同じ数の数値データで表現される場合、そのデータは*固定長*のベクトルで構成されていると言え、そのベクトルの (一定の) 長さはデータの次元と表現することができます。想像できるかもしれませんが、固定長というのは便利な性質です。顕微鏡検査の画像のなかから、がんを認識するモデルを学習する場合、固定長の入力は心配事項を1つ減らすことができます。
 
-However, not all data can easily be represented as fixed length vectors.
-While we might expect microscrope images to come from standard equipment,
-we can't expect images mined from the internet to all show up in the same size.
-While we might imagine cropping images to a standard size,
-text data resists fixed-length representations even more stubbornly.
-Consider the product reviews left on e-commerce sites like Amazon or TripAdvisor. Some are short: "it stinks!". Others ramble for pages.
-One major advantage of deep learning over traditional methods
-is the comparative grace with which modern models
-can handle *varying-length* data.
-
+しかし、すべてのデータが固定長のベクトルで簡単に表現されるわけではありません。顕微鏡の画像については、標準的な機器から撮影されたものを期待できるかもしれませんが、インターネットから収集された画像は、すべて同じサイズで現れるとは限りません。標準的なサイズに画像を切り落とすことを考えることもできるでしょう。しかし、テキストデータは固定長の表現がさらに難しいものです。AmazonやTrip Advisorのような電子商取引のサイトにおける、商品レビューを考えてみましょう。何人かは「ひどい！」のように短く、ほかには数ページに渡るレビューもあるでしょう。古くからの方式に比べて、深層学習の主要な利点として、*可変長*のデータを扱える最新のモデルと親和性が高いことです。
 
 一般的に、多くのデータを持っていれば持っているほど、問題を簡単に解くことができます。多くのデータを持っているなら、より性能の良いモデルを構築することができるからです。比較的小規模なデータからビッグデータと呼ばれる時代への移り変わりによって、現代の深層学習は成り立っているといえます。話をもとに戻しますが、深層学習における最も素晴らしいモデルの多くは大規模なデータセットなしには機能しません。
 いくつかは小規模なデータの時代においても有効でしたが、従来からのアプローチと大差はありません。
 
+最後に、データをたくさん集めて、それを適切に処理することは十分とは限りません。必要なのは*正しい*データなのです。データが間違いだらけだったり、選んだ特徴が興味ある指標を予測しえないものであれば、学習は失敗するでしょう。その状況はよくある決まり文句で、*garbage in, garbage out (不正確なデータを入れると不正確なデータが出力される)*といわれています。 さらに、不十分な予測能力は、それだけが重大な結果というだけではありません。機械学習のセンシティブなアプリケーション、例えば、予測警備、レジュメの書類審査、貸付のリスクモデルでは、不正確なデータの結果に対して、特に警戒しなければなりません。いくつかのグループの人々が、学習データのなかに表現されていないようなデータセットにおいて、ある失敗が発生しました。これまで黒人の皮膚を見たことがない、皮膚がんの認識システムをあらゆる人に適用することを考えてみてください。
+データが一部のグループを過小評価してなくとも、社会的な偏見を含む場合には、失敗が起こりうるでしょう。例えば、過去の採用判定が、履歴書を審査するための予測モデルの学習に利用されている場合、機械学習モデルは注意なくこれまでの偏見を取り入れて、自動的に審査するでしょう。
+このことは、データサイエンティストが意図的でなくとも、気づかないうちに起こってしまう可能性があります。
 
-Finally it's not enough to have lots of data and to process it cleverly.
-We need the *right* data.
-If the data is full of mistakes, or if the chosen features are not predictive of the target quantity of interest, learning is going to fail.
-The situation is well captured by the cliché: *garbage in, garbage out*.
-Moreover, poor predictive performance isn't the only potential consequence.
-In sensitive applications of machine learning,
-like predictive policing, resumé screening, and risk models used for lending,
-we must be especially alert to the consequences of garbage data.
-One common failure mode occurs in datasets where some groups of people
-are unrepresented in the training data.
-Imagine applying a skin cancer recognition system in the wild
-that had never seen black skin before.
-Failure can also occur when the data doesn't merely under-represent some groups,
-but reflects societal prejudices.
-For example if past hiring decisions are used to train a predictive model
-that will be used to screen resumes, then machine learning models could inadvertently capture and automate historical injustices.
-Note that this can all happen without the data scientist being complicit,
-or even aware.
 
 <!--
 * **画像** スマートフォンで撮影されたり、Webで収集された画像、衛星画像、超音波やCTやMRIなどのレントゲン画像など
@@ -156,22 +111,9 @@ or even aware.
 
 ### モデル
 
-Most machine learning involves *transforming* the data in some sense.
-We might want to build a system that ingests photos and predicts *smiley-ness*.
-Alternatively, we might want to ingest a set of sensor readings
-and predict how *normal* vs *anomalous* the readings are.
-By *model*, we denote the computational machinery for ingesting data
-of one type, and spitting out predictions of a possibly different type.
-In particular, we are interested in statistical models
-that can be estimated from data.
-While simple models are perfectly capable of addressing
-appropriately simple problems the problems
-that we focus on in this book stretch the limits of classical methods.
-Deep learning is differentiated from classical approaches
-principally by the set of powerful models that it focuses on.
-These models consist of many successive transformations of the data
-that are chained together top to bottom, thus the name *deep learning*.
-On our way to discussing deep neural networks, we'll discuss some more traditional methods.
+ほとんどの機械学習はある意味でデータを*変換*します。
+例えば、写真を取り込んで*笑顔の度合い*を予測するシステムを構築したいと思うかもしれません。あるいは、センサーの測定値が正常なのか異常なのかを予測したいと思うかもしれません。
+モデルは、あるタイプのデータを取り込んで、おそらく異なるタイプの予測を出力する計算機構を表します。ここでは特に、データから推定できる統計モデルに興味があります。単純なモデルは適切な単純な問題に完全に対処することができますが、この本で焦点を当てる問題は古典的な方法の限界を広げます。深層学習は、主に焦点を当てている一連の強力なモデルによって、古典的なアプローチとは区別されます。これらのモデルは、最初(上)から最後(下)までつながった、連続した多くのデータ変換で成り立っています。したがって、*深層学習*という名前なのです。深層学習を議論する過程において、古くからの方法についてもより議論するでしょう。
 
 ###  目的関数
 
@@ -190,8 +132,9 @@ On our way to discussing deep neural networks, we'll discuss some more tradition
 
 ## さまざまな機械学習
 
-In the following sections, we will discuss a few types of machine learning in some more detail. We begin with a list of *objectives*, i.e. a list of things that machine learning can do. Note that the objectives are complemented with a set of techniques of *how* to accomplish them, i.e. training, types of data, etc. The list below is really only sufficient to whet the readers' appetite and to give us a common language when we talk about problems. We will introduce a larger number of such problems as we go along.
-
+以下の節では、機械学習の一部の種類についてもう少し詳しく説明します。まず、*目的*のリスト、すなわち機械学習ができることのリストから始めます。
+その目的は実現のための一連の技術、言い換えれば、学習やデータの種類などによって補完的に記述されています。
+以下のリストは、読者を動機づけるために、そして問題について会話するための共通言語を示すためのものです。より多くの問題については、この書籍を進めていく上で紹介していきます。
 
 ### 教師あり学習
 
@@ -310,251 +253,119 @@ $$L(\mathrm{action}| x) = \mathbf{E}_{y \sim p(y| x)}[\mathrm{loss}(\mathrm{acti
 
 ![](../img/deeplearning_amazon.png)
 
-#### Sequence Learning
+#### 系列学習
 
-So far we've looked at problems where we have some fixed number of inputs
-and produce a fixed number of outputs.
-Before we considered predicting home prices from a fixed set of features:
-square footage, number of bedrooms, number of bathrooms, walking time to downtown.
-We also discussed mapping from an image (of fixed dimension),
-to the predicted probabilities that it belongs to each of a fixed number of classes,
-or taking a user ID and a product ID, and predicting a star rating.
-In these cases, once we feed our fixed-length input into the model to generate an output,
-the model immediately forgets what it just saw.
+これまで、固定長の入力に対して、固定長の出力を生成する問題について見てきました。これまでに、広さ、ベッドルームの数、バスルームの数、ダウンタウンまでの徒歩時間といった特徴の決められた集合から住宅価格を予測することを考えました。また、（固定次元の）画像から、それが固定数のクラスに属する確率へのマッピング、またはユーザーIDと製品IDからユーザのレーティングを予測することも説明しました。このような場合、固定長の入力をモデルに渡して出力を生成すると、モデルはさきほど見たデータをすぐに忘れてしまいます。
 
-This might be fine if our inputs truly all have the same dimensions
-and if successive inputs truly have nothing to do with each other.
-But how would we deal with video snippets?
-In this case, each snippet might consist of a different number of frames.
-And our guess of what's going on in each frame
-might be much stronger if we take into account
-the previous or succeeding frames.
-Same goes for language.
-One popular deep learning problem is machine translation:
-the task of ingesting sentences in some source language
-and predicting their translation in another language.
+入力が実際にすべて同じ次元をもち、連続する入力が本当に互いに何の関係もない場合、問題はないでしょう。しかし、断片的な動画を扱う場合はどうでしょうか。この場合、各動画は異なる数のフレームで構成される場合があります。そして、各フレームで起こっていることを推測する際、前後のフレームを考慮に入れることによって、より強い推測とすることができるでしょう。言語についても同様です。よく知られている深層学習の問題の1つに機械翻訳があります。それは、ある翻訳元の言語の文を取り込んで、別の言語への翻訳を予測するタスクです。
 
-These problems also occur in medicine.
-We might want a model to monitor patients in the intensive care unit and to fire off alerts
-if their risk of death in the next 24 hours exceeds some threshold.
-We definitely wouldn't want this model to throw away everything it knows about the patient history each hour,
-and just make its predictions based on the most recent measurements.
+これらの問題は医療の分野でも起こります。集中治療室で患者を監視し、次の24時間以内に死亡するリスクがあるしきい値を超えた場合、警告を発するモデルを望んでいるとしましょう。この場合、モデルが過去の1時間ごとに患者の状況を全て捨て去り、ただ最新の測定値にもとづいて予測する、といったことはきっと望まないはずです。
 
-These problems are among the more exciting applications of machine learning
-and they are instances of *sequence learning*.
-They require a model to either ingest sequences of inputs
-or to emit sequences of outputs (or both!).
-These latter problems are sometimes referred to as ``seq2seq`` problems.
-Language translation is a ``seq2seq`` problem.
-Transcribing text from spoken speech is also a ``seq2seq`` problem.
-While it is impossible to consider all types of sequence transformations,
-a number of special cases are worth mentioning:
+これらの問題は、機械学習のより刺激的なアプリケーションの1つであり、それらは*系列学習*の一つです。入力の系列を取り込むか、または出力の系列を生成する（あるいはその両方）モデルが必要です。系列を生成する後者の問題は ``seq2seq``の問題と呼ばれることがあります。言語翻訳は ``seq2seq``の問題です。会話の音声をテキストを書き起こすことも``seq2seq``問題です。すべてのタイプの系列変換を考慮することは不可能ですが、いくつかの特別な場合について以下で述べます。
 
-##### Tagging and Parsing
 
-This involves annotating a text sequence with attributes. In other words, the number of inputs and outputs is essentially the same. For instance, we might want to know where the verbs and subjects are. Alternatively, we might want to know which words are the named entities. In general, the goal is to decompose and annotate text based on structural and grammatical assumptions to get some annotation. This sounds more complex than it actually is. Below is a very simple example of annotating a sentence with tags indicating which words refer to named entities.
+##### 文章のタグ付けとパース
+
+テキストの系列に属性を付けることも、タグ付けやパースの一つです。入力と出力の数は基本的に同じです。例えば、動詞と主語がどこにあるかを知りたいと思うかもしれません。あるいは、どの単語が固有表現であるかを知りたいと思うかもしれません。一般に、アノテーションを行うための構造や文法に関する前提にもとづいて、文章を分解したりアノテーションしたりすることが目標になります。これは実際よりも複雑に思えるかもしれません。以下は、どの単語が固有表現であるかを示すタグを文に付与する非常に簡単な例です。
 
 |Tom | has | dinner | in | Washington | with | Sally.|
 |:--:|:--:|:--:|:--:|:--:|:--:|:--:|
 |Ent | - | - | - | Ent | - | Ent|
 
 
-##### Automatic Speech Recognition
+##### 自動音声認識
 
-With speech recognition, the input sequence $x$ is the sound of a speaker,
-and the output $y$ is the textual transcript of what the speaker said.
-The challenge is that there are many more audio frames (sound is typically sampled at 8kHz or 16kHz) than text, i.e. there is no 1:1 correspondence between audio and text,
-since thousands of samples correspond to a single spoken word.
-These are ``seq2seq`` problems where the output is much shorter than the input.
+音声認識では、入力の系列データ$x$は話者の音声であり、出力$y$は話者が話した内容を書き起こしたテキストです。難しい点としては、テキストよりもはるかに多くの音声フレーム（音声は通常8kHzまたは16kHzでサンプリングされる）があることです。すなわち何千もの音声サンプルが、話された単語の一つに対応するので、オーディオとテキストとの間に1:1の対応がありません。これらは ``seq2seq``の問題ですが、出力は入力よりずっと短い系列です。
 
 |`-D-e-e-p- L-ea-r-ni-ng-`|
 |:--------------:|
 |![Deep Learning](../img/speech.png)|
 
-##### Text to Speech
+##### テキスト読み上げ
 
-Text-to-Speech (TTS) is the inverse of speech recognition.
-In other words, the input $x$ is text
-and the output $y$ is an audio file.
-In this case, the output is *much longer* than the input.
-While it is easy for *humans* to recognize a bad audio file,
-this isn't quite so trivial for computers.
+テキスト読み上げ (TTS, Text-To-Speech)は音声認識の逆です。
+つまり、入力$x$はテキストで、出力$y$は音声です。この場合、出力は入力よりも*はるかに長い*系列となります。 *人間*にとっては品質の悪い音声を認識するのは簡単ですが、コンピュータにとってそれほど簡単ではありません。
 
-##### Machine Translation
 
-Unlike the case of speech recognition, where corresponding inputs and outputs occur in the same order (after alignment),
-in machine translation, order inversion can be vital.
-In other words, while we are still converting one sequence into another,
-neither the number of inputs and outputs
-nor the order of corresponding data points
-are assumed to be the same.
-Consider the following illustrative example of the obnoxious tendency of Germans
-(*Alex writing here*)
-to place the verbs at the end of sentences.
+##### 機械翻訳
+
+音声認識では、対応する入力および出力が同じ順序で発生しますが (ある程度、整列は必要ですが)、機械翻訳では、順序の逆転を生じる可能性があります。言い換えれば、ある系列データを別の系列データに変換している間は、入力と出力の数も、対応するデータの順序も、同じと考えてはいけません。
+以下の例は、動詞を文の末尾に置くというドイツ語の傾向を表したものです。
 
 |German |Haben Sie sich schon dieses grossartige Lehrwerk angeschaut?|
 |:------|:---------|
 |English|Did you already check out this excellent tutorial?|
 |Wrong alignment |Did you yourself already this excellent tutorial looked-at?|
 
-A number of related problems exist.
-For instance, determining the order in which a user reads a webpage
-is a two-dimensional layout analysis problem.
-Likewise, for dialogue problems,
-we need to take world-knowledge and prior state into account.
-This is an active area of research.
+他にも関連する問題はあります。例えば、ユーザがウェブページを読む順序を決定する問題は、二次元の配置分析問題と考えることができます。同様に、自動的な対話を実現するためには、実世界の知識であったり、あるいは事前知識のようなものを考慮する必要があり、活発な研究分野となっています。
 
 
-### Unsupervised learning
+### 教師なし学習
 
-All the examples so far were related to *Supervised Learning*,
-i.e. situations where we feed the model
-a bunch of examples and a bunch of *corresponding target values*.
-You could think of supervised learning as having an extremely specialized job and an extremely anal boss.
-The boss stands over your shoulder and tells you exactly what to do in every situation until you learn to map from situations to actions.
-Working for such a boss sounds pretty lame.
-On the other hand, it's easy to please this boss. You just recognize the pattern as quickly as possible and imitate their actions.
+これまでのすべての例は*教師あり学習*、つまり一連のデータと*対応する目標値*をモデルに与えるというものでした。教師あり学習は、非常に専門的な仕事をもっていて、非常に神経質な上司がいるような状況とみなせるでしょう。上司はあなたを見張って、あなたが状況に対応する行動を学習するまで、あらゆる状況に対して取るべき行動を伝えるでしょう。そのような上司のもとで働くことは、かなり不自由に思えます。一方、この上司を喜ばせるのは簡単です。ただそのパターンをできるだけ早く認識し、その行動を真似するだけです。
 
-In a completely opposite way,
-it could be frustrating to work for a boss
-who has no idea what they want you to do.
-However, if you plan to be a data scientist, you'd better get used to it.
-The boss might just hand you a giant dump of data and tell you to *do some data science with it!*
-This sounds vague because it is.
-We call this class of problems *unsupervised learning*,
-and the type and number of questions we could ask
-is limited only by our creativity.
-We will address a number of unsupervised learning techniques in later chapters. To whet your appetite for now, we describe a few of the questions you might ask:
+まったく正反対のこととして、あなたに何を望んでいるのかわからない上司のもとで働くことはイライラするかもしれません。しかし、データサイエンティストになろうと思っていれば、それに慣れたほうがいいでしょう。ボスはあなたに巨大なデータを渡して、それを使って*データサイエンスをやるように指示するかもしれません*。
+このような指示は曖昧に思えるでしょう。このクラスの問題は*教師なし学習*と呼ばれていて、どのような質問の種類あるいは数に対応できるかは、使う人の創造性に委ねられているのです。以降の章では、教師なしの学習手法について、いくつか取り上げます。ここではみなさんの動機づけのために、私達はあなたが尋ねるかもしれない質問のいくつかを説明します。
 
-* Can we find a small number of prototypes that accurately summarize the data? Given a set of photos, can we group them into landscape photos, pictures of dogs, babies, cats, mountain peaks, etc.? Likewise, given a collection of users' browsing activity, can we group them into users with similar behavior? This problem is typically known as **clustering**.
-* Can we find a small number of parameters that accurately capture the relevant properties of the data? The trajectories of a ball are quite well described by velocity, diameter, and mass of the ball. Tailors have developed a small number of parameters that describe human body shape fairly accurately for the purpose of fitting clothes. These problems are referred to as **subspace estimation** problems. If the dependence is linear, it is called **principal component analysis**.
-* Is there a representation of (arbitrarily structured) objects in Euclidean space (i.e. the space of vectors in $\mathbb{R}^n$) such that symbolic properties can be well matched? This is called **representation learning** and it is used to describe entities and their relations, such as Rome - Italy + France = Paris.
-* Is there a description of the root causes of much of the data that we observe? For instance, if we have demographic data about house prices, pollution, crime, location, education, salaries, etc., can we discover how they are related simply based on empirical data? The field of **directed graphical models** and **causality** deals with this.
-* An important and exciting recent development is **generative adversarial networks**. They are basically a procedural way of synthesizing data. The underlying statistical mechanisms are tests to check whether real and fake data are the same. We will devote a few notebooks to them.
+* データを正確に要約して、それらの模範的な少数のデータを見つけることができますか?ある写真の集まりを考えると、それらを風景写真、犬、赤ちゃん、猫、山頂などの写真にグループ分けすることができますか? 同様に、たくさんのユーザーの閲覧動作を考えたとき、同じような動作を行うユーザーへとグループ化できますか? この問題は通常**クラスタリング**として知られています。
+
+* データに関連する特性を正確にとらえた、少数のパラメータを見つけることができますか? ボールの軌道は、ボールの速度、直径、および質量によってうまく説明することができます。仕立て屋は、服を身体に合わせるために、人間の形状をかなり正確に記述するパラメータをいくつか作成しました。これらの問題は**部分空間推定**問題と呼ばれます。依存性が線形の場合、特に**主成分分析**と呼ばれます。
+* ユークリッド空間（つまり、$\mathbb{R}^n$のベクトルの空間）において、シンボルの性質がよく適合するような、（任意の構造をもつ）オブジェクトの表現はありますか? これは**表現学習**と呼ばれ、ローマ - イタリア+フランス=パリなど、エンティティとその関係を記述するために利用されます。
+
+* 観察したデータの多くを構成する、根本的な原因を説明できるでしょうか? たとえば、住宅価格、公害、犯罪、場所、教育、給与などに関する人口統計データがある場合、それらがどのように関連しているのか、経験的なデータにもとづいて発見できますか。 **有向グラフィカルモデル**と**因果関係**の分野はこれを扱います。
+
+* 最近、重要かつ活発に開発されているものとして**敵対的生成ネットワーク**があります。敵対的生成ネットワークとは、基本的にデータを合成する方法です。根底にある統計的メカニズムとしては、実際のデータと偽のデータが同じかどうかを確認するためのテストを行うというものです。この書籍では、これらに関するノートブックを紹介する予定です。
 
 
-### Interacting with an Environment
+### 環境とのインタラクション
 
-So far, we haven't discussed where data actually comes from,
-or what actually *happens* when a machine learning model generates an output.
-That's because supervised learning and unsupervised learning
-do not address these issues in a very sophisticated way.
-In either case, we grab a big pile of data up front,
-then do our pattern recognition without ever interacting with the environment again.
-Because all of the learning takes place after the algorithm is disconnected from the environment,
-this is called *offline learning*.
-For supervised learning, the process looks like this:
+これまでのところ、データが実際にどこからもたらされるのか、あるいは機械学習モデルが出力を生成するときに何が実際に起こるのか、については説明していません。教師あり学習と教師なし学習は、非常に洗練された方法で、これらの問題に対処する必要がないからです。どちらの場合も、大量のデータを事前に取得してから、環境とやり取りすることなくパターン認識を行います。すなわち、アルゴリズムが環境から切り離されてから、すべての学習が行われるので、これは*オフライン学習*と呼ばれます。教師あり学習の場合、プロセスは次のようになります。
 
 ![](../img/data-collection.svg)
 
+オフライン学習が単純さは魅力です。したがって、良い点としては他に扱うべき問題とは無関係にパターン認識のみを心配すれば良いという点ですが、一方、欠点としては問題の定式化が非常に限定的になってしまうという点があります。
+もし、もっと意欲的な人、AsimovのRobot Seriesを読んで成長したような人にとっては、予測を行うだけでなく、実世界で行動を起こすことができる人工知能のボットを想像するかもしれません。そこで、予測型の*モデル*だけでなく、知的な*エージェント*についても考えたいと思います。つまり、単に予測を立てるのではなく、アクションを選ぶことを考える必要があるということです。さらに、予測とは異なり、行動は実際には環境に影響を与えます。知的エージェントを訓練したい場合は、その行動がエージェントの将来の観察にどのように影響するかを定義しなければなりません。
 
-This simplicity of offline learning has its charms.
-The upside is we can worry about pattern recognition in isolation without these other problems to deal with,
-but the downside is that the problem formulation is quite limiting.
-If you are more ambitious, or if you grew up reading Asimov's Robot Series,
-then you might imagine artificially intelligent bots capable not only of making predictions,
-but of taking actions in the world.
-We want to think about intelligent *agents*, not just predictive *models*.
-That means we need to think about choosing *actions*, not just making *predictions*.
-Moreover, unlike predictions, actions actually impact the environment.
-If we want to train an intelligent agent,
-we must account for the way its actions might
-impact the future observations of the agent.
+環境との相互作用を考えると、モデリングに関する新しい疑問が山ほど出てきます。環境は：
 
+* 私達の過去の行動を記憶しているでしょうか?
+* 私たちを助けようとするでしょうか? たとえば、ユーザが音声認識器に向かってテキストを読んでいたりしますか?
+* もしくは私達を打ち負かそうとするでしょうか? つまり、スパムをばら撒く人に対するスパムフィルタリングや対戦相手に対するゲームプレイなどのような敵対的な設定でしょうか?
+* 何も気にしないでしょうか? (多くの場合でそうあるように)
+* 変化するダイナミクス (安定したものと時間の経過とともに変化するもの) がありますか？
 
-Considering the interaction with an environment opens a whole set of new modeling questions. Does the environment:
+この最後の質問は、*共変量シフト*の問題を引き起こします（トレーニングデータとテストデータが異なる場合）。その問題は、例えば、講師のTAが宿題を作成し、講師が試験wの作成したとき、よく私達が経験するものです。以下では、強化学習と敵対的学習という、環境との相互作用を明示的に考慮する2つの設定について簡単に説明します。
 
-* remember what we did previously?
-* want to help us, e.g. a user reading text into a speech recognizer?
-* want to beat us, i.e. an adversarial setting like spam filtering (against spammers) or playing a game (vs an opponent)?
-* not  care (as in most cases)?
-* have shifting dynamics (steady vs. shifting over time)?
+### 強化学習
 
-This last question raises the problem of *covariate shift*,
-(when training and test data are different).
-It's a problem that most of us have experienced when taking exams written by a lecturer,
-while the homeworks were composed by his TAs.
-We'll briefly describe reinforcement learning and adversarial learning,
-two settings that explicitly consider interaction with an environment.
+機械学習を使用して環境と対話して行動を起こすエージェントを開発することに興味があるなら、おそらく*強化学習*（RL, Reinforcement Learning）に焦点を当てることになるでしょう。これは、ロボット工学、対話システム、さらに、ビデオゲーム用のAIの開発にも応用されうるでしょう。深層強化学習 (Deep Reinforcement Learning, DRL) は注目を集めています。そのブレークスルーである
+[deep Q-network that beat humans at Atari games using only the visual input](https://www.wired.com/2015/02/google-ai-plays-atari-like-pros/)と
+[AlphaGo program that dethroned the world champion at the board game Go](https://www.wired.com/2017/05/googles-alphago-trounces-humans-also-gives-boost/) は有名な例です。
 
+強化学習は、一連の*時間ステップ*にわたって、エージェントが環境と相互作用するという非常に一般的な問題設定を与えます。
+時間ステップ$t$ごとに、エージェントは環境から何らかの観測値$o_t$を受け取り、そのあと環境に送り返す行動$a_t$を選択しなければなりません。
+最後に、エージェントは環境から報酬$r_t$を受け取ります。
+その後もエージェントは観測を受け取り、アクションを選択します。 強化学習エージェントの振る舞いは*ポリシー*によって管理されています。簡単に言うと、*ポリシー*は（環境の）観察を行動にマッピングする単なる関数です。強化学習の目標は、良いポリシーを作成することです。
 
-### Reinforcement learning
-
-If you're interested in using machine learning to develop an agent that interacts with an environment and takes actions, then you're probably going to wind up focusing on *reinforcement learning* (RL).
-This might include applications to robotics, to dialogue systems,
-and even to developing AI for video games.
-*Deep reinforcement learning* (DRL), which applies deep neural networks
-to RL problems, has surged in popularity.
-The breakthrough [deep Q-network that beat humans at Atari games using only the visual input](https://www.wired.com/2015/02/google-ai-plays-atari-like-pros/) ,
-and the [AlphaGo program that dethroned the world champion at the board game Go](https://www.wired.com/2017/05/googles-alphago-trounces-humans-also-gives-boost/) are two prominent examples.
-
-Reinforcement learning gives a very general statement of a problem,
-in which an agent interacts with an environment over a series of *time steps*.
-At each time step $t$, the agent receives some observation $o_t$ from the environment,
-and must choose an action $a_t$ which is then transmitted back to the environment.
-Finally, the agent receives a reward $r_t$ from the environment.
-The agent then receives a subsequent observation, and chooses a subsequent action, and so on.
-The behavior of an RL agent is governed by a *policy*.
-In short, a *policy* is just a function that maps from observations (of the environment) to actions.
-The goal of reinforcement learning is to produce a good policy.
 
 ![](../img/rl-environment.svg)
 
-It's hard to overstate the generality of the RL framework.
-For example, we can cast any supervised learning problem as an RL problem.
-Say we had a classification problem.
-We could create an RL agent with one *action* corresponding to each class.
-We could then create an environment which gave a reward
-that was exactly equal to the loss function from the original supervised problem.
+強化学習のフレームワークの一般性を誇張しすぎるのは難しいです。
+たとえば、教師あり学習の問題を強化学習の問題として扱うことができます。分類問題について考えてみましょう。まず、各クラスに1つの行動が対応するような強化学習エージェントを作成します。そして、元の教師あり学習の問題における損失関数とまったく等しい報酬を与えるような環境を作ります。
 
-That being said, RL can also address many problems that supervised learning cannot.
-For example, in supervised learning we always expect
-that the training input comes associated with the correct label.
-But in RL, we don't assume that for each observation,
-the environment tells us the optimal action.
-In general, we just get some reward.
-Moreover, the environment may not even tell us which actions led to the reward.
+強化学習は教師あり学習では不可能な多くの問題にも対処できます。たとえば、教師あり学習では、入力される学習データが正しいラベルに関連付けられていることを仮定します。しかし強化学習では、観測ごとに環境が最適な動作を示していると想定しません。一般的に強化学習では、報酬が与えられるだけで、どの行動が報酬につながったかさえも環境は伝えないかもしれません。
 
-Consider for example the game of chess.
-The only real reward signal comes at the end of the game when we either win, which we might assign a reward of 1,
-or when we lose, which we could assign a reward of -1.
-So reinforcement learners must deal with the *credit assignment problem*.
-The same goes for an employee who gets a promotion on October 11.
-That promotion likely reflects a large number of well-chosen actions over the previous year.
-Getting more promotions in the future requires figuring out what actions along the way led to the promotion.
+例えばチェスのゲームを考えてみましょう。唯一の報酬として、勝ったときに1、負けたときに-1の報酬を割り当てることができ、これらはゲームの終わりになってはじめて得られるものです。強化学習を行う際は、この*信用割当問題 (credit assignment problem) *に対処する必要があります。同じことは、10月11日に昇進した、とある従業員にも当てはまります。その昇進は、前年に比べて適切に選択された多数の行動の結果と考えられるでしょう。将来に昇進を増やすには、その過程でどのような行動が昇進につながったのかを把握する必要があります。
 
-Reinforcement learners may also have to deal with the problem of partial observability.
-That is, the current observation might not tell you everything about your current state.
-Say a cleaning robot found itself trapped in one of many identical closets in a house.
-Inferring the precise location (and thus state) of the robot
-might require considering its previous observations before entering the closet.
+強化学習を行う際は、部分的にしか観測できないという問題にも対処しなければならないかもしれません。つまり、現在観察している内容からは、現在の状態に関するすべてのことがわかるわけではないのです。家の中に全く同じクローゼットがあったとして、掃除ロボットがそのうちの1つに閉じ込められていることに気づいたとしましょう。ロボットの正確な位置（つまりは状態）を推測するには、クローゼットに入る前の観察を考慮する必要があります。
 
-Finally, at any given point, reinforcement learners might know of one good policy,
-but there might be many other better policies that the agent has never tried.
-The reinforcement learner must constantly choose
-whether to *exploit* the best currently-known strategy as a policy,
-or to *explore* the space of strategies,
-potentially giving up some short-run reward in exchange for knowledge.
+最後に、強化学習によって、どのような時点であっても、なんらかの良い方針を知ることができるでしょうが、エージェントが試したことがない良い方針が他にもあるかもしれません。強化学習では、ポリシーとして現在知られている最善の戦略を*活用 (exploit) *するか、さらなる知識を得るために短期的な報酬を諦めて戦略の空間を*探索*するかを絶えず選択する必要があります。
 
+#### マルコフ決定過程, バンディット問題
 
-#### MDPs, bandits, and friends
+強化学習の問題は非常に一般的な設定です。行動はその後の観測に影響し、報酬はある行動を実行した結果によってのみ観察されます。環境は完全にまたは部分的に観測されるかもしれません。このような複雑さをすべて一度に説明するためには、研究者に対して非常に多くの質問をする必要があるでしょう。さらに、すべての実践的な問題がこの複雑さをもっているわけではありません。この結果として、研究者たちは強化学習の問題のいくつかの*特殊なケース*を研究してきました。
 
-The general reinforcement learning problem
-is a very general setting.
-Actions affect subsequent observations.
-Rewards are only observed corresponding to the chosen actions.
-The environment may be either fully or partially observed.
-Accounting for all this complexity at once may ask too much of researchers.
-Moreover not every practical problem exhibits all this complexity.
-As a result, researchers have studied a number of *special cases* of reinforcement learning problems.
-
-When the environment is fully observed,
-we call the RL problem a *Markov Decision Process* (MDP).
-When the state does not depend on the previous actions,
-we call the problem a *contextual bandit problem*.
-When there is no state, just a set of available actions with initially unknown rewards,
-this problem is the classic *multi-armed bandit problem*.
-
+環境が完全に観察されるとき、その強化学習の問題を*Markov Decision Process*（MDP）と呼びます。状態が前の行動に依存していないときは*Contextual Bandit Problem*と呼びます。状態が存在せず、最初は報酬が未知であるような行動の集合が与えられているとき、古典的な*multi-armed bandit problem*と呼ばれています。
 
 ## 起源
 
