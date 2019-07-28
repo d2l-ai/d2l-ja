@@ -314,131 +314,58 @@ $$L(\mathrm{action}| x) = \mathbf{E}_{y \sim p(y| x)}[\mathrm{loss}(\mathrm{acti
 
 * 観察したデータの多くを構成する、根本的な原因を説明できるでしょうか? たとえば、住宅価格、公害、犯罪、場所、教育、給与などに関する人口統計データがある場合、それらがどのように関連しているのか、経験的なデータにもとづいて発見できますか。 **有向グラフィカルモデル**と**因果関係**の分野はこれを扱います。
 
-* 最近、重要かつ活発に開発されているものとして**敵対的生成ネットワーク**があります。敵対的生成ネットワークとは、基本的にデータを合成する方法です。根底にある統計的メカニズムとしては、実際のデータと偽のデータが同じかどうかを確認するためのテストを行うというものです。これらに関するノートブックを紹介する予定です。
+* 最近、重要かつ活発に開発されているものとして**敵対的生成ネットワーク**があります。敵対的生成ネットワークとは、基本的にデータを合成する方法です。根底にある統計的メカニズムとしては、実際のデータと偽のデータが同じかどうかを確認するためのテストを行うというものです。この書籍では、これらに関するノートブックを紹介する予定です。
 
 
-### Interacting with an Environment
+### 環境とのインタラクション
 
-So far, we haven't discussed where data actually comes from,
-or what actually *happens* when a machine learning model generates an output.
-That's because supervised learning and unsupervised learning
-do not address these issues in a very sophisticated way.
-In either case, we grab a big pile of data up front,
-then do our pattern recognition without ever interacting with the environment again.
-Because all of the learning takes place after the algorithm is disconnected from the environment,
-this is called *offline learning*.
-For supervised learning, the process looks like this:
+これまでのところ、データが実際にどこからもたらされるのか、あるいは機械学習モデルが出力を生成するときに何が実際に起こるのか、については説明していません。教師あり学習と教師なし学習は、非常に洗練された方法で、これらの問題に対処する必要がないからです。どちらの場合も、大量のデータを事前に取得してから、環境とやり取りすることなくパターン認識を行います。すなわち、アルゴリズムが環境から切り離されてから、すべての学習が行われるので、これは*オフライン学習*と呼ばれます。教師あり学習の場合、プロセスは次のようになります。
 
 ![](../img/data-collection.svg)
 
+オフライン学習が単純さは魅力です。したがって、良い点としては他に扱うべき問題とは無関係にパターン認識のみを心配すれば良いという点ですが、一方、欠点としては問題の定式化が非常に限定的になってしまうという点があります。
+もし、もっと意欲的な人、AsimovのRobot Seriesを読んで成長したような人にとっては、予測を行うだけでなく、実世界で行動を起こすことができる人工知能のボットを想像するかもしれません。そこで、予測型の*モデル*だけでなく、知的な*エージェント*についても考えたいと思います。つまり、単に予測を立てるのではなく、アクションを選ぶことを考える必要があるということです。さらに、予測とは異なり、行動は実際には環境に影響を与えます。知的エージェントを訓練したい場合は、その行動がエージェントの将来の観察にどのように影響するかを定義しなければなりません。
 
-This simplicity of offline learning has its charms.
-The upside is we can worry about pattern recognition in isolation without these other problems to deal with,
-but the downside is that the problem formulation is quite limiting.
-If you are more ambitious, or if you grew up reading Asimov's Robot Series,
-then you might imagine artificially intelligent bots capable not only of making predictions,
-but of taking actions in the world.
-We want to think about intelligent *agents*, not just predictive *models*.
-That means we need to think about choosing *actions*, not just making *predictions*.
-Moreover, unlike predictions, actions actually impact the environment.
-If we want to train an intelligent agent,
-we must account for the way its actions might
-impact the future observations of the agent.
+環境との相互作用を考えると、モデリングに関する新しい疑問が山ほど出てきます。環境は：
 
+* 私達の過去の行動を記憶しているでしょうか?
+* 私たちを助けようとするでしょうか? たとえば、ユーザが音声認識器に向かってテキストを読んでいたりしますか?
+* もしくは私達を打ち負かそうとするでしょうか? つまり、スパムをばら撒く人に対するスパムフィルタリングや対戦相手に対するゲームプレイなどのような敵対的な設定でしょうか?
+* 何も気にしないでしょうか? (多くの場合でそうあるように)
+* 変化するダイナミクス (安定したものと時間の経過とともに変化するもの) がありますか？
 
-Considering the interaction with an environment opens a whole set of new modeling questions. Does the environment:
+この最後の質問は、*共変量シフト*の問題を引き起こします（トレーニングデータとテストデータが異なる場合）。その問題は、例えば、講師のTAが宿題を作成し、講師が試験wの作成したとき、よく私達が経験するものです。以下では、強化学習と敵対的学習という、環境との相互作用を明示的に考慮する2つの設定について簡単に説明します。
 
-* remember what we did previously?
-* want to help us, e.g. a user reading text into a speech recognizer?
-* want to beat us, i.e. an adversarial setting like spam filtering (against spammers) or playing a game (vs an opponent)?
-* not  care (as in most cases)?
-* have shifting dynamics (steady vs. shifting over time)?
+### 強化学習
 
-This last question raises the problem of *covariate shift*,
-(when training and test data are different).
-It's a problem that most of us have experienced when taking exams written by a lecturer,
-while the homeworks were composed by his TAs.
-We'll briefly describe reinforcement learning and adversarial learning,
-two settings that explicitly consider interaction with an environment.
+機械学習を使用して環境と対話して行動を起こすエージェントを開発することに興味があるなら、おそらく*強化学習*（RL, Reinforcement Learning）に焦点を当てることになるでしょう。これは、ロボット工学、対話システム、さらに、ビデオゲーム用のAIの開発にも応用されうるでしょう。深層強化学習 (Deep Reinforcement Learning, DRL) は注目を集めています。そのブレークスルーである
+[deep Q-network that beat humans at Atari games using only the visual input](https://www.wired.com/2015/02/google-ai-plays-atari-like-pros/)と
+[AlphaGo program that dethroned the world champion at the board game Go](https://www.wired.com/2017/05/googles-alphago-trounces-humans-also-gives-boost/) は有名な例です。
 
+強化学習は、一連の*時間ステップ*にわたって、エージェントが環境と相互作用するという非常に一般的な問題設定を与えます。
+時間ステップ$t$ごとに、エージェントは環境から何らかの観測値$o_t$を受け取り、そのあと環境に送り返す行動$a_t$を選択しなければなりません。
+最後に、エージェントは環境から報酬$r_t$を受け取ります。
+その後もエージェントは観測を受け取り、アクションを選択します。 強化学習エージェントの振る舞いは*ポリシー*によって管理されています。簡単に言うと、*ポリシー*は（環境の）観察を行動にマッピングする単なる関数です。強化学習の目標は、良いポリシーを作成することです。
 
-### Reinforcement learning
-
-If you're interested in using machine learning to develop an agent that interacts with an environment and takes actions, then you're probably going to wind up focusing on *reinforcement learning* (RL).
-This might include applications to robotics, to dialogue systems,
-and even to developing AI for video games.
-*Deep reinforcement learning* (DRL), which applies deep neural networks
-to RL problems, has surged in popularity.
-The breakthrough [deep Q-network that beat humans at Atari games using only the visual input](https://www.wired.com/2015/02/google-ai-plays-atari-like-pros/) ,
-and the [AlphaGo program that dethroned the world champion at the board game Go](https://www.wired.com/2017/05/googles-alphago-trounces-humans-also-gives-boost/) are two prominent examples.
-
-Reinforcement learning gives a very general statement of a problem,
-in which an agent interacts with an environment over a series of *time steps*.
-At each time step $t$, the agent receives some observation $o_t$ from the environment,
-and must choose an action $a_t$ which is then transmitted back to the environment.
-Finally, the agent receives a reward $r_t$ from the environment.
-The agent then receives a subsequent observation, and chooses a subsequent action, and so on.
-The behavior of an RL agent is governed by a *policy*.
-In short, a *policy* is just a function that maps from observations (of the environment) to actions.
-The goal of reinforcement learning is to produce a good policy.
 
 ![](../img/rl-environment.svg)
 
-It's hard to overstate the generality of the RL framework.
-For example, we can cast any supervised learning problem as an RL problem.
-Say we had a classification problem.
-We could create an RL agent with one *action* corresponding to each class.
-We could then create an environment which gave a reward
-that was exactly equal to the loss function from the original supervised problem.
+強化学習のフレームワークの一般性を誇張しすぎるのは難しいです。
+たとえば、教師あり学習の問題を強化学習の問題として扱うことができます。分類問題について考えてみましょう。まず、各クラスに1つの行動が対応するような強化学習エージェントを作成します。そして、元の教師あり学習の問題における損失関数とまったく等しい報酬を与えるような環境を作ります。
 
-That being said, RL can also address many problems that supervised learning cannot.
-For example, in supervised learning we always expect
-that the training input comes associated with the correct label.
-But in RL, we don't assume that for each observation,
-the environment tells us the optimal action.
-In general, we just get some reward.
-Moreover, the environment may not even tell us which actions led to the reward.
+強化学習は教師あり学習では不可能な多くの問題にも対処できます。たとえば、教師あり学習では、入力される学習データが正しいラベルに関連付けられていることを仮定します。しかし強化学習では、観測ごとに環境が最適な動作を示していると想定しません。一般的に強化学習では、報酬が与えられるだけで、どの行動が報酬につながったかさえも環境は伝えないかもしれません。
 
-Consider for example the game of chess.
-The only real reward signal comes at the end of the game when we either win, which we might assign a reward of 1,
-or when we lose, which we could assign a reward of -1.
-So reinforcement learners must deal with the *credit assignment problem*.
-The same goes for an employee who gets a promotion on October 11.
-That promotion likely reflects a large number of well-chosen actions over the previous year.
-Getting more promotions in the future requires figuring out what actions along the way led to the promotion.
+例えばチェスのゲームを考えてみましょう。唯一の報酬として、勝ったときに1、負けたときに-1の報酬を割り当てることができ、これらはゲームの終わりになってはじめて得られるものです。強化学習を行う際は、この*信用割当問題 (credit assignment problem) *に対処する必要があります。同じことは、10月11日に昇進した、とある従業員にも当てはまります。その昇進は、前年に比べて適切に選択された多数の行動の結果と考えられるでしょう。将来に昇進を増やすには、その過程でどのような行動が昇進につながったのかを把握する必要があります。
 
-Reinforcement learners may also have to deal with the problem of partial observability.
-That is, the current observation might not tell you everything about your current state.
-Say a cleaning robot found itself trapped in one of many identical closets in a house.
-Inferring the precise location (and thus state) of the robot
-might require considering its previous observations before entering the closet.
+強化学習を行う際は、部分的にしか観測できないという問題にも対処しなければならないかもしれません。つまり、現在観察している内容からは、現在の状態に関するすべてのことがわかるわけではないのです。家の中に全く同じクローゼットがあったとして、掃除ロボットがそのうちの1つに閉じ込められていることに気づいたとしましょう。ロボットの正確な位置（つまりは状態）を推測するには、クローゼットに入る前の観察を考慮する必要があります。
 
-Finally, at any given point, reinforcement learners might know of one good policy,
-but there might be many other better policies that the agent has never tried.
-The reinforcement learner must constantly choose
-whether to *exploit* the best currently-known strategy as a policy,
-or to *explore* the space of strategies,
-potentially giving up some short-run reward in exchange for knowledge.
+最後に、強化学習によって、どのような時点であっても、なんらかの良い方針を知ることができるでしょうが、エージェントが試したことがない良い方針が他にもあるかもしれません。強化学習では、ポリシーとして現在知られている最善の戦略を*活用 (exploit) *するか、さらなる知識を得るために短期的な報酬を諦めて戦略の空間を*探索*するかを絶えず選択する必要があります。
 
+#### マルコフ決定過程, バンディット問題
 
-#### MDPs, bandits, and friends
+強化学習の問題は非常に一般的な設定です。行動はその後の観測に影響し、報酬はある行動を実行した結果によってのみ観察されます。環境は完全にまたは部分的に観測されるかもしれません。このような複雑さをすべて一度に説明するためには、研究者に対して非常に多くの質問をする必要があるでしょう。さらに、すべての実践的な問題がこの複雑さをもっているわけではありません。この結果として、研究者たちは強化学習の問題のいくつかの*特殊なケース*を研究してきました。
 
-The general reinforcement learning problem
-is a very general setting.
-Actions affect subsequent observations.
-Rewards are only observed corresponding to the chosen actions.
-The environment may be either fully or partially observed.
-Accounting for all this complexity at once may ask too much of researchers.
-Moreover not every practical problem exhibits all this complexity.
-As a result, researchers have studied a number of *special cases* of reinforcement learning problems.
-
-When the environment is fully observed,
-we call the RL problem a *Markov Decision Process* (MDP).
-When the state does not depend on the previous actions,
-we call the problem a *contextual bandit problem*.
-When there is no state, just a set of available actions with initially unknown rewards,
-this problem is the classic *multi-armed bandit problem*.
-
+環境が完全に観察されるとき、その強化学習の問題を*Markov Decision Process*（MDP）と呼びます。状態が前の行動に依存していないときは*Contextual Bandit Problem*と呼びます。状態が存在せず、最初は報酬が未知であるような行動の集合が与えられているとき、古典的な*multi-armed bandit problem*と呼ばれています。
 
 ## 起源
 
