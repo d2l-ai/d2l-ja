@@ -1,81 +1,79 @@
-# Data Manipulation
+# データの取り扱い
 
-It is impossible to get anything done if we cannot manipulate data. Generally, there are two important things we need to do with data: (i) acquire it and (ii) process it once it is inside the computer. There is no point in acquiring data if we do not even know how to store it, so let's get our hands dirty first by playing with synthetic data. We will start by introducing the NDArray,
-MXNet's primary tool for storing and transforming data. If you have worked with NumPy before, you will notice that NDArrays are, by design, similar to NumPy's multi-dimensional array. However, they confer a few key advantages. First, NDArrays support asynchronous computation on CPU, GPU, and distributed cloud architectures. Second, they provide support for automatic differentiation. These properties make NDArray indispensable for deep learning.
+データを操作できなければ、何も行うことはできません。一般的に、データを処理する上で重要なことは次の2点です。（i）データを獲得すること、および（ii）コンピュータに取り込んだらそれを処理することです。データの保存方法さえわからなければ、データを獲得することに意味がありません。合成データを利用して実際に触ってみましょう。まず、NDArrayというデータを保存・変換するためのMXNetの主要なツールを紹介します。 NumPyを以前に使用したことがあれば、NDArrayは設計上、NumPyの多次元配列に似ていることがわかります。ただし、NDArrayにはいくつかの重要な利点があります。まず、NDArrayは、CPU、GPU、および分散クラウドアーキテクチャでの非同期計算をサポートしています。第二に、それらは自動微分をサポートしています。これらの特性によって、NDArrayは深層学習に必要不可欠なものとなっています。
 
-## Getting Started
+## まずはじめに
 
-Throughout this chapter, we are aiming to get you up and running with the basic functionality. Do not worry if you do not understand all of the basic math, like element-wise operations or normal distributions. In the next two chapters we will take another pass at the same material, teaching the material in the context of practical examples. On the other hand, if you want to go deeper into the mathematical content, see the ["Math"](../chapter_appendix/math.md) section in the appendix.
+この章を通して、読者の最初のステップを支援することを目的とし、基本的な機能について話を進めていきます。Element-wiseな演算や正規分布など、基本的な数学のすべてを理解していなくても心配しないでください。以降の2つの章では、同じコンテンツについて別の見方をし、実践的な例にもとづいてその内容を解説します。一方、数学的な内容を詳しく知りたい場合は、付録の["Math"](../chapter_appendix/math.md) のセクションを参照してください。
 
-We begin by importing MXNet and the `ndarray` module from MXNet.
-Here, `nd` is short for `ndarray`.
+MXNetとMXNetから `ndarray`モジュールをインポートすることから始めます。ここで、`nd` は `ndarray` の短縮形です。
+
 
 ```{.python .input  n=1}
 import mxnet as mx
 from mxnet import nd
 ```
 
+NDArraysは数値の (多次元の) 配列を表します。 1軸のNDArrayは(数学的には)*vector*に対応します。2軸のNDArrayは*行列*に対応します。3つ以上の軸を持つ配列に関しては、数学者は特別な名前を与えていません - 単にそれらを*テンソル*と呼びます。
 
-NDArrays represent (possibly multi-dimensional) arrays of numerical values. NDArrays with one axis correspond (in math-speak) to *vectors*. NDArrays with two axes correspond to *matrices*. For arrays with more than two axes, mathematicians do not have special names---they simply call them *tensors*.
+作成できる最も単純なオブジェクトはベクトルです。まず始めに、 `arange`を使って12個の連続した整数をもつ行ベクトルを作りましょう。
 
-The simplest object we can create is a vector. To start, we can use `arange` to create a row vector with 12 consecutive integers.
 
 ```{.python .input  n=2}
 x = nd.arange(12)
 x
 ```
+`x`を標準出力すると`<NDArray 12 @cpu（0）>`というプロパティを見ることができます。これは`x`が長さ12の1次元配列であり、それがCPUのメインメモリにあることを示します。 `@cpu(0)`の0は特別な意味を持たず、特定のコアを表すものでもありません。
 
-When we print `x`, we can observe the property `<NDArray 12 @cpu(0)>` listed, which indicates that `x` is a one-dimensional array of length 12 and that it resides in CPU main memory. The 0 in `@cpu(0)` has no special meaning and does not represent a specific core.
-
-We can get the NDArray instance shape through the `shape` property.
+NDArrayインスタンスの形状は `shape`のプロパティを利用して確認することができます。
 
 ```{.python .input  n=8}
 x.shape
 ```
 
-We can also get the total number of elements in the NDArray instance through the `size` property. This is the product of the elements of the shape. Since we are dealing with a vector here, both are identical.
+`size`のプロパティから、NDArrayインスタンスの要素の総数を得ることもできます。これは`shape`の要素の積となります。ここではベクトルを扱っているので、`size`も`shape`も同じ数になります。
+
 
 ```{.python .input  n=9}
 x.size
 ```
 
-We use the `reshape` function to change the shape of one (possibly multi-dimensional) array, to another that contains the same number of elements.
-For example, we can transform the shape of our line vector `x` to (3, 4), which contains the same values but interprets them as a matrix containing 3 rows and 4 columns. Note that although the shape has changed, the elements in `x` have not. Moreover, the `size` remains the same.
+ある一つの(多次元の)配列のshapeを、同じ数の要素を含む別のものに変えるためには`reshape`関数を使います。
+たとえば、行ベクトル`x`のshapeを(3, 4)に変換できます。これは同じ値を含みますが、3行4列の行列として解釈されます。shapeは変わっていますが、`x`の要素は変わっていないことに注意してください。`size`は同じままです。
+
 
 ```{.python .input  n=3}
 x = x.reshape((3, 4))
 x
 ```
 
-Reshaping by manually specifying each of the dimensions can get annoying. Once we know one of the dimensions, why should we have to perform the division our selves to determine the other? For example, above, to get a matrix with 3 rows, we had to specify that it should have 4 columns (to account for the 12 elements). Fortunately, NDArray can automatically work out one dimension given the other. We can invoke this capability by placing `-1` for the dimension that we would like NDArray to automatically infer. In our case, instead of
-`x.reshape((3, 4))`, we could have equivalently used `x.reshape((-1, 4))` or `x.reshape((3, -1))`.
+各次元をそれぞれ手動で指定してreshapeすることは面倒なことがあります。一方の次元がわかっていれば、もう一方の次元を決定するために、わざわざ割り算を実行する必要があるでしょうか? たとえば、上の例では、3行の行列を取得するために、4列をもつように別途指定する必要がありました（12要素を考慮して）。幸いなことに、NDArrayは自動的に一方の次元から他方の次元を決定することができます。 NDArrayに自動的に推測させたい次元に `-1`を配置します。さきほどの例では `x.reshape((3, 4))`の代わりに、 `x.reshape((-1, 4))`または `x.reshape((3,-1))`を使用することが可能です。
+
 
 ```{.python .input}
 nd.empty((3, 4))
 ```
+`empty`のメソッドは、いくらかのメモリを確保して、その要素に対していずれの値も設定せずに行列を返します。これは非常に効率的ですが、各要素は非常に大きな値も含め、任意の値を取る可能性があります。通常は、行列を、1、ゼロ、既知の定数、または既知の分布から無作為に抽出された数値のいずれかで初期化しようとするでしょう。
 
-The `empty` method just grabs some memory and hands us back a matrix without setting the values of any of its entries. This is very efficient but it means that the entries might take any arbitrary values, including very big ones! Typically, we'll want our matrices initialized either with ones, zeros, some known constant or numbers randomly sampled from a known distribution.
-
-Perhaps most often, we want an array of all zeros. To create an NDArray representing a tensor with all elements set to 0 and a shape of (2, 3, 4) we can invoke:
+そして、ほとんどの場合、すべてゼロの配列を必要とするでしょう。すべての要素が0、shapeが(2,3,4)であるようなテンソルを表すNDArrayを作成するには、以下を実行します。
 
 ```{.python .input  n=4}
 nd.zeros((2, 3, 4))
 ```
 
-We can create tensors with each element set to 1 works via
+すべての要素が1であるようなテンソルを作成するためには以下を実行します。
 
 ```{.python .input  n=5}
 nd.ones((2, 3, 4))
 ```
-
-We can also specify the value of each element in the desired NDArray by supplying a Python list containing the numerical values.
+数値の値を含む Python のリストを与えることで、特定の値を要素にもつNDArrayを作成することもできます。
 
 ```{.python .input  n=6}
 y = nd.array([[2, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]])
 y
 ```
 
-In some cases, we will want to randomly sample the values of each element in the NDArray according to some known probability distribution. This is especially common when we intend to use the array as a parameter in a neural network. The following snippet creates an NDArray with a shape of (3,4). Each of its elements is randomly sampled in a normal distribution with zero mean and unit variance.
+場合によっては、既知の確率分布に従って、NDArrayの各要素の値をランダムにサンプリングすることもあるでしょう。これは、ニューラルネットワークにおけるパラメータとして、配列を使用しようとする際に特に一般的に行われています。次のスニペットは、(3, 4)の形状をもつNDArrayを作成します。その要素は平均がゼロで分散が1の正規分布から無作為にサンプリングされた値をもちます。
 
 ```{.python .input  n=7}
 nd.random.normal(0, 1, shape=(3, 4))
