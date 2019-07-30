@@ -1,40 +1,19 @@
-# Linear Algebra
+# 線形代数
 
-Now that you can store and manipulate data,
-let's briefly review the subset of basic linear algebra
-that you will need to understand most of the models.
-We will introduce all the basic concepts,
-the corresponding mathematical notation,
-and their realization in code all in one place.
-If you are already confident in your basic linear algebra,
-feel free to skim through or skip this chapter.
+データを保存・操作できるようになったので、ほとんどのモデルを理解するために必要となる、基本的な線形代数の一部を簡単に見てみましょう。基本的な概念、それに対応する数学的表記、そしてそれらを実現する方法を1か所で紹介します。基本的な線形代数にすでに自信がある場合は、この章を読み飛ばすか、スキップしてください。
 
 ```{.python .input}
 from mxnet import nd
 ```
 
-## Scalars
+## スカラー
 
-If you never studied linear algebra or machine learning,
-you are probably used to working with one number at a time.
-And know how to do basic things like add them together or multiply them.
-For example, in Palo Alto, the temperature is $52$ degrees Fahrenheit.
-Formally, we call these values $scalars$.
-If you wanted to convert this value to Celsius (using metric system's more sensible unit of temperature measurement),
-you would evaluate the expression $c = (f - 32) * 5/9$ setting $f$ to $52$.
-In this equation, each of the terms $32$, $5$, and $9$ is a scalar value.
-The placeholders $c$ and $f$ that we use are called variables
-and they represent unknown scalar values.
+これまで線形代数や機械学習を勉強したことがなかったとしたら、おそらく一度に1つの数だけを扱ってきたかもしれません。そして、それらを一緒に足したり、掛けたりするといった基本的な方法はご存知でしょう。パロアルトの気温が華氏52度というのを例にあげましょう。正式には、これらの値を*スカラー*と呼びます。この値を摂氏に変換したい場合 (温度測定する単位としてメートル法が採用するより賢明な方法)、$f$を$52$として、式$c（f-32）* 5/9$を評価します。この式において、$32$、$5$、および$9$の各項はスカラー値です。何らかの値を代入するためのプレースホルダー$c$と$f$は変数と呼ばれ、それらは未知のスカラー値を表します。
 
-In mathematical notation, we represent scalars with ordinary lower-cased letters ($x$, $y$, $z$).
-We also denote the space of all scalars as $\mathcal{R}$.
-For expedience, we are going to punt a bit on what precisely a space is,
-but for now, remember that if you want to say that $x$ is a scalar,
-you can simply say $x \in \mathcal{R}$.
-The symbol $\in$ can be pronounced "in" and just denotes membership in a set.
+数学的な表記では、スカラーを通常の小文字 ($x$、$y$、$z$) で表します。また、すべてのスカラーがとりうる空間を$\mathcal{R}$と表します。便宜上、空間とは何かについて少し説明しますが、今のところ、$x$がスカラーであると言いたい場合には、単に$x\in \mathcal{R}$と記述することにします。$ \in$という記号は"in (イン)"と発音でき、集合の要素であることを表します。
 
-In MXNet, we work with scalars by creating NDArrays with just one element.
-In this snippet, we instantiate two scalars and perform some familiar arithmetic operations with them, such as addition, multiplication, division and exponentiation.
+MXNetでは、1つの要素だけをもつNDArrayを作成することでスカラーを扱います。以下のスニペットでは、2つのスカラーをインスタンス化し、加算、乗算、除算、べき乗など、使い慣れた算術演算を実行します。
+
 
 ```{.python .input}
 x = nd.array([3.0])
@@ -45,69 +24,43 @@ print('x * y = ', x * y)
 print('x / y = ', x / y)
 print('x ** y = ', nd.power(x,y))
 ```
-
-We can convert any NDArray to a Python float by calling its `asscalar` method. Note that this is typically a bad idea. While you are doing this, NDArray has to stop doing anything else in order to hand the result and the process control back to Python. And unfortunately Python is not very good at doing things in parallel. So avoid sprinkling this operation liberally throughout your code or your networks will take a long time to train.
+`asscalar`の関数を呼び出すことで、NDArrayをPythonのfloat型に変換することができます。通常、これは良い方法とはいえません。この変換を行っている間、結果とプロセス制御をPythonに戻すために、NDArrayは他のことを中断する必要があります。そして残念なことに、Pythonは並列処理が得意ではありません。そのため、この変換をコード全体に好き勝手に入れてしまえば、ネットワークの学習に長時間かかってしまうので、避けましょう。
 
 ```{.python .input}
 x.asscalar()
 ```
 
-## Vectors
+## ベクトル
 
-You can think of a vector as simply a list of numbers, for example ``[1.0,3.0,4.0,2.0]``.
-Each of the numbers in the vector consists of a single scalar value.
-We call these values the *entries* or *components* of the vector.
-Often, we are interested in vectors whose values hold some real-world significance.
-For example, if we are studying the risk that loans default,
-we might associate each applicant with a vector
-whose components correspond to their income,
-length of employment, number of previous defaults, etc.
-If we were studying the risk of heart attacks hospital patients potentially face,
-we might represent each patient with a vector
-whose components capture their most recent vital signs,
-cholesterol levels, minutes of exercise per day, etc.
-In math notation, we will usually denote vectors as bold-faced,
-lower-cased letters ($\mathbf{u}$, $\mathbf{v}$, $\mathbf{w})$.
-In MXNet, we work with vectors via 1D NDArrays with an arbitrary number of components.
+ベクトルは単に数字のリスト、例えば``[1.0,3.0,4.0,2.0]``、として考えることができます。ベクトル内の各数値は、単一のスカラー値で構成されています。これらの値をベクトルの*要素*や*成分* (英語では*entries*や*components*) と呼びます。多くの場合、実世界において意味のある値をもったベクトルに興味があると思います。たとえば、ローンの債務不履行のリスクを調査している場合、収入、雇用期間、過去の債務不履行の数などに対応する要素を持つベクトルに、各申請者を関連付けることができるでしょう。もし、病院の患者の心臓発作のリスクを調べる場合は、最新のバイタルサイン、コレステロール値、1日当たりの運動時間などからなるベクトルで、患者の状態を表すかもしれません。数学表記では、通常、太字の小文字でベクトル ($\mathbf{u}$、$ \mathbf{v}$、$\mathbf{w}$)を表します。MXNetでは、任意の数の要素をもつ1D NDArrayをベクトルとして使用します。
+
 
 ```{.python .input}
 x = nd.arange(4)
 print('x = ', x)
 ```
-
-We can refer to any element of a vector by using a subscript.
-For example, we can refer to the $4$th element of $\mathbf{u}$ by $u_4$.
-Note that the element $u_4$ is a scalar,
-so we do not bold-face the font when referring to it.
-In code, we access any element $i$ by indexing into the ``NDArray``.
+添字を使用して、ベクトルの任意の要素を参照することができます。たとえば、$\mathbf{u}$の$4$番目の要素を$u_4$で参照できます。要素$u_4$はスカラーなので、参照するときにフォントを太字にしないでください。コードでは、``NDArray``にインデックスを付けることで任意の要素$i$にアクセスします。
 
 ```{.python .input}
 x[3]
 ```
 
-## Length, dimensionality and shape
+## 長さ、次元、shape
 
-Let's revisit some concepts from the previous section. A vector is just an array of numbers. And just as every array has a length, so does every vector.
-In math notation, if we want to say that a vector $\mathbf{x}$ consists of $n$ real-valued scalars,
-we can express this as $\mathbf{x} \in \mathcal{R}^n$.
-The length of a vector is commonly called its $dimension$.
-As with an ordinary Python array, we can access the length of an NDArray
-by calling Python's in-built ``len()`` function.
+上の節からいくつかの概念を見直してみましょう。ベクトルは単に数値の配列です。そして、すべての配列が長さをもつのと同じように、すべてのベクトルも長さをもっています。ベクトル$\mathbf{x}$が$n$個の実数値スカラーで構成されているとき、数学的な表記を用いて、これを$\mathcal{R}^n$のように表現することができます。ベクトルの長さは通常、*次元*と呼ばれます。通常のPython配列と同様に、Pythonの組み込み関数``len() ``を呼び出すことでNDArrayの長さにアクセスできます。
 
-We can also access a vector's length via its `.shape` attribute.
-The shape is a tuple that lists the dimensionality of the NDArray along each of its axes.
-Because a vector can only be indexed along one axis, its shape has just one element.
+`.shape`属性を利用することで、ベクトルの長さにアクセスすることもできます。shapeは、NDArrayの各軸に沿った次元をリスト形式で表現するタプルです。ベクトルは1つの軸に沿ってインデックスされるため、shapeは1つの要素のみをもちます。
 
 ```{.python .input}
 x.shape
 ```
 
-Note that the word dimension is overloaded and this tends to confuse people.
-Some use the *dimensionality* of a vector to refer to its length (the number of components).
-However some use the word *dimensionality* to refer to the number of axes that an array has.
-In this sense, a scalar *would have* $0$ dimensions and a vector *would have* $1$ dimension.
 
-**To avoid confusion, when we say *2D* array or *3D* array, we mean an array with 2 or 3 axes respectively. But if we say *$n$-dimensional* vector, we mean a vector of length $n$.**
+英語では次元をdimensionといいますが、これが様々な意味をもつがゆえに、人々を混乱させる傾向にあります。そこで、*dimensionality*という単語を使って、ベクトルの*dimensionality*で長さ(つまりは要素数)を指すことがあります。しかし、 *dimensionality*という単語は、ときには配列がもつ軸の数を指すこともあります。この場合、スカラーは0次元をもっている、ベクトルは1次元をもっている、といった言い方をすることがあります。
+
+
+**混乱を避けるために、ここでは*2D*arrayまたは*3D*arrayと言う場合、それぞれ2軸または3軸の配列を意味します。しかし、もし私たちが$n$次元のvectorと言えば、長さ$n$のベクトルを意味します。**
+
 
 ```{.python .input}
 a = 2
