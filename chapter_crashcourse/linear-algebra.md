@@ -45,29 +45,22 @@ print('x = ', x)
 x[3]
 ```
 
-## Length, dimensionality and shape
+## 長さ、次元、shape
 
-Let's revisit some concepts from the previous section. A vector is just an array of numbers. And just as every array has a length, so does every vector.
-In math notation, if we want to say that a vector $\mathbf{x}$ consists of $n$ real-valued scalars,
-we can express this as $\mathbf{x} \in \mathcal{R}^n$.
-The length of a vector is commonly called its $dimension$.
-As with an ordinary Python array, we can access the length of an NDArray
-by calling Python's in-built ``len()`` function.
+上の節からいくつかの概念を見直してみましょう。ベクトルは単に数値の配列です。そして、すべての配列が長さをもつのと同じように、すべてのベクトルも長さをもっています。ベクトル$\mathbf{x}$が$n$個の実数値スカラーで構成されているとき、数学的な表記を用いて、これを$\mathcal{R}^n$のように表現することができます。ベクトルの長さは通常、*次元*と呼ばれます。通常のPython配列と同様に、Pythonの組み込み関数``len() ``を呼び出すことでNDArrayの長さにアクセスできます。
 
-We can also access a vector's length via its `.shape` attribute.
-The shape is a tuple that lists the dimensionality of the NDArray along each of its axes.
-Because a vector can only be indexed along one axis, its shape has just one element.
+`.shape`属性を利用することで、ベクトルの長さにアクセスすることもできます。shapeは、NDArrayの各軸に沿った次元をリスト形式で表現するタプルです。ベクトルは1つの軸に沿ってインデックスされるため、shapeは1つの要素のみをもちます。
 
 ```{.python .input}
 x.shape
 ```
 
-Note that the word dimension is overloaded and this tends to confuse people.
-Some use the *dimensionality* of a vector to refer to its length (the number of components).
-However some use the word *dimensionality* to refer to the number of axes that an array has.
-In this sense, a scalar *would have* $0$ dimensions and a vector *would have* $1$ dimension.
 
-**To avoid confusion, when we say *2D* array or *3D* array, we mean an array with 2 or 3 axes respectively. But if we say *$n$-dimensional* vector, we mean a vector of length $n$.**
+英語では次元をdimensionといいますが、これが様々な意味をもつがゆえに、人々を混乱させる傾向にあります。そこで、*dimensionality*という単語を使って、ベクトルの*dimensionality*で長さ(つまりは要素数)を指すことがあります。しかし、 *dimensionality*という単語は、ときには配列がもつ軸の数を指すこともあります。この場合、スカラーは0次元をもっている、ベクトルは1次元をもっている、といった言い方をすることがあります。
+
+
+**混乱を避けるために、ここでは*2D*arrayまたは*3D*arrayと言う場合、それぞれ2軸または3軸の配列を意味します。しかし、もし私たちが$n$次元のvectorと言えば、長さ$n$のベクトルを意味します。**
+
 
 ```{.python .input}
 a = 2
