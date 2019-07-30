@@ -154,22 +154,23 @@ a, b
 a + b
 ```
 
-## Indexing and Slicing
+## Indexing と Slicing
 
-Just like in any other Python array, elements in an NDArray can be accessed by its index. In good Python tradition the first element has index 0 and ranges are specified to include the first but not the last element. By this logic `1:3` selects the second and third element. Let's try this out by selecting the respective rows in a matrix.
+他のPython配列と同じように、NDArrayの要素はそのインデックスによってアクセスできます。 Pythonでは伝統的に、最初の要素のインデックスは0で、範囲を最初の要素を含んで最後の要素は含まないように指定します。つまりは`1：3`で指定される範囲は、2番目と3番目の要素を選択します (インデックス1と2が選ばれ、それぞれ2番めと3番めの要素)。行列のそれぞれの行を選択して試してみましょう。
+
 
 ```{.python .input  n=19}
 x[1:3]
 ```
-
-Beyond reading, we can also write elements of a matrix.
+上記で説明したように、行列の要素に値を書き込むこともできます。
 
 ```{.python .input  n=20}
 x[1, 2] = 9
 x
 ```
 
-If we want to assign multiple elements the same value, we simply index all of them and then assign them the value. For instance, `[0:2, :]` accesses the first and second rows. While we discussed indexing for matrices, this obviously also works for vectors and for tensors of more than 2 dimensions.
+複数の要素に同じ値を割り当てたい場合は、それらのすべてにインデックスに対して値を割り当てれば良いです。例えば、 `[0:2,:]`は1行目と2行目にアクセスします。以下では、それらの行に対して12を割り当てます。行列のindexingについて説明しましたが、いうまでもなくベクトルや2次元以上のテンソルに対しても同様のことが機能します。
+
 
 ```{.python .input  n=21}
 x[0:2, :] = 12
