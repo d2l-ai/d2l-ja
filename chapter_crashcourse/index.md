@@ -1,35 +1,7 @@
-#  The Preliminaries: A Crashcourse
+#  準備: A Crashcourse (短期集中コース)
 
-To get started with deep learning,
-we will need to develop a few basic skills.
-All machine learning is concerned
-with extracting information from data.
-So we will begin by learning the practical skills
-for storing and manipulating data with Apache MXNet.
-Moreover machine learning typically requires
-working with large datasets, which we can think of as tables,
-where the rows correspond to examples
-and the columns correspond to attributes.
-Linear algebra gives us a powerful set of techniques
-for working with tabular data.
-We won't go too far into the weeds but rather focus on the basic
-of matrix operations and their implementation in Apache MXNet.
-Additionally, deep learning is all about optimization.
-We have a model with some parameters and
-we want to find those that fit our data the *best*.
-Determining which way to move each parameter at each step of an algorithm
-requires a little bit of calculus.
-Fortunately, Apache MXNet's autograd package covers this for us,
-and we will cover it next.
-Next, machine learning is concerned with making predictions:
-*what is the likely value of some unknown attribute,
-given the information that we observe?*
-To reason rigorously under uncertainty
-we will need to invoke the language of probability and statistics.
-To conclude the chapter, we will present
-your first basic classifier, *Naive Bayes*.
-
-
+深層学習を始めるには、いくつかの基本的なスキルを身につける必要があります。すべての機械学習はデータから情報を抽出することに関係しています。そこで、Apache MXNetを使ってデータを保存し操作するための実践的なスキルを学ぶことから始めます。さらに機械学習では通常、大きなデータセットを扱う必要があります。データセットは、行がデータ例に対応し、列が属性に対応する表と考えることができます。線形代数は、表形式のデータを扱うための強力な手法を提供します。細かい部分にあまり深く入り込まずに、むしろ行列演算の基本とApache MXNetを利用したそれらの実装に着目します。そして、深層学習は最適化そのものです。いくつかのパラメータをもつモデルに対して、データにぴったり合うものを見つけたいのです。アルゴリズムの各ステップで、パラメータをどのように動かせばよいか決めるためには、少し計算が必要です。幸いなことに、Apache MXNetのautogradパッケージがこれをカバーしているので、それについて後に説明します。次に、機械学習は予測、つまり*観測した情報にもとづいて、未知の属性に対して尤もらしい値はなにかを決める*ことに関係しています。
+不確実性の下で厳密に推論するためには、確率と統計を使いこなす必要があります。この章を締めくくるために、最初の基本的な分類器である、*Naive Bayes*を紹介します。
 
 
 ```eval_rst
