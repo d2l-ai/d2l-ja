@@ -30,34 +30,16 @@ print('x ** y = ', nd.power(x,y))
 x.asscalar()
 ```
 
-## Vectors
+## ベクトル
 
-You can think of a vector as simply a list of numbers, for example ``[1.0,3.0,4.0,2.0]``.
-Each of the numbers in the vector consists of a single scalar value.
-We call these values the *entries* or *components* of the vector.
-Often, we are interested in vectors whose values hold some real-world significance.
-For example, if we are studying the risk that loans default,
-we might associate each applicant with a vector
-whose components correspond to their income,
-length of employment, number of previous defaults, etc.
-If we were studying the risk of heart attacks hospital patients potentially face,
-we might represent each patient with a vector
-whose components capture their most recent vital signs,
-cholesterol levels, minutes of exercise per day, etc.
-In math notation, we will usually denote vectors as bold-faced,
-lower-cased letters ($\mathbf{u}$, $\mathbf{v}$, $\mathbf{w})$.
-In MXNet, we work with vectors via 1D NDArrays with an arbitrary number of components.
+ベクトルは単に数字のリスト、例えば``[1.0,3.0,4.0,2.0]``、として考えることができます。ベクトル内の各数値は、単一のスカラー値で構成されています。これらの値をベクトルの*要素*や*成分* (英語では*entries*や*components*) と呼びます。多くの場合、実世界において意味のある値をもったベクトルに興味があると思います。たとえば、ローンの債務不履行のリスクを調査している場合、収入、雇用期間、過去の債務不履行の数などに対応する要素を持つベクトルに、各申請者を関連付けることができるでしょう。もし、病院の患者の心臓発作のリスクを調べる場合は、最新のバイタルサイン、コレステロール値、1日当たりの運動時間などからなるベクトルで、患者の状態を表すかもしれません。数学表記では、通常、太字の小文字でベクトル ($\mathbf{u}$、$ \mathbf{v}$、$\mathbf{w}$)を表します。MXNetでは、任意の数の要素をもつ1D NDArrayをベクトルとして使用します。
+
 
 ```{.python .input}
 x = nd.arange(4)
 print('x = ', x)
 ```
-
-We can refer to any element of a vector by using a subscript.
-For example, we can refer to the $4$th element of $\mathbf{u}$ by $u_4$.
-Note that the element $u_4$ is a scalar,
-so we do not bold-face the font when referring to it.
-In code, we access any element $i$ by indexing into the ``NDArray``.
+添字を使用して、ベクトルの任意の要素を参照することができます。たとえば、$\mathbf{u}$の$4$番目の要素を$u_4$で参照できます。要素$u_4$はスカラーなので、参照するときにフォントを太字にしないでください。コードでは、``NDArray``にインデックスを付けることで任意の要素$i$にアクセスします。
 
 ```{.python .input}
 x[3]
