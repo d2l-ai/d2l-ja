@@ -1,40 +1,19 @@
-# Linear Algebra
+# 線形代数
 
-Now that you can store and manipulate data,
-let's briefly review the subset of basic linear algebra
-that you will need to understand most of the models.
-We will introduce all the basic concepts,
-the corresponding mathematical notation,
-and their realization in code all in one place.
-If you are already confident in your basic linear algebra,
-feel free to skim through or skip this chapter.
+データを保存・操作できるようになったので、ほとんどのモデルを理解するために必要となる、基本的な線形代数の一部を簡単に見てみましょう。基本的な概念、それに対応する数学的表記、そしてそれらを実現する方法を1か所で紹介します。基本的な線形代数にすでに自信がある場合は、この章を読み飛ばすか、スキップしてください。
 
 ```{.python .input}
 from mxnet import nd
 ```
 
-## Scalars
+## スカラー
 
-If you never studied linear algebra or machine learning,
-you are probably used to working with one number at a time.
-And know how to do basic things like add them together or multiply them.
-For example, in Palo Alto, the temperature is $52$ degrees Fahrenheit.
-Formally, we call these values $scalars$.
-If you wanted to convert this value to Celsius (using metric system's more sensible unit of temperature measurement),
-you would evaluate the expression $c = (f - 32) * 5/9$ setting $f$ to $52$.
-In this equation, each of the terms $32$, $5$, and $9$ is a scalar value.
-The placeholders $c$ and $f$ that we use are called variables
-and they represent unknown scalar values.
+これまで線形代数や機械学習を勉強したことがなかったとしたら、おそらく一度に1つの数だけを扱ってきたかもしれません。そして、それらを一緒に足したり、掛けたりするといった基本的な方法はご存知でしょう。パロアルトの気温が華氏52度というのを例にあげましょう。正式には、これらの値を*スカラー*と呼びます。この値を摂氏に変換したい場合 (温度測定する単位としてメートル法が採用するより賢明な方法)、$f$を$52$として、式$c（f-32）* 5/9$を評価します。この式において、$32$、$5$、および$9$の各項はスカラー値です。何らかの値を代入するためのプレースホルダー$c$と$f$は変数と呼ばれ、それらは未知のスカラー値を表します。
 
-In mathematical notation, we represent scalars with ordinary lower-cased letters ($x$, $y$, $z$).
-We also denote the space of all scalars as $\mathcal{R}$.
-For expedience, we are going to punt a bit on what precisely a space is,
-but for now, remember that if you want to say that $x$ is a scalar,
-you can simply say $x \in \mathcal{R}$.
-The symbol $\in$ can be pronounced "in" and just denotes membership in a set.
+数学的な表記では、スカラーを通常の小文字 ($x$、$y$、$z$) で表します。また、すべてのスカラーがとりうる空間を$\mathcal{R}$と表します。便宜上、空間とは何かについて少し説明しますが、今のところ、$x$がスカラーであると言いたい場合には、単に$x\in \mathcal{R}$と記述することにします。$ \in$という記号は"in (イン)"と発音でき、集合の要素であることを表します。
 
-In MXNet, we work with scalars by creating NDArrays with just one element.
-In this snippet, we instantiate two scalars and perform some familiar arithmetic operations with them, such as addition, multiplication, division and exponentiation.
+MXNetでは、1つの要素だけをもつNDArrayを作成することでスカラーを扱います。以下のスニペットでは、2つのスカラーをインスタンス化し、加算、乗算、除算、べき乗など、使い慣れた算術演算を実行します。
+
 
 ```{.python .input}
 x = nd.array([3.0])
@@ -45,8 +24,7 @@ print('x * y = ', x * y)
 print('x / y = ', x / y)
 print('x ** y = ', nd.power(x,y))
 ```
-
-We can convert any NDArray to a Python float by calling its `asscalar` method. Note that this is typically a bad idea. While you are doing this, NDArray has to stop doing anything else in order to hand the result and the process control back to Python. And unfortunately Python is not very good at doing things in parallel. So avoid sprinkling this operation liberally throughout your code or your networks will take a long time to train.
+`asscalar`の関数を呼び出すことで、NDArrayをPythonのfloat型に変換することができます。通常、これは良い方法とはいえません。この変換を行っている間、結果とプロセス制御をPythonに戻すために、NDArrayは他のことを中断する必要があります。そして残念なことに、Pythonは並列処理が得意ではありません。そのため、この変換をコード全体に好き勝手に入れてしまえば、ネットワークの学習に長時間かかってしまうので、避けましょう。
 
 ```{.python .input}
 x.asscalar()
