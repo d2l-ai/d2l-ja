@@ -139,7 +139,8 @@ x.norm().asscalar()
 
 ## Broadcast の仕組み
 
-In the above section, we saw how to perform operations on two NDArrays of the same shape. When their shapes differ, a broadcasting mechanism may be triggered analogous to NumPy: first, copy the elements appropriately so that the two NDArrays have the same shape, and then carry out operations by element.
+上記の節では、同じshapeをもつ、2つのNDArrayに対する演算について説明しました。shapeが異なる場合は、NumPyと同様にBroadcastingが実行されます。まず、2つのNDArrayが同じ形状になるように要素を適切にコピーしてから、要素ごとに演算を実行します。
+
 
 ```{.python .input  n=14}
 a = nd.arange(3).reshape((3, 1))
@@ -147,7 +148,7 @@ b = nd.arange(2).reshape((1, 2))
 a, b
 ```
 
-Since `a` and `b` are (3x1) and (1x2) matrices respectively, their shapes do not match up if we want to add them. NDArray addresses this by 'broadcasting' the entries of both matrices into a larger (3x2) matrix as follows: for matrix `a` it replicates the columns, for matrix `b` it replicates the rows before adding up both element-wise.
+`a`と`b`はそれぞれ（3x1）と（1x2）の行列なので、これらの加算を行おうと思っても、shapeが互いに一致しません。 NDArrayは、両方の行列の要素を次のようにBroadcastすることで、より大きな（3×2）行列を生成し、これに対処します。行列`a`に対しては列を複製し、行列`b`に対しては行を複製し、最後に要素ごとに加算します。
 
 ```{.python .input}
 a + b
