@@ -6,7 +6,7 @@
 
 この章を通して、読者の最初のステップを支援することを目的とし、基本的な機能について話を進めていきます。Element-wiseな演算や正規分布など、基本的な数学のすべてを理解していなくても心配しないでください。以降の2つの章では、同じコンテンツについて別の見方をし、実践的な例にもとづいてその内容を解説します。一方、数学的な内容を詳しく知りたい場合は、付録の["Math"](../chapter_appendix/math.md) のセクションを参照してください。
 
-MXNetとMXNetから `ndarray`モジュールをインポートすることから始めます。ここで、`nd` は `ndarray` の短縮形です。
+MXNetのインポートおよびMXNetから `ndarray`モジュールのインポートから始めます。ここで、`nd` は `ndarray` の短縮形です。
 
 
 ```{.python .input  n=1}
@@ -81,7 +81,7 @@ nd.random.normal(0, 1, shape=(3, 4))
 
 ## 演算
 
-配列に対して関数を適用したいときは多いと思います。最も単純かつ便利な機能として要素ごとの (element-wise)の機能が挙げられます。これらは、2つの配列の対応する要素に対して、単一のスカラー演算を実行します。スカラーからスカラーへ写像するあらゆる関数に対して、element-wiseな関数を作成することができます。数学的な記法を使うと、以下の用に記述することができます: $f: \mathbb{R} \rightarrow \mathbb{R}$. 同じshapeの2つのベクトル$\mathbf{u}$と$\mathbf{v}$、関数$f$が与えられているとき、すべての$i$に対して、$c_i \gets f(u_i, v_i)$ となるようなベクトル$\mathbf{c} = F(\mathbf{u},\mathbf{v})$を作成することができます。
+配列に対して関数を適用したいときは多いと思います。最も単純かつ便利な機能として要素ごとの (element-wise)の機能が挙げられます。これらは、2つの配列の対応する要素に対して、単一のスカラー演算を実行します。スカラーからスカラーへ写像するあらゆる関数に対して、element-wiseな関数を作成することができます。数学的な記法を使うと、$f: \mathbb{R} \rightarrow \mathbb{R}$ といった記述になります。同じshapeの2つのベクトル$\mathbf{u}$と$\mathbf{v}$、関数$f$が与えられているとき、すべての$i$に対して、$c_i \gets f(u_i, v_i)$ となるようなベクトル$\mathbf{c} = F(\mathbf{u},\mathbf{v})$を作成することができます。
 
 ここで、スカラー関数をelement-wiseなベクトル演算に*置き換える*ことで、ベクトル値関数$F: \mathbb{R}^d \rightarrow \mathbb{R}^d$を作成することもできます。MXNetでは、基本的な数式演算である (+,-,/,\*,\*\*) はすべて、任意のshapeに対して、shapeが同じテンソルであれば、element-wiseな演算に*置き換える*ことが可能です。同じ shapeをもつ2つのテンソルおよび行列に対して、element-wiseな演算を行うことができます。
 
@@ -177,19 +177,20 @@ x[0:2, :] = 12
 x
 ```
 
-## Saving Memory
+## メモリの節約
 
-In the previous example, every time we ran an operation, we allocated new memory to host its results. For example, if we write `y = x + y`, we will dereference the matrix that `y` used to point to and instead point it at the newly allocated memory. In the following example we demonstrate this with Python's `id()` function, which gives us the exact address of the referenced object in memory. After running `y = y + x`, we will find that `id(y)` points to a different location. That is because Python first evaluates `y + x`, allocating new memory for the result and then subsequently redirects `y` to point at this new location in memory.
+前に紹介した例では、演算を実行するたびに、その結​​果を格納するために新しいメモリを割り当てていました。たとえば、 `y = x + y`と書くと、もともと`y`が指していた行列を間接参照し、代わりに新しく割り当てられたメモリを指します。以下の例では、Pythonの`id()`関数という、メモリの参照オブジェクトの正確なアドレスを返す関数を使って実際に説明します。`y = y + x`を実行した後、`id(y)`が別の場所を指していることがわかります。これは、Pythonが最初に`y + x`を評価し、その結果に新しいメモリを割り当て、それからメモリ内のこの新しい位置を指すように`y`をリダイレクトしているからです。
+
 
 ```{.python .input  n=15}
 before = id(y)
 y = y + x
 id(y) == before
 ```
+これが望まれない場合として、以下の2つが挙げられます。第一に、私たちは常に不必要なメモリ割り当てを行いたくありません。 機械学習では、数百メガバイトのパラメータがあり、1秒のうちにそれらすべてを複数回更新します。 通常は、これらの更新を*その場で実行(in-place)*します。 第二に、同じパラメータは複数の変数が参照しているかもしれません。 適切に更新しないと、メモリリークが発生し、誤って古いパラメータを参照する可能性があります。
 
-This might be undesirable for two reasons. First, we do not want to run around allocating memory unnecessarily all the time. In machine learning, we might have hundreds of megabytes of parameters and update all of them multiple times per second. Typically, we will want to perform these updates *in place*. Second, we might point at the same parameters from multiple variables. If we do not update in place, this could cause a memory leak, making it possible for us to inadvertently reference stale parameters.
+幸運にも、in-placeな演算は、MXNetでは簡単に行うことができます。sliceを利用して以前に確保された配列に対して、演算の結果を割り当てることができます。つまり、y[:] = <expression>とします。この挙動を示すために、0の要素ブロックを割り当てるzero_likeを利用して、行列のshapeをコピーします。
 
-Fortunately, performing in-place operations in MXNet is easy. We can assign the result of an operation to a previously allocated array with slice notation, e.g., `y[:] = <expression>`. To illustrate the behavior, we first clone the shape of a matrix using `zeros_like` to allocate a block of 0 entries.
 
 ```{.python .input  n=16}
 z = y.zeros_like()
@@ -198,7 +199,9 @@ z[:] = x + y
 print('id(z):', id(z))
 ```
 
-While this looks pretty, `x+y` here will still allocate a temporary buffer to store the result of `x+y` before copying it to `y[:]`. To make even better use of memory, we can directly invoke the underlying `ndarray` operation, in this case `elemwise_add`, avoiding temporary buffers. We do this by specifying the `out` keyword argument, which every `ndarray` operator supports:
+これはきれいに見えますが、ここでの`x + y'はそれを`y[:]`にコピーする前に`x + y`の結果を格納するための一時バッファを割り当てます。 さらにメモリを有効利用するためには、一時的なバッファを避けるような基盤的な`ndarray`を直接利用することができ、この場合は`elemwise_add`を利用します。
+
+基礎となる `ndarray`操作、この場合は` elemwise_add`を直接呼び出すことができます。 そして、すべての`ndarray`の演算がサポートしている、`out`というキーワードの引数を指定することで、以上のことを実現することができます。
 
 ```{.python .input  n=17}
 before = id(z)
@@ -206,7 +209,7 @@ nd.elemwise_add(x, y, out=z)
 id(z) == before
 ```
 
-If the value of `x ` is not reused in subsequent computations, we can also use `x[:] = x + y` or `x += y` to reduce the memory overhead of the operation.
+もし、`x`の値が以降の計算において再利用されないのであれば、その演算のオーバーヘッドを削減するために`x[:] = x + y` or `x += y` とすることも可能です。
 
 ```{.python .input  n=18}
 before = id(x)
@@ -214,7 +217,10 @@ x += y
 id(x) == before
 ```
 
-## Mutual Transformation of NDArray and NumPy
+## NDArrayとNumpyの相互変換
+
+Mutual Transformation of NDArray and NumPy
+MXNet NDArrayとNumPyとの間の変換は容易です。変換された配列はメモリを共有*しません*。 これは少し不便に感じるかもしれませんが、実は非常に重要です。CPUまたは複数GPUの1つで演算を実行する際、NumPyで何か実行する場合、同じメモリ領域でMXNetがその処理を待つということは望ましくありません。変換自体は`array`と` asnumpy`の関数によって行えます。
 
 Converting MXNet NDArrays to and from NumPy is easy. The converted arrays do *not* share memory. This minor inconvenience is actually quite important: when you perform operations on the CPU or one of the GPUs, you do not want MXNet having to wait whether NumPy might want to be doing something else with the same chunk of memory. The  `array` and `asnumpy` functions do the trick.
 
@@ -227,12 +233,12 @@ b = nd.array(a)
 print(type(b))
 ```
 
-## Exercises
+## 練習
 
-1. Run the code in this section. Change the conditional statement `x == y` in this section to `x < y` or `x > y`, and then see what kind of NDArray you can get.
-1. Replace the two NDArrays that operate by element in the broadcast mechanism with other shapes, e.g. three dimensional tensors. Is the result the same as expected?
-1. Assume that we have three matrices `a`, `b` and `c`. Rewrite `c = nd.dot(a, b.T) + c` in the most memory efficient manner.
+1. この節のコードを実行しましょう。この節の条件文 `x == y`を`x < y`または`x > y`に変更して、どのようなNDArrayを得られるか確認してください。
+1. Broadcastの仕組みで要素ごとの演算を行った2つのNDArraysを別のshapeに変えてみましょう。例えば、三次元テンソルです。結果は予想と同じでしょうか?
+1. 3つの行列a, b, cがあるとします。 コード`c = nd.dot（a, b.T）+ c`を、最もメモリ効率の良い方法に書き換えてください。
 
-## Scan the QR Code to [Discuss](https://discuss.mxnet.io/t/2316)
+## [議論](https://discuss.mxnet.io/t/2316)のためのQRコードをスキャン
 
 ![](../img/qr_ndarray.svg)
