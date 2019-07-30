@@ -219,10 +219,8 @@ id(x) == before
 
 ## NDArrayとNumpyの相互変換
 
-Mutual Transformation of NDArray and NumPy
 MXNet NDArrayとNumPyとの間の変換は容易です。変換された配列はメモリを共有*しません*。 これは少し不便に感じるかもしれませんが、実は非常に重要です。CPUまたは複数GPUの1つで演算を実行する際、NumPyで何か実行する場合、同じメモリ領域でMXNetがその処理を待つということは望ましくありません。変換自体は`array`と` asnumpy`の関数によって行えます。
 
-Converting MXNet NDArrays to and from NumPy is easy. The converted arrays do *not* share memory. This minor inconvenience is actually quite important: when you perform operations on the CPU or one of the GPUs, you do not want MXNet having to wait whether NumPy might want to be doing something else with the same chunk of memory. The  `array` and `asnumpy` functions do the trick.
 
 ```{.python .input  n=22}
 import numpy as np
