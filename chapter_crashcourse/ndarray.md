@@ -79,10 +79,11 @@ y
 nd.random.normal(0, 1, shape=(3, 4))
 ```
 
-## Operations
+## 演算
 
-Oftentimes, we want to apply functions to arrays. Some of the simplest and most useful functions are the element-wise functions. These operate by performing a single scalar operation on the corresponding elements of two arrays. We can create an element-wise function from any function that maps from the scalars to the scalars. In math notations we would denote such a function as $f: \mathbb{R} \rightarrow \mathbb{R}$. Given any two vectors $\mathbf{u}$ and $\mathbf{v}$ *of the same shape*, and the function f,
-we can produce a vector $\mathbf{c} = F(\mathbf{u},\mathbf{v})$ by setting $c_i \gets f(u_i, v_i)$ for all $i$. Here, we produced the vector-valued $F: \mathbb{R}^d \rightarrow \mathbb{R}^d$ by *lifting* the scalar function to an element-wise vector operation. In MXNet, the common standard arithmetic operators (+,-,/,\*,\*\*) have all been *lifted* to element-wise operations for identically-shaped tensors of arbitrary shape. We can call element-wise operations on any two tensors of the same shape, including matrices.
+配列に対して関数を適用したいときは多いと思います。最も単純かつ便利な機能として要素ごとの (element-wise)の機能が挙げられます。これらは、2つの配列の対応する要素に対して、単一のスカラー演算を実行します。スカラーからスカラーへ写像するあらゆる関数に対して、element-wiseな関数を作成することができます。数学的な記法を使うと、以下の用に記述することができます: $f: \mathbb{R} \rightarrow \mathbb{R}$. 同じshapeの2つのベクトル$\mathbf{u}$と$\mathbf{v}$、関数$f$が与えられているとき、すべての$i$に対して、$c_i \gets f(u_i, v_i)$ となるようなベクトル$\mathbf{c} = F(\mathbf{u},\mathbf{v})$を作成することができます。
+
+ここで、スカラー関数をelement-wiseなベクトル演算に*置き換える*ことで、ベクトル値関数$F: \mathbb{R}^d \rightarrow \mathbb{R}^d$を作成することもできます。MXNetでは、基本的な数式演算である (+,-,/,\*,\*\*) はすべて、任意のshapeに対して、shapeが同じテンソルであれば、element-wiseな演算に*置き換える*ことが可能です。同じ shapeをもつ2つのテンソルおよび行列に対して、element-wiseな演算を行うことができます。
 
 ```{.python .input}
 x = nd.array([1, 2, 4, 8])
@@ -94,13 +95,14 @@ print('x * y', x * y)
 print('x / y', x / y)
 ```
 
-Many more operations can be applied element-wise, such as exponentiation:
+より多くの演算をelement-wiseに適用することも可能です。例えば指数関数の場合は:
 
 ```{.python .input  n=12}
 x.exp()
 ```
 
-In addition to computations by element, we can also perform matrix operations, like matrix multiplication using the `dot` function. Next, we will perform matrix multiplication of `x` and the transpose of `y`. We define `x` as a matrix of 3 rows and 4 columns, and `y` is transposed into a matrix of 4 rows and 3 columns. The two matrices are multiplied to obtain a matrix of 3 rows and 3 columns (if you are confused about what this means, do not worry - we will explain matrix operations in much more detail in the chapter on [linear algebra](linear-algebra.md)).
+要素ごとの計算に加えて、`dot`関数を使った行列の乗算のような行列演算も実行できます。以下では、`x`と`y`の転置に対して、行列の演算を実行します。 `x`を3行4列の行列として定義し、`y`を4行3列の行列に転置します。 2つの行列の掛け算を計算することで3行3列の行列が得られます (これが何を意味するのか混乱していても心配しないでください。[線形代数](linear-algebra.md)の章で行列演算についてさらに詳しく説明します。)
+
 
 ```{.python .input  n=13}
 x = nd.arange(12).reshape((3,4))
@@ -108,36 +110,37 @@ y = nd.array([[2, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]])
 nd.dot(x, y.T)
 ```
 
-We can also merge multiple NDArrays. For that, we need to tell the system along which dimension to merge. The example below merges two matrices along dimension 0 (along rows) and dimension 1 (along columns) respectively.
+複数のNDArrayを結合することもできます。そのためには、どの次元で結合するかをシステムに伝える必要があります。以下の例は、次元0 (行に沿って) と次元1 (列に沿って) に沿って2つの行列をそれぞれ結合します。
 
 ```{.python .input}
 nd.concat(x, y, dim=0)
 nd.concat(x, y, dim=1)
 ```
 
-Sometimes, we may want to construct binary NDArrays via logical statements. Take `x == y` as an example. If `x` and `y` are equal for some entry, the new NDArray has a value of 1 at the same position; otherwise it is 0.
+ときには、論理式を使って2値のNDArrayを作成したいと思うかもしれません。例えば `x == y`を取り上げましょう。ある、要素に関して`x`と`y`が等しい場合、新しく作成されるNDArrayにおいて、その要素と同じ位置には1の値が入ります。それ以外の場合は0です。
 
 ```{.python .input}
 x == y
 ```
-
-Summing all the elements in the NDArray yields an NDArray with only one element.
+NDArrayにおける全要素の和を計算すると、その和だけを唯一の要素としてもつNDArrayを生成します。
 
 ```{.python .input}
 x.sum()
 ```
 
-We can transform the result into a scalar in Python using the `asscalar` function. In the following example, the $\ell_2$ norm of `x` yields a single element NDArray. The final result is transformed into a scalar.
+`asscalar`関数を使って、結果をPythonのスカラーに変換することができます。次の例では、`x`の$\ell_2$ノルムが、単一の要素をもつNDArrayを生成し、その結果は`asscalar`によってスカラーに変換されます。
 
 ```{.python .input}
 x.norm().asscalar()
 ```
 
-For stylistic convenience, we can write `y.exp()`, `x.sum()`, `x.norm()`, etc. also as `nd.exp(y)`, `nd.sum(x)`, `nd.norm(x)`.
+またプログラミングの利便性から、`y.exp()`, `x.sum()`, `x.norm()`と書くこともできますし、 `nd.exp(y)`, `nd.sum(x)`, `nd.norm(x)`と書くこともできます。
 
-## Broadcast Mechanism
 
-In the above section, we saw how to perform operations on two NDArrays of the same shape. When their shapes differ, a broadcasting mechanism may be triggered analogous to NumPy: first, copy the elements appropriately so that the two NDArrays have the same shape, and then carry out operations by element.
+## Broadcast の仕組み
+
+上記の節では、同じshapeをもつ、2つのNDArrayに対する演算について説明しました。shapeが異なる場合は、NumPyと同様にBroadcastingが実行されます。まず、2つのNDArrayが同じ形状になるように要素を適切にコピーしてから、要素ごとに演算を実行します。
+
 
 ```{.python .input  n=14}
 a = nd.arange(3).reshape((3, 1))
@@ -145,28 +148,29 @@ b = nd.arange(2).reshape((1, 2))
 a, b
 ```
 
-Since `a` and `b` are (3x1) and (1x2) matrices respectively, their shapes do not match up if we want to add them. NDArray addresses this by 'broadcasting' the entries of both matrices into a larger (3x2) matrix as follows: for matrix `a` it replicates the columns, for matrix `b` it replicates the rows before adding up both element-wise.
+`a`と`b`はそれぞれ（3x1）と（1x2）の行列なので、これらの加算を行おうと思っても、shapeが互いに一致しません。 NDArrayは、両方の行列の要素を次のようにBroadcastすることで、より大きな（3×2）行列を生成し、これに対処します。行列`a`に対しては列を複製し、行列`b`に対しては行を複製し、最後に要素ごとに加算します。
 
 ```{.python .input}
 a + b
 ```
 
-## Indexing and Slicing
+## Indexing と Slicing
 
-Just like in any other Python array, elements in an NDArray can be accessed by its index. In good Python tradition the first element has index 0 and ranges are specified to include the first but not the last element. By this logic `1:3` selects the second and third element. Let's try this out by selecting the respective rows in a matrix.
+他のPython配列と同じように、NDArrayの要素はそのインデックスによってアクセスできます。 Pythonでは伝統的に、最初の要素のインデックスは0で、範囲を最初の要素を含んで最後の要素は含まないように指定します。つまりは`1：3`で指定される範囲は、2番目と3番目の要素を選択します (インデックス1と2が選ばれ、それぞれ2番めと3番めの要素)。行列のそれぞれの行を選択して試してみましょう。
+
 
 ```{.python .input  n=19}
 x[1:3]
 ```
-
-Beyond reading, we can also write elements of a matrix.
+上記で説明したように、行列の要素に値を書き込むこともできます。
 
 ```{.python .input  n=20}
 x[1, 2] = 9
 x
 ```
 
-If we want to assign multiple elements the same value, we simply index all of them and then assign them the value. For instance, `[0:2, :]` accesses the first and second rows. While we discussed indexing for matrices, this obviously also works for vectors and for tensors of more than 2 dimensions.
+複数の要素に同じ値を割り当てたい場合は、それらのすべてにインデックスに対して値を割り当てれば良いです。例えば、 `[0:2,:]`は1行目と2行目にアクセスします。以下では、それらの行に対して12を割り当てます。行列のindexingについて説明しましたが、いうまでもなくベクトルや2次元以上のテンソルに対しても同様のことが機能します。
+
 
 ```{.python .input  n=21}
 x[0:2, :] = 12
