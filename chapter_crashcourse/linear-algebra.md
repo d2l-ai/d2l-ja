@@ -34,7 +34,7 @@ x.asscalar()
 
 ## ベクトル
 
-ベクトルは単に数字のリスト、例えば``[1.0,3.0,4.0,2.0]``、として考えることができます。ベクトル内の各数値は、単一のスカラー値で構成されています。これらの値をベクトルの*要素*や*成分* (英語では*entries*や*components*) と呼びます。多くの場合、実世界において意味のある値をもったベクトルに興味があると思います。たとえば、ローンの債務不履行のリスクを調査している場合、収入、雇用期間、過去の債務不履行の数などに対応する要素を持つベクトルに、各申請者を関連付けることができるでしょう。もし、病院の患者の心臓発作のリスクを調べる場合は、最新のバイタルサイン、コレステロール値、1日当たりの運動時間などからなるベクトルで、患者の状態を表すかもしれません。数学表記では、通常、太字の小文字でベクトル ($\mathbf{u}$、$\mathbf{v}$、$\mathbf{w}$)を表します。MXNetでは、任意の数の要素をもつ1D NDArrayをベクトルとして使用します。
+ベクトルは単に数字のリスト、例えば``[1.0,3.0,4.0,2.0]``、として考えることができます。ベクトル内の各数値は、単一のスカラー値で構成されています。これらの値をベクトルの*要素*や*成分* (英語では *entries* や *components*) と呼びます。多くの場合、実世界において意味のある値をもったベクトルに興味があると思います。たとえば、ローンの債務不履行のリスクを調査している場合、収入、雇用期間、過去の債務不履行の数などに対応する要素を持つベクトルに、各申請者を関連付けることができるでしょう。もし、病院の患者の心臓発作のリスクを調べる場合は、最新のバイタルサイン、コレステロール値、1日当たりの運動時間などからなるベクトルで、患者の状態を表すかもしれません。数学表記では、通常、太字の小文字でベクトル ($\mathbf{u}$、$\mathbf{v}$、$\mathbf{w}$)を表します。MXNetでは、任意の数の要素をもつ1D NDArrayをベクトルとして使用します。
 
 
 ```{.python .input}
@@ -119,8 +119,6 @@ print('X =', X)
 
 スカラー、ベクトル、行列、そして任意の次数のテンソルは、頼りになる良い性質をもっています。たとえば、element-wiseな演算の定義で気付いた方もいるかもしれませんが、同じshapeの計算対象が与えられた場合、element-wiseな演算の結果は同じshapeのテンソルになります。もう1つの便利な性質は、すべてのテンソルに対して、スカラーを掛けると同じshapeのテンソルが生成されることです。数学的には、同じshapeの2つのテンソル$X$と$Y$を考えると、$\alpha X+Y$は同じshapeになります (数値計算の専門家はこれをAXPY操作と呼びます)。
 
-Scalars, vectors, matrices, and tensors of any order have some nice properties that we will often rely on. For example, as you might have noticed from the definition of an element-wise operation, given operands with the same shape, the result of any element-wise operation is a tensor of that same shape. Another convenient property is that for all tensors, multiplication by a scalar produces a tensor of the same shape. In math, given two tensors $X$ and $Y$ with the same shape, $\alpha X + Y$ has the same shape (numerical mathematicians call this the AXPY operation).
-
 ```{.python .input}
 a = 2
 x = nd.ones(3)
@@ -130,7 +128,6 @@ print(y.shape)
 print((a * x).shape)
 print((a * x + y).shape)
 ```
-
 
 shapeはスカラーの加算と乗算によってのみ保存されるわけではありません。これらの演算は、あるベクトル空間へ属していることも保持します。ただし、最初のモデルを起動させる上で、それほど重要ではないため、この章の後半までこの説明を先延ばしにします。
 
