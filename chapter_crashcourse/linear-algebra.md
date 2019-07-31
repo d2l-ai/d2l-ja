@@ -32,10 +32,6 @@ x.asscalar()
 ```
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> root_branch/master
 ## ベクトル
 
 ベクトルは単に数字のリスト、例えば``[1.0,3.0,4.0,2.0]``、として考えることができます。ベクトル内の各数値は、単一のスカラー値で構成されています。これらの値をベクトルの*要素*や*成分* (英語では*entries*や*components*) と呼びます。多くの場合、実世界において意味のある値をもったベクトルに興味があると思います。たとえば、ローンの債務不履行のリスクを調査している場合、収入、雇用期間、過去の債務不履行の数などに対応する要素を持つベクトルに、各申請者を関連付けることができるでしょう。もし、病院の患者の心臓発作のリスクを調べる場合は、最新のバイタルサイン、コレステロール値、1日当たりの運動時間などからなるベクトルで、患者の状態を表すかもしれません。数学表記では、通常、太字の小文字でベクトル ($\mathbf{u}$、$\mathbf{v}$、$\mathbf{w}$)を表します。MXNetでは、任意の数の要素をもつ1D NDArrayをベクトルとして使用します。
@@ -78,14 +74,10 @@ print(a * x + y)
 
 
 
-## Matrices
+## 行列
 
-Just as vectors generalize scalars from order $0$ to order $1$,
-matrices generalize vectors from $1D$ to $2D$.
-Matrices, which we'll typically denote with capital letters ($A$, $B$, $C$),
-are represented in code as arrays with 2 axes.
-Visually, we can draw a matrix as a table,
-where each entry $a_{ij}$ belongs to the $i$-th row and $j$-th column.
+ベクトルがスカラーを0次から1次に一般化したもののように、行列はベクトルを$1D$から$2D$に一般化したものになります。通常、大文字 ($A$、$B$、$C$) で表す行列は、コードのなかでは2つの軸をもつ配列として表されます。視覚的には、各エントリ$a_{ij}$が$i$番目の行と$j$番目の列に属するような表として、行列を表現することができます。
+
 
 
 $$A=\begin{pmatrix}
@@ -95,31 +87,27 @@ $$A=\begin{pmatrix}
  a_{n1} & a_{n2} & \cdots & a_{nm} \\
 \end{pmatrix}$$
 
-We can create a matrix with $n$ rows and $m$ columns in MXNet
-by specifying a shape with two components `(n,m)`
-when calling any of our favorite functions for instantiating an `ndarray`
-such as `ones`, or `zeros`.
+`ones`や`zeros`といった`ndarray`をインスタンス化するためによく用いられる関数を呼ぶ際に、2つの要素 `(n, m)` でshapeを指定すると、MXNetで$n$行$m$列の行列を作成できます。
 
 ```{.python .input}
 A = nd.arange(20).reshape((5,4))
 print(A)
 ```
+行列は便利なデータ構造です。行列を使用することで、さまざまなバリエーションをもつデータを構成できます。たとえば、行列の行が各患者に対応し、列が異なる属性に対応するといったことを表現できるでしょう。
 
-Matrices are useful data structures: they allow us to organize data that has different modalities of variation. For example, rows in our matrix might correspond to different patients, while columns might correspond to different attributes.
+行 ($i$) と列 ($j$) のインデックスを指定することで、行列$A$のスカラー要素$a_{ij}$にアクセスすることができます。 `:`を利用してインデックスを指定しなければ、それぞれの次元に沿ってすべての要素をとることができます (前の節で説明しました)。
 
-We can access the scalar elements $a_{ij}$ of a matrix $A$ by specifying the indices for the row ($i$) and column ($j$) respectively. Leaving them blank via a `:` takes all elements along the respective dimension (as seen in the previous section).
-
-We can transpose the matrix through `T`. That is, if $B = A^T$, then $b_{ij} = a_{ji}$ for any $i$ and $j$.
+行列は`T`で転置することができます。つまり、$B=A^T$の場合、すべての$i$および$j$に対して、$b_{ij}=a_{ji}$が成立します。
 
 ```{.python .input}
 print(A.T)
 ```
 
-## Tensors
+## テンソル
 
-Just as vectors generalize scalars, and matrices generalize vectors, we can actually build data structures with even more axes. Tensors give us a generic way of discussing arrays with an arbitrary number of axes. Vectors, for example, are first-order tensors, and matrices are second-order tensors.
+ベクトルがスカラーの一般化であるように、また、行列がベクトルの一般化であるように、実際には、さらに多くの軸をもつデータ構造を構成できます。テンソルは、任意の数の軸を持つ配列について議論するための、汎用的な方法を提供しています。たとえば、ベクトルは1次テンソル、行列は2次テンソルです。
 
-Using tensors will become more important when we start working with images, which arrive as 3D data structures, with axes corresponding to the height, width, and the three (RGB) color channels. But in this chapter, we're going to skip this part and make sure you know the basics.
+テンソルを使用することは、画像に関する仕事を始める際に、より重要なものとなります。なぜなら、画像は縦、横、3つの(RGB)カラーチャンネルに対応する軸をもつ3Dデータ構造だからです。しかしこの章では、この部分をスキップして、知っておくべき基本的な事項をおさえていきます。
 
 ```{.python .input}
 X = nd.arange(24).reshape((2, 3, 4))
