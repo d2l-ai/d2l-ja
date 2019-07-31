@@ -115,17 +115,11 @@ print('X.shape =', X.shape)
 print('X =', X)
 ```
 
-## Basic properties of tensor arithmetic
+## テンソル計算の基本的性質
 
-Scalars, vectors, matrices, and tensors of any order have some nice properties that we will often rely on.
-For example, as you might have noticed from the definition of an element-wise operation,
-given operands with the same shape,
-the result of any element-wise operation is a tensor of that same shape.
-Another convenient property is that for all tensors, multiplication by a scalar
-produces a tensor of the same shape.
-In math, given two tensors $X$ and $Y$ with the same shape,
-$\alpha X + Y$ has the same shape
-(numerical mathematicians call this the AXPY operation).
+スカラー、ベクトル、行列、そして任意の次数のテンソルは、頼りになる良い性質をもっています。たとえば、element-wiseな演算の定義で気付いた方もいるかもしれませんが、同じshapeの計算対象が与えられた場合、element-wiseな演算の結果は同じshapeのテンソルになります。もう1つの便利な性質は、すべてのテンソルに対して、スカラーを掛けると同じshapeのテンソルが生成されることです。数学的には、同じshapeの2つのテンソル$X$と$Y$を考えると、$\alpha X+Y$は同じshapeになります (数値計算の専門家はこれをAXPY操作と呼びます)。
+
+Scalars, vectors, matrices, and tensors of any order have some nice properties that we will often rely on. For example, as you might have noticed from the definition of an element-wise operation, given operands with the same shape, the result of any element-wise operation is a tensor of that same shape. Another convenient property is that for all tensors, multiplication by a scalar produces a tensor of the same shape. In math, given two tensors $X$ and $Y$ with the same shape, $\alpha X + Y$ has the same shape (numerical mathematicians call this the AXPY operation).
 
 ```{.python .input}
 a = 2
@@ -137,7 +131,9 @@ print((a * x).shape)
 print((a * x + y).shape)
 ```
 
-Shape is not the the only property preserved under addition and multiplication by a scalar. These operations also preserve membership in a vector space. But we will postpone this discussion for the second half of this chapter because it is not critical to getting your first models up and running.
+
+shapeはスカラーの加算と乗算によってのみ保存されるわけではありません。これらの演算は、あるベクトル空間へ属していることも保持します。ただし、最初のモデルを起動させる上で、それほど重要ではないため、この章の後半までこの説明を先延ばしにします。
+
 
 ## Sums and means
 
