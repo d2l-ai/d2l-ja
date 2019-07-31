@@ -32,7 +32,6 @@ x.asscalar()
 ```
 
 
-
 ## ベクトル
 
 ベクトルは単に数字のリスト、例えば``[1.0,3.0,4.0,2.0]``、として考えることができます。ベクトル内の各数値は、単一のスカラー値で構成されています。これらの値をベクトルの*要素*や*成分* (英語では*entries*や*components*) と呼びます。多くの場合、実世界において意味のある値をもったベクトルに興味があると思います。たとえば、ローンの債務不履行のリスクを調査している場合、収入、雇用期間、過去の債務不履行の数などに対応する要素を持つベクトルに、各申請者を関連付けることができるでしょう。もし、病院の患者の心臓発作のリスクを調べる場合は、最新のバイタルサイン、コレステロール値、1日当たりの運動時間などからなるベクトルで、患者の状態を表すかもしれません。数学表記では、通常、太字の小文字でベクトル ($\mathbf{u}$、$\mathbf{v}$、$\mathbf{w}$)を表します。MXNetでは、任意の数の要素をもつ1D NDArrayをベクトルとして使用します。
@@ -75,14 +74,10 @@ print(a * x + y)
 
 
 
-## Matrices
+## 行列
 
-Just as vectors generalize scalars from order $0$ to order $1$,
-matrices generalize vectors from $1D$ to $2D$.
-Matrices, which we'll typically denote with capital letters ($A$, $B$, $C$),
-are represented in code as arrays with 2 axes.
-Visually, we can draw a matrix as a table,
-where each entry $a_{ij}$ belongs to the $i$-th row and $j$-th column.
+ベクトルがスカラーを0次から1次に一般化したもののように、行列はベクトルを$1D$から$2D$に一般化したものになります。通常、大文字 ($A$、$B$、$C$) で表す行列は、コードのなかでは2つの軸をもつ配列として表されます。視覚的には、各エントリ$a_{ij}$が$i$番目の行と$j$番目の列に属するような表として、行列を表現することができます。
+
 
 
 $$A=\begin{pmatrix}
@@ -92,31 +87,27 @@ $$A=\begin{pmatrix}
  a_{n1} & a_{n2} & \cdots & a_{nm} \\
 \end{pmatrix}$$
 
-We can create a matrix with $n$ rows and $m$ columns in MXNet
-by specifying a shape with two components `(n,m)`
-when calling any of our favorite functions for instantiating an `ndarray`
-such as `ones`, or `zeros`.
+`ones`や`zeros`といった`ndarray`をインスタンス化するためによく用いられる関数を呼ぶ際に、2つの要素 `(n, m)` でshapeを指定すると、MXNetで$n$行$m$列の行列を作成できます。
 
 ```{.python .input}
 A = nd.arange(20).reshape((5,4))
 print(A)
 ```
+行列は便利なデータ構造です。行列を使用することで、さまざまなバリエーションをもつデータを構成できます。たとえば、行列の行が各患者に対応し、列が異なる属性に対応するといったことを表現できるでしょう。
 
-Matrices are useful data structures: they allow us to organize data that has different modalities of variation. For example, rows in our matrix might correspond to different patients, while columns might correspond to different attributes.
+行 ($i$) と列 ($j$) のインデックスを指定することで、行列$A$のスカラー要素$a_{ij}$にアクセスすることができます。 `:`を利用してインデックスを指定しなければ、それぞれの次元に沿ってすべての要素をとることができます (前の節で説明しました)。
 
-We can access the scalar elements $a_{ij}$ of a matrix $A$ by specifying the indices for the row ($i$) and column ($j$) respectively. Leaving them blank via a `:` takes all elements along the respective dimension (as seen in the previous section).
-
-We can transpose the matrix through `T`. That is, if $B = A^T$, then $b_{ij} = a_{ji}$ for any $i$ and $j$.
+行列は`T`で転置することができます。つまり、$B=A^T$の場合、すべての$i$および$j$に対して、$b_{ij}=a_{ji}$が成立します。
 
 ```{.python .input}
 print(A.T)
 ```
 
-## Tensors
+## テンソル
 
-Just as vectors generalize scalars, and matrices generalize vectors, we can actually build data structures with even more axes. Tensors give us a generic way of discussing arrays with an arbitrary number of axes. Vectors, for example, are first-order tensors, and matrices are second-order tensors.
+ベクトルがスカラーの一般化であるように、また、行列がベクトルの一般化であるように、実際には、さらに多くの軸をもつデータ構造を構成できます。テンソルは、任意の数の軸を持つ配列について議論するための、汎用的な方法を提供しています。たとえば、ベクトルは1次テンソル、行列は2次テンソルです。
 
-Using tensors will become more important when we start working with images, which arrive as 3D data structures, with axes corresponding to the height, width, and the three (RGB) color channels. But in this chapter, we're going to skip this part and make sure you know the basics.
+テンソルを使用することは、画像に関する仕事を始める際に、より重要なものとなります。なぜなら、画像は縦、横、3つの(RGB)カラーチャンネルに対応する軸をもつ3Dデータ構造だからです。しかしこの章では、この部分をスキップして、知っておくべき基本的な事項をおさえていきます。
 
 ```{.python .input}
 X = nd.arange(24).reshape((2, 3, 4))
@@ -124,17 +115,11 @@ print('X.shape =', X.shape)
 print('X =', X)
 ```
 
-## Basic properties of tensor arithmetic
+## テンソル計算の基本的性質
 
-Scalars, vectors, matrices, and tensors of any order have some nice properties that we will often rely on.
-For example, as you might have noticed from the definition of an element-wise operation,
-given operands with the same shape,
-the result of any element-wise operation is a tensor of that same shape.
-Another convenient property is that for all tensors, multiplication by a scalar
-produces a tensor of the same shape.
-In math, given two tensors $X$ and $Y$ with the same shape,
-$\alpha X + Y$ has the same shape
-(numerical mathematicians call this the AXPY operation).
+スカラー、ベクトル、行列、そして任意の次数のテンソルは、頼りになる良い性質をもっています。たとえば、element-wiseな演算の定義で気付いた方もいるかもしれませんが、同じshapeの計算対象が与えられた場合、element-wiseな演算の結果は同じshapeのテンソルになります。もう1つの便利な性質は、すべてのテンソルに対して、スカラーを掛けると同じshapeのテンソルが生成されることです。数学的には、同じshapeの2つのテンソル$X$と$Y$を考えると、$\alpha X+Y$は同じshapeになります (数値計算の専門家はこれをAXPY操作と呼びます)。
+
+Scalars, vectors, matrices, and tensors of any order have some nice properties that we will often rely on. For example, as you might have noticed from the definition of an element-wise operation, given operands with the same shape, the result of any element-wise operation is a tensor of that same shape. Another convenient property is that for all tensors, multiplication by a scalar produces a tensor of the same shape. In math, given two tensors $X$ and $Y$ with the same shape, $\alpha X + Y$ has the same shape (numerical mathematicians call this the AXPY operation).
 
 ```{.python .input}
 a = 2
@@ -146,34 +131,27 @@ print((a * x).shape)
 print((a * x + y).shape)
 ```
 
-Shape is not the the only property preserved under addition and multiplication by a scalar. These operations also preserve membership in a vector space. But we will postpone this discussion for the second half of this chapter because it is not critical to getting your first models up and running.
 
-## Sums and means
+shapeはスカラーの加算と乗算によってのみ保存されるわけではありません。これらの演算は、あるベクトル空間へ属していることも保持します。ただし、最初のモデルを起動させる上で、それほど重要ではないため、この章の後半までこの説明を先延ばしにします。
 
-The next more sophisticated thing we can do with arbitrary tensors
-is to calculate the sum of their elements.
-In mathematical notation, we express sums using the $\sum$ symbol.
-To express the sum of the elements in a vector $\mathbf{u}$ of length $d$,
-we can write $\sum_{i=1}^d u_i$. In code, we can just call ``nd.sum()``.
+
+## 総和と平均
+
+任意のテンソルに対して可能なことのうち、次に洗練されていることといえば、要素の合計を計算することでしょう。数学的表記では、合計を$\sum$記号を使って表現します。長さ$d$のベクトル$ \mathbf{u}$の要素の合計を表すために$\sum_{i=1}^d u_i$と書くことができます。コード上は、``nd.sum()``を呼び出すだけです。
 
 ```{.python .input}
 print(x)
 print(nd.sum(x))
 ```
 
-We can similarly express sums over the elements of tensors of arbitrary shape. For example, the sum of the elements of an $m \times n$ matrix $A$ could be written $\sum_{i=1}^{m} \sum_{j=1}^{n} a_{ij}$.
+任意のshapeをもつテンソルの要素についても、同様に総和を計算ことができます。たとえば、$m \times n$の行列$A$の要素の合計は、$\sum_{i=1}^{m} \sum_{j=1}^{n} a_{ij}$と書くことができます。
+
 
 ```{.python .input}
 print(A)
 print(nd.sum(A))
 ```
-
-A related quantity is the *mean*, which is also called the *average*.
-We calculate the mean by dividing the sum by the total number of elements.
-With mathematical notation, we could write the average
-over a vector $\mathbf{u}$ as $\frac{1}{d} \sum_{i=1}^{d} u_i$
-and the average over a matrix $A$ as  $\frac{1}{n \cdot m} \sum_{i=1}^{m} \sum_{j=1}^{n} a_{ij}$.
-In code, we could just call ``nd.mean()`` on tensors of arbitrary shape:
+関連する計算として*平均(mean)*があります。英語では*mean*以外に*average*とも呼ばれます。合計を要素の数で割ることで平均を計算します。数学的表記では、ベクトル$\mathbf{u}$の平均は$\frac{1}{d} \sum_{i=1}^{d}u_i$、行列Aの平均は$\frac{1}{n \cdot m} \sum_{i = 1}^{m} \sum_{j=1}^{n} a_{ij}$として記述できます。コードでは、任意の形のテンソルに ``nd.mean()``を呼び出すだけです。
 
 ```{.python .input}
 print(nd.mean(A))
