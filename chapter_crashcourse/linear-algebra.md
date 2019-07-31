@@ -135,32 +135,23 @@ print((a * x + y).shape)
 shapeはスカラーの加算と乗算によってのみ保存されるわけではありません。これらの演算は、あるベクトル空間へ属していることも保持します。ただし、最初のモデルを起動させる上で、それほど重要ではないため、この章の後半までこの説明を先延ばしにします。
 
 
-## Sums and means
+## 総和と平均
 
-The next more sophisticated thing we can do with arbitrary tensors
-is to calculate the sum of their elements.
-In mathematical notation, we express sums using the $\sum$ symbol.
-To express the sum of the elements in a vector $\mathbf{u}$ of length $d$,
-we can write $\sum_{i=1}^d u_i$. In code, we can just call ``nd.sum()``.
+任意のテンソルに対して可能なことのうち、次に洗練されていることといえば、要素の合計を計算することでしょう。数学的表記では、合計を$\sum$記号を使って表現します。長さ$d$のベクトル$ \mathbf{u}$の要素の合計を表すために$\sum_{i=1}^d u_i$と書くことができます。コード上は、``nd.sum()``を呼び出すだけです。
 
 ```{.python .input}
 print(x)
 print(nd.sum(x))
 ```
 
-We can similarly express sums over the elements of tensors of arbitrary shape. For example, the sum of the elements of an $m \times n$ matrix $A$ could be written $\sum_{i=1}^{m} \sum_{j=1}^{n} a_{ij}$.
+任意のshapeをもつテンソルの要素についても、同様に総和を計算ことができます。たとえば、$m \times n$の行列$A$の要素の合計は、$\sum_{i=1}^{m} \sum_{j=1}^{n} a_{ij}$と書くことができます。
+
 
 ```{.python .input}
 print(A)
 print(nd.sum(A))
 ```
-
-A related quantity is the *mean*, which is also called the *average*.
-We calculate the mean by dividing the sum by the total number of elements.
-With mathematical notation, we could write the average
-over a vector $\mathbf{u}$ as $\frac{1}{d} \sum_{i=1}^{d} u_i$
-and the average over a matrix $A$ as  $\frac{1}{n \cdot m} \sum_{i=1}^{m} \sum_{j=1}^{n} a_{ij}$.
-In code, we could just call ``nd.mean()`` on tensors of arbitrary shape:
+関連する計算として*平均(mean)*があります。英語では*mean*以外に*average*とも呼ばれます。合計を要素の数で割ることで平均を計算します。数学的表記では、ベクトル$\mathbf{u}$の平均は$\frac{1}{d} \sum_{i=1}^{d}u_i$、行列Aの平均は$\frac{1}{n \cdot m} \sum_{i = 1}^{m} \sum_{j=1}^{n} a_{ij}$として記述できます。コードでは、任意の形のテンソルに ``nd.mean()``を呼び出すだけです。
 
 ```{.python .input}
 print(nd.mean(A))
