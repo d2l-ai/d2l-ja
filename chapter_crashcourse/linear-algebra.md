@@ -175,9 +175,10 @@ nd.sum(x * y)
 
 ドット積の有用性は幅広いです。たとえば、一連の重み$\mathbf{w}$を考えると、いくつかの値${u}$の重み付け和は、内積$\mathbf{u}^T \mathbf{w}$として表すことができます。重みが負ではなく、その総和が1になる場合$\left(\sum_{i=1}^{d} {w_i}=1 \right)$、ドット積は*加重平均*を表します。 2つのベクトルがそれぞれ長さ1をもつ場合 (ノルムに関する節で*長さ*が何を意味するのかを説明します)、ドット積はそれらの間のコサイン角度を表します。
 
-## Matrix-vector products
+## 行列ベクトル積
 
-Now that we know how to calculate dot products we can begin to understand matrix-vector products. Let's start off by visualizing a matrix $A$ and a column vector $\mathbf{x}$.
+ドット積の計算方法がわかったところで、行列ベクトル積についても理解しましょう。
+行列$A$と列ベクトル$\mathbf{x}$を可視化するところから始めます。
 
 $$A=\begin{pmatrix}
  a_{11} & a_{12} & \cdots & a_{1m} \\
@@ -191,7 +192,7 @@ $$A=\begin{pmatrix}
  x_{m}\\
 \end{pmatrix} $$
 
-We can visualize the matrix in terms of its row vectors
+行ベクトルに関して行列を可視化することもできます。
 
 $$A=
 \begin{pmatrix}
@@ -201,10 +202,9 @@ $$A=
 \mathbf{a}^T_n \\
 \end{pmatrix},$$
 
-where each $\mathbf{a}^T_{i} \in \mathbb{R}^{m}$
-is a row vector representing the $i$-th row of the matrix $A$.
+それぞれ、$\mathbf{a}^T_{i} \in \mathbb{R}^{m}$は、行列$A$の$i$番目の行を表す行ベクトルです。
 
-Then the matrix vector product $\mathbf{y} = A\mathbf{x}$ is simply a column vector $\mathbf{y} \in \mathbb{R}^n$ where each entry $y_i$ is the dot product $\mathbf{a}^T_i \mathbf{x}$.
+行列ベクトル積$\mathbf{y} = A\mathbf{x}$では、単に列ベクトル$\mathbf{y} \in \mathbb{R}^n$において、その要素$y_i$がドット積$\mathbf{a}^T_i \mathbf{x}$になります。
 
 $$A\mathbf{x}=
 \begin{pmatrix}
@@ -227,11 +227,12 @@ $$A\mathbf{x}=
 \end{pmatrix}
 $$
 
-So you can think of multiplication by a matrix $A\in \mathbb{R}^{n \times m}$ as a transformation that projects vectors from $\mathbb{R}^{m}$ to $\mathbb{R}^{n}$.
+したがって、行列$\A \in \mathbb{R}^{n \times m}$による乗算は、ベクトルを$\mathbb{R}^{m}$から$\mathbb{R}^{m}$へ射影する変換として考えることができます。
 
-These transformations turn out to be remarkably useful. For example, we can represent rotations as multiplications by a square matrix. As we will see in subsequent chapters, we can also use matrix-vector products to describe the calculations of each layer in a neural network.
+これらの変換は非常に便利です。たとえば回転という変換は、ある正方行列による乗算として表すことができます。以降の章で見られるように、ニューラルネットワークの各層の計算を記述する際に、行列ベクトル積を使うこともできます。
 
-Expressing matrix-vector products in code with ``ndarray``, we use the same ``nd.dot()`` function as for dot products. When we call ``nd.dot(A, x)`` with a matrix ``A`` and a vector ``x``, MXNet knows to perform a matrix-vector product. Note that the column dimension of ``A`` must be the same as the dimension of ``x``.
+行列ベクトル積を`ndarray`を利用してコード内で表現するには、ドット積と同じ`nd.dot()`関数を使います。行列``A``とベクトル``x``を指定して``nd.dot(A, x)``を呼び出すと、MXNetは行列ベクトル積の実行を求められていることを認識します。 ``A``の列次元は ``x``の次元と同じでなければならないことに注意してください。
+
 
 ```{.python .input}
 nd.dot(A, x)
