@@ -34,7 +34,7 @@ x.asscalar()
 
 ## ベクトル
 
-ベクトルは単に数字のリスト、例えば``[1.0,3.0,4.0,2.0]``、として考えることができます。ベクトル内の各数値は、単一のスカラー値で構成されています。これらの値をベクトルの*要素*や*成分* (英語では*entries*や*components*) と呼びます。多くの場合、実世界において意味のある値をもったベクトルに興味があると思います。たとえば、ローンの債務不履行のリスクを調査している場合、収入、雇用期間、過去の債務不履行の数などに対応する要素を持つベクトルに、各申請者を関連付けることができるでしょう。もし、病院の患者の心臓発作のリスクを調べる場合は、最新のバイタルサイン、コレステロール値、1日当たりの運動時間などからなるベクトルで、患者の状態を表すかもしれません。数学表記では、通常、太字の小文字でベクトル ($\mathbf{u}$、$\mathbf{v}$、$\mathbf{w}$)を表します。MXNetでは、任意の数の要素をもつ1D NDArrayをベクトルとして使用します。
+ベクトルは単に数字のリスト、例えば``[1.0,3.0,4.0,2.0]``、として考えることができます。ベクトル内の各数値は、単一のスカラー値で構成されています。これらの値をベクトルの*要素*や*成分* (英語では *entries* や *components*) と呼びます。多くの場合、実世界において意味のある値をもったベクトルに興味があると思います。たとえば、ローンの債務不履行のリスクを調査している場合、収入、雇用期間、過去の債務不履行の数などに対応する要素を持つベクトルに、各申請者を関連付けることができるでしょう。もし、病院の患者の心臓発作のリスクを調べる場合は、最新のバイタルサイン、コレステロール値、1日当たりの運動時間などからなるベクトルで、患者の状態を表すかもしれません。数学表記では、通常、太字の小文字でベクトル ($\mathbf{u}$、$\mathbf{v}$、$\mathbf{w}$)を表します。MXNetでは、任意の数の要素をもつ1D NDArrayをベクトルとして使用します。
 
 
 ```{.python .input}
@@ -119,8 +119,6 @@ print('X =', X)
 
 スカラー、ベクトル、行列、そして任意の次数のテンソルは、頼りになる良い性質をもっています。たとえば、element-wiseな演算の定義で気付いた方もいるかもしれませんが、同じshapeの計算対象が与えられた場合、element-wiseな演算の結果は同じshapeのテンソルになります。もう1つの便利な性質は、すべてのテンソルに対して、スカラーを掛けると同じshapeのテンソルが生成されることです。数学的には、同じshapeの2つのテンソル$X$と$Y$を考えると、$\alpha X+Y$は同じshapeになります (数値計算の専門家はこれをAXPY操作と呼びます)。
 
-Scalars, vectors, matrices, and tensors of any order have some nice properties that we will often rely on. For example, as you might have noticed from the definition of an element-wise operation, given operands with the same shape, the result of any element-wise operation is a tensor of that same shape. Another convenient property is that for all tensors, multiplication by a scalar produces a tensor of the same shape. In math, given two tensors $X$ and $Y$ with the same shape, $\alpha X + Y$ has the same shape (numerical mathematicians call this the AXPY operation).
-
 ```{.python .input}
 a = 2
 x = nd.ones(3)
@@ -130,7 +128,6 @@ print(y.shape)
 print((a * x).shape)
 print((a * x + y).shape)
 ```
-
 
 shapeはスカラーの加算と乗算によってのみ保存されるわけではありません。これらの演算は、あるベクトル空間へ属していることも保持します。ただし、最初のモデルを起動させる上で、それほど重要ではないため、この章の後半までこの説明を先延ばしにします。
 
@@ -158,9 +155,11 @@ print(nd.mean(A))
 print(nd.sum(A) / A.size)
 ```
 
-## Dot products
+## ドット積
 
-So far, we have only performed element-wise operations, sums and averages. And if this was all we could do, linear algebra probably would not deserve its own chapter. However, one of the most fundamental operations is the dot product. Given two vectors $\mathbf{u}$ and $\mathbf{v}$, the dot product $\mathbf{u}^T \mathbf{v}$ is a sum over the products of the corresponding elements: $\mathbf{u}^T \mathbf{v} = \sum_{i=1}^{d} u_i \cdot v_i$.
+これまでのところ、element-wiseな演算、合計、平均のみを扱ってきました。もし、これだけしかできないのであれば、線形代数として1つの章を設けるほどではないでしょう。ここで紹介したいのが、最も基本的な演算の1つであるドット積です。 2つのベクトル$\mathbf{u}$と$\mathbf{v}$が与えられたとき、内積$\mathbf{u}^T \mathbf{v}$は対応する要素の積の和となります。すなわち、$\mathbf{u}^T \mathbf{v} = \sum_{i=1}^{d} u_i \cdot v_i$ となります。
+
+
 
 ```{.python .input}
 x = nd.arange(4)
@@ -168,17 +167,18 @@ y = nd.ones(4)
 print(x, y, nd.dot(x, y))
 ```
 
-Note that we can express the dot product of two vectors ``nd.dot(x, y)`` equivalently by performing an element-wise multiplication and then a sum:
+2つのベクトルのドット積 ``nd.dot(x,y)``は、要素ごとにelement-wiseな乗算を実行して、その総和をとることと等価です。
 
 ```{.python .input}
 nd.sum(x * y)
 ```
 
-Dot products are useful in a wide range of contexts. For example, given a set of weights $\mathbf{w}$, the weighted sum of some values ${u}$ could be expressed as the dot product $\mathbf{u}^T \mathbf{w}$. When the weights are non-negative and sum to one $\left(\sum_{i=1}^{d} {w_i} = 1\right)$, the dot product expresses a *weighted average*. When two vectors each have length one (we will discuss what *length* means below in the section on norms), dot products can also capture the cosine of the angle between them.
+ドット積の有用性は幅広いです。たとえば、一連の重み$\mathbf{w}$を考えると、いくつかの値${u}$の重み付け和は、内積$\mathbf{u}^T \mathbf{w}$として表すことができます。重みが負ではなく、その総和が1になる場合$\left(\sum_{i=1}^{d} {w_i}=1 \right)$、ドット積は*加重平均*を表します。 2つのベクトルがそれぞれ長さ1をもつ場合 (ノルムに関する節で*長さ*が何を意味するのかを説明します)、ドット積はそれらの間のコサイン角度を表します。
 
-## Matrix-vector products
+## 行列ベクトル積
 
-Now that we know how to calculate dot products we can begin to understand matrix-vector products. Let's start off by visualizing a matrix $A$ and a column vector $\mathbf{x}$.
+ドット積の計算方法がわかったところで、行列ベクトル積についても理解しましょう。
+行列$A$と列ベクトル$\mathbf{x}$を可視化するところから始めます。
 
 $$A=\begin{pmatrix}
  a_{11} & a_{12} & \cdots & a_{1m} \\
@@ -192,7 +192,7 @@ $$A=\begin{pmatrix}
  x_{m}\\
 \end{pmatrix} $$
 
-We can visualize the matrix in terms of its row vectors
+行ベクトルに関して行列を可視化することもできます。
 
 $$A=
 \begin{pmatrix}
@@ -202,10 +202,9 @@ $$A=
 \mathbf{a}^T_n \\
 \end{pmatrix},$$
 
-where each $\mathbf{a}^T_{i} \in \mathbb{R}^{m}$
-is a row vector representing the $i$-th row of the matrix $A$.
+それぞれ、$\mathbf{a}^T_{i} \in \mathbb{R}^{m}$は、行列$A$の$i$番目の行を表す行ベクトルです。
 
-Then the matrix vector product $\mathbf{y} = A\mathbf{x}$ is simply a column vector $\mathbf{y} \in \mathbb{R}^n$ where each entry $y_i$ is the dot product $\mathbf{a}^T_i \mathbf{x}$.
+行列ベクトル積$\mathbf{y} = A\mathbf{x}$では、単に列ベクトル$\mathbf{y} \in \mathbb{R}^n$において、その要素$y_i$がドット積$\mathbf{a}^T_i \mathbf{x}$になります。
 
 $$A\mathbf{x}=
 \begin{pmatrix}
@@ -228,21 +227,22 @@ $$A\mathbf{x}=
 \end{pmatrix}
 $$
 
-So you can think of multiplication by a matrix $A\in \mathbb{R}^{n \times m}$ as a transformation that projects vectors from $\mathbb{R}^{m}$ to $\mathbb{R}^{n}$.
+したがって、行列$A \in \mathbb{R}^{n \times m}$による乗算は、ベクトルを$\mathbb{R}^{m}$から$\mathbb{R}^{m}$へ射影する変換として考えることができます。
 
-These transformations turn out to be remarkably useful. For example, we can represent rotations as multiplications by a square matrix. As we will see in subsequent chapters, we can also use matrix-vector products to describe the calculations of each layer in a neural network.
+これらの変換は非常に便利です。たとえば回転という変換は、ある正方行列による乗算として表すことができます。以降の章で見られるように、ニューラルネットワークの各層の計算を記述する際に、行列ベクトル積を使うこともできます。
 
-Expressing matrix-vector products in code with ``ndarray``, we use the same ``nd.dot()`` function as for dot products. When we call ``nd.dot(A, x)`` with a matrix ``A`` and a vector ``x``, MXNet knows to perform a matrix-vector product. Note that the column dimension of ``A`` must be the same as the dimension of ``x``.
+行列ベクトル積を`ndarray`を利用してコード内で表現するには、ドット積と同じ`nd.dot()`関数を使います。行列``A``とベクトル``x``を指定して``nd.dot(A, x)``を呼び出すと、MXNetは行列ベクトル積の実行を求められていることを認識します。 ``A``の列次元は ``x``の次元と同じでなければならないことに注意してください。
+
 
 ```{.python .input}
 nd.dot(A, x)
 ```
 
-## Matrix-matrix multiplication
+## 行列同士の積
 
-If you have gotten the hang of dot products and matrix-vector multiplication, then matrix-matrix multiplications should be pretty straightforward.
+もし、ドット積と行列ベクトル積を理解できたとしたら、行列同士の積も同様に理解できるでしょう。
 
-Say we have two matrices, $A \in \mathbb{R}^{n \times k}$ and $B \in \mathbb{R}^{k \times m}$:
+2つの行列$A \in \mathbb{R}^{n \times k}$ と $B \in \mathbb{R}^{k \times m}$を考えます。
 
 $$A=\begin{pmatrix}
  a_{11} & a_{12} & \cdots & a_{1k} \\
@@ -257,7 +257,7 @@ B=\begin{pmatrix}
  b_{k1} & b_{k2} & \cdots & b_{km} \\
 \end{pmatrix}$$
 
-To produce the matrix product $C = AB$, it's easiest to think of $A$ in terms of its row vectors and $B$ in terms of its column vectors:
+行列積 $C = AB$ を計算するには、行ベクトルに関して$A$を考えて、列ベクトルに関して$B$を考えます。
 
 $$A=
 \begin{pmatrix}
@@ -271,9 +271,9 @@ $$A=
 \end{pmatrix}.
 $$
 
-Note here that each row vector $\mathbf{a}^T_{i}$ lies in $\mathbb{R}^k$ and that each column vector $\mathbf{b}_j$ also lies in $\mathbb{R}^k$.
+ここで、各行ベクトル$\mathbf{a}^T_{i}$は$\mathbb{R}^k$に属していて、各列ベクトル$\mathbf{b}_j$は$\mathbb{R}^k$に属していることに注意しましょう。
 
-Then to produce the matrix product $C \in \mathbb{R}^{n \times m}$ we simply compute each entry $c_{ij}$ as the dot product $\mathbf{a}^T_i \mathbf{b}_j$.
+行列積$C \in \mathbb{R}^{n \times m}$を計算するためには、各要素$c_{ij}$をドット積$\mathbf{a}^T_i \mathbf{b}_j$として計算するだけです。
 
 $$C = AB = \begin{pmatrix}
 \mathbf{a}^T_{1} \\
@@ -292,14 +292,15 @@ $$C = AB = \begin{pmatrix}
 \end{pmatrix}
 $$
 
-You can think of the matrix-matrix multiplication $AB$ as simply performing $m$ matrix-vector products and stitching the results together to form an $n \times m$ matrix. Just as with ordinary dot products and matrix-vector products, we can compute matrix-matrix products in MXNet by using ``nd.dot()``.
+$AB$の行列積については、単純に$m$個の行列ベクトル積を実行し、$n \times m$ の行列になるように、その結果をつなげていく操作とみなすことができます。MXNetでは、ドット積や行列ベクトル積と同様に、行列積についても``nd.dot()``を利用して計算できます。
+
 
 ```{.python .input}
 B = nd.ones(shape=(4, 3))
 nd.dot(A, B)
 ```
 
-## Norms
+## ノルム
 
 Before we can start implementing models,
 there is one last concept we are going to introduce.
