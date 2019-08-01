@@ -238,11 +238,11 @@ $$
 nd.dot(A, x)
 ```
 
-## Matrix-matrix multiplication
+## 行列同士の積
 
-If you have gotten the hang of dot products and matrix-vector multiplication, then matrix-matrix multiplications should be pretty straightforward.
+もし、ドット積と行列ベクトル積を理解できたとしたら、行列同士の積も同様に理解できるでしょう。
 
-Say we have two matrices, $A \in \mathbb{R}^{n \times k}$ and $B \in \mathbb{R}^{k \times m}$:
+2つの行列$A \in \mathbb{R}^{n \times k}$ と $B \in \mathbb{R}^{k \times m}$を考えます。
 
 $$A=\begin{pmatrix}
  a_{11} & a_{12} & \cdots & a_{1k} \\
@@ -257,7 +257,7 @@ B=\begin{pmatrix}
  b_{k1} & b_{k2} & \cdots & b_{km} \\
 \end{pmatrix}$$
 
-To produce the matrix product $C = AB$, it's easiest to think of $A$ in terms of its row vectors and $B$ in terms of its column vectors:
+行列積 $C = AB$ を計算するには、行ベクトルに関して$A$を考えて、列ベクトルに関して$B$を考えます。
 
 $$A=
 \begin{pmatrix}
@@ -271,9 +271,9 @@ $$A=
 \end{pmatrix}.
 $$
 
-Note here that each row vector $\mathbf{a}^T_{i}$ lies in $\mathbb{R}^k$ and that each column vector $\mathbf{b}_j$ also lies in $\mathbb{R}^k$.
+ここで、各行ベクトル$\mathbf{a}^T_{i}$は$\mathbb{R}^k$に属していて、各列ベクトル$\mathbf{b}_j$は$\mathbb{R}^k$に属していることに注意しましょう。
 
-Then to produce the matrix product $C \in \mathbb{R}^{n \times m}$ we simply compute each entry $c_{ij}$ as the dot product $\mathbf{a}^T_i \mathbf{b}_j$.
+行列積$C \in \mathbb{R}^{n \times m}$を計算するためには、各要素$c_{ij}$をドット積$\mathbf{a}^T_i \mathbf{b}_j$として計算するだけです。
 
 $$C = AB = \begin{pmatrix}
 \mathbf{a}^T_{1} \\
@@ -292,7 +292,8 @@ $$C = AB = \begin{pmatrix}
 \end{pmatrix}
 $$
 
-You can think of the matrix-matrix multiplication $AB$ as simply performing $m$ matrix-vector products and stitching the results together to form an $n \times m$ matrix. Just as with ordinary dot products and matrix-vector products, we can compute matrix-matrix products in MXNet by using ``nd.dot()``.
+$AB$の行列積については、単純に$m$個の行列ベクトル積を実行し、$n \times m$ の行列になるように、その結果をつなげていく操作とみなすことができます。MXNetでは、ドット積や行列ベクトル積と同様に、行列積についても``nd.dot()``を利用して計算できます。
+
 
 ```{.python .input}
 B = nd.ones(shape=(4, 3))
