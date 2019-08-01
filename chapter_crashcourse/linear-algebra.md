@@ -155,9 +155,11 @@ print(nd.mean(A))
 print(nd.sum(A) / A.size)
 ```
 
-## Dot products
+## ドット積
 
-So far, we have only performed element-wise operations, sums and averages. And if this was all we could do, linear algebra probably would not deserve its own chapter. However, one of the most fundamental operations is the dot product. Given two vectors $\mathbf{u}$ and $\mathbf{v}$, the dot product $\mathbf{u}^T \mathbf{v}$ is a sum over the products of the corresponding elements: $\mathbf{u}^T \mathbf{v} = \sum_{i=1}^{d} u_i \cdot v_i$.
+これまでのところ、element-wiseな演算、合計、平均のみを扱ってきました。もし、これだけしかできないのであれば、線形代数として1つの章を設けるほどではないでしょう。ここで紹介したいのが、最も基本的な演算の1つであるドット積です。 2つのベクトル$\mathbf{u}$と$\mathbf{v}$が与えられたとき、内積$\mathbf{u}^T \mathbf{v}$は対応する要素の積の和となります。すなわち、$\mathbf{u}^T \mathbf{v} = \sum_{i=1}^{d} u_i \cdot v_i$ となります。
+
+
 
 ```{.python .input}
 x = nd.arange(4)
@@ -165,13 +167,13 @@ y = nd.ones(4)
 print(x, y, nd.dot(x, y))
 ```
 
-Note that we can express the dot product of two vectors ``nd.dot(x, y)`` equivalently by performing an element-wise multiplication and then a sum:
+2つのベクトルのドット積 ``nd.dot(x,y)``は、要素ごとにelement-wiseな乗算を実行して、その総和をとることと等価です。
 
 ```{.python .input}
 nd.sum(x * y)
 ```
 
-Dot products are useful in a wide range of contexts. For example, given a set of weights $\mathbf{w}$, the weighted sum of some values ${u}$ could be expressed as the dot product $\mathbf{u}^T \mathbf{w}$. When the weights are non-negative and sum to one $\left(\sum_{i=1}^{d} {w_i} = 1\right)$, the dot product expresses a *weighted average*. When two vectors each have length one (we will discuss what *length* means below in the section on norms), dot products can also capture the cosine of the angle between them.
+ドット積の有用性は幅広いです。たとえば、一連の重み$\mathbf{w}$を考えると、いくつかの値${u}$の重み付け和は、内積$\mathbf{u}^T \mathbf{w}$として表すことができます。重みが負ではなく、その総和が1になる場合$\left(\sum_{i=1}^{d} {w_i}=1 \right)$、ドット積は*加重平均*を表します。 2つのベクトルがそれぞれ長さ1をもつ場合 (ノルムに関する節で*長さ*が何を意味するのかを説明します)、ドット積はそれらの間のコサイン角度を表します。
 
 ## Matrix-vector products
 
