@@ -227,7 +227,7 @@ $$A\mathbf{x}=
 \end{pmatrix}
 $$
 
-したがって、行列$\A \in \mathbb{R}^{n \times m}$による乗算は、ベクトルを$\mathbb{R}^{m}$から$\mathbb{R}^{m}$へ射影する変換として考えることができます。
+したがって、行列$A \in \mathbb{R}^{n \times m}$による乗算は、ベクトルを$\mathbb{R}^{m}$から$\mathbb{R}^{m}$へ射影する変換として考えることができます。
 
 これらの変換は非常に便利です。たとえば回転という変換は、ある正方行列による乗算として表すことができます。以降の章で見られるように、ニューラルネットワークの各層の計算を記述する際に、行列ベクトル積を使うこともできます。
 
@@ -300,7 +300,7 @@ B = nd.ones(shape=(4, 3))
 nd.dot(A, B)
 ```
 
-## Norms
+## ノルム
 
 Before we can start implementing models,
 there is one last concept we are going to introduce.
