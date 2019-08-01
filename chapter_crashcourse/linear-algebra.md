@@ -302,65 +302,35 @@ nd.dot(A, B)
 
 ## ノルム
 
-Before we can start implementing models,
-there is one last concept we are going to introduce.
-Some of the most useful operators in linear algebra are norms.
-Informally, they tell us how big a vector or matrix is.
-We represent norms with the notation $\|\cdot\|$.
-The $\cdot$ in this expression is just a placeholder.
-For example, we would represent the norm of a vector $\mathbf{x}$
-or matrix $A$ as $\|\mathbf{x}\|$ or $\|A\|$, respectively.
+モデルの実装を始める前に、最後に紹介しておきたい概念が1つあります。線形代数で最も有用な演算子であるノルムです。簡単に言えば、ノルムはベクトルや行列がどれくらい大きいかを表すものです。ノルムを$\|\cdot \|$という表記で表します。この式の$\cdot$は単なるプレースホルダーで、たとえばベクトル$\mathbf{x}$または行列$A$のノルムを、それぞれ$\|\mathbf{x}\|$または$\|A\|$として表します。
 
-All norms must satisfy a handful of properties:
+すべてのノルムは、以下の特性を満たします。
 
 1. $\|\alpha A\| = |\alpha| \|A\|$
 1. $\|A + B\| \leq \|A\| + \|B\|$
 1. $\|A\| \geq 0$
 1. If $\forall {i,j}, a_{ij} = 0$, then $\|A\|=0$
 
-To put it in words, the first rule says
-that if we scale all the components of a matrix or vector
-by a constant factor $\alpha$,
-its norm also scales by the *absolute value*
-of the same constant factor.
-The second rule is the familiar triangle inequality.
-The third rule simply says that the norm must be non-negative.
-That makes sense, in most contexts the smallest *size* for anything is 0.
-The final rule basically says that the smallest norm is achieved by a matrix or vector consisting of all zeros.
-It is possible to define a norm that gives zero norm to nonzero matrices,
-but you cannot give nonzero norm to zero matrices.
-That may seem like a mouthful, but if you digest it then you probably have grepped the important concepts here.
+言葉で説明すると、最初の特性は、行列またはベクトルのすべての要素に対して定数$\alpha$をかけると、そのノルムも同じ定数の*絶対値*をかけたものと一致することを示しています。 2番目の特性はおなじみの三角不等式です。 3番目の特性は、ノルムは非負でなければならないことを表しています。すべてにおいて最小の*サイズ*というのは0であるという意味において、もっともといえることです。最後の特性は、基本的に最小のノルムは、すべてゼロからなる行列またはベクトルによってのみ得られることを表します。ゼロでない行列に対してゼロとなるノルムを定義することは可能ですが、ゼロの行列に対してゼロでないノルムを定義することはできません。長ったらしい説明に思えるかもしれませんが、もしその意味を把握できたとすれば、おそらく重要な概念を掴んだかもしれません。
 
-If you remember Euclidean distances (think Pythagoras' theorem) from grade school,
-then non-negativity and the triangle inequality might ring a bell.
-You might notice that norms sound a lot like measures of distance.
+あなたが小学校で学んだユークリッド距離 (ピタゴラスの定理を思い浮かべてください) を覚えていれば、そこから非負性と三角不等式について気づくかもしれません。また、ノルムは距離の尺度に非常に似ているように思えるでしょう。
 
-In fact, the Euclidean distance $\sqrt{x_1^2 + \cdots + x_n^2}$ is a norm.
-Specifically it is the $\ell_2$-norm.
-An analogous computation,
-performed over the entries of a matrix, e.g. $\sqrt{\sum_{i,j} a_{ij}^2}$,
-is called the Frobenius norm.
-More often, in machine learning we work with the squared $\ell_2$ norm (notated $\ell_2^2$).
-We also commonly work with the $\ell_1$ norm.
-The $\ell_1$ norm is simply the sum of the absolute values.
-It has the convenient property of placing less emphasis on outliers.
+実際のところ、ユークリッド距離$\sqrt{x_1^2 + \cdots + x_n^2}$はノルムです。 具体的には$\ell_2$ノルムです。行列の要素に対して実行される同様の計算、つまり $\sqrt{\sum_{i,j} a_{ij}^2}$はフロベニウスノルムと呼ばれます。多くの場合、機械学習では、二乗の$\ell_2$ノルム ($\ell_2^2$と表記) を使用します。また、通常$\ell_1$ノルムを利用することもあります。 $\ell_1$ノルムは単に絶対値の合計です。外れ値をあまり強調しないという便利な性質があります。
 
-To calculate the $\ell_2$ norm, we can just call ``nd.norm()``.
+$\ell_2$ノルムを計算するためには``nd.norm()``を呼ぶだけです。
 
 ```{.python .input}
 nd.norm(x)
 ```
-
-To calculate the L1-norm we can simply perform the absolute value and then sum over the elements.
+L1ノルムを計算したい場合は、絶対値をとって、それらの要素の総和を計算します。
 
 ```{.python .input}
 nd.sum(nd.abs(x))
 ```
 
-## Norms and objectives
+## ノルムと目的関数
 
-While we do not want to get too far ahead of ourselves, we do want you to anticipate why these concepts are useful.
-In machine learning we are often trying to solve optimization problems: *Maximize* the probability assigned to observed data. *Minimize* the distance between predictions and the ground-truth observations. Assign vector representations to items (like words, products, or news articles) such that the distance between similar items is minimized, and the distance between dissimilar items is maximized. Oftentimes, these objectives, perhaps the most important component of a machine learning algorithm (besides the data itself), are expressed as norms.
+ここで少し先の話になってしまいますが、なぜこれらの概念が役に立つのかをあなたに予想してもらおうと思います。機械学習では最適化問題を解くことがよくあります。最適化問題においては、*観測されたデータに割り当てられる確率を最大化したり、予測と真実の観測との間の距離を*最小化*します。つまり、アイテム (単語、商品、ニュース記事など) をベクトルで表現し、類似アイテム間の距離を最小化したり、非類似アイテム間の距離を最大化します。これらの目的は、おそらく機械学習アルゴリズムの最も重要な構成要素（データに加えて）であり、ノルムとして表現されます。
 
 
 ## Intermediate linear algebra
