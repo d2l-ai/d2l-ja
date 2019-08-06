@@ -333,38 +333,25 @@ nd.sum(nd.abs(x))
 ここで少し先の話になってしまいますが、なぜこれらの概念が役に立つのかをあなたに予想してもらおうと思います。機械学習では最適化問題を解くことがよくあります。最適化問題においては、*観測されたデータに割り当てられる確率を最大化したり、予測と真実の観測との間の距離を*最小化*します。つまり、アイテム (単語、商品、ニュース記事など) をベクトルで表現し、類似アイテム間の距離を最小化したり、非類似アイテム間の距離を最大化します。これらの目的は、おそらく機械学習アルゴリズムの最も重要な構成要素（データに加えて）であり、ノルムとして表現されます。
 
 
-## Intermediate linear algebra
+## 線形代数: 中級
 
-If you have made it this far, and understand everything that we have covered,
-then honestly, you *are* ready to begin modeling.
-If you are feeling antsy, this is a perfectly reasonable place to move on.
-You already know nearly all of the linear algebra required
-to implement a number of many practically useful models
-and you can always circle back when you want to learn more.
+ここまでの内容をすべて理解していれば、正直なところモデリングを始める準備ができています。もし不安を感じていれば、ここから、さらに学習を進めるべきでしょう。多くの実用的なモデルを実装するために必要な線形代数について、それらのほぼすべてを知っているので、さらに学習したいときにはいつでもここに戻ることができます。
 
-But there is a lot more to linear algebra, even as concerns machine learning.
-At some point, if you plan to make a career in machine learning,
-you will need to know more than what we have covered so far.
-In the rest of this chapter, we introduce some useful, more advanced concepts.
+しかし、機械学習に関係があるといっても、線形代数が含む内容にはさらに多くのものがあります。あるとき、機械学習でキャリアを積もうと考えたなら、これまでに扱ってきた以上のことを知る必要があります。この章の残りの部分では、便利で高度な概念をいくつか紹介します。
 
 
+### 基本的なベクトルの性質
 
-### Basic vector properties
+ベクトルには、数値を受け渡すためのデータ構造以上に有用な点があります。ベクトルの要素に対する値の読み取りと書き込みや、有用な数学演算の実行に加えて、いくつかの興味深い特性をみることができます。
 
-Vectors are useful beyond being data structures to carry numbers.
-In addition to reading and writing values to the components of a vector,
-and performing some useful mathematical operations,
-we can analyze vectors in some interesting ways.
+1つの重要な概念はベクトル空間の概念です。ベクトル空間を構成する条件は次のとおりです。
 
-One important concept is the notion of a vector space.
-Here are the conditions that make a vector space:
-
-* **Additive axioms** (we assume that x,y,z are all vectors):
-  $x+y = y+x$ and $(x+y)+z = x+(y+z)$ and $0+x = x+0 = x$ and $(-x) + x = x + (-x) = 0$.
-* **Multiplicative axioms** (we assume that x is a vector and a, b are scalars):
-  $0 \cdot x = 0$ and $1 \cdot x = x$ and $(a b) x = a (b x)$.
-* **Distributive axioms** (we assume that x and y are vectors and a, b are scalars):
-  $a(x+y) = ax + ay$ and $(a+b)x = ax +bx$.
+* **交換法則** (x, y, z はすべてベクトルとする):
+  $x+y = y+x$, $(x+y)+z = x+(y+z)$, $0+x = x+0 = x$, $(-x) + x = x + (-x) = 0$.
+* **スカラー倍** (x はベクトルで a と b はスカラーとする):
+  $0 \cdot x = 0$, $1 \cdot x = x$, $(a b) x = a (b x)$.
+* **分配法則** (x と y はベクトルで a と b はスカラーとする):
+  $a(x+y) = ax + ay$,  $(a+b)x = ax +bx$.
 
 ### Special matrices
 
