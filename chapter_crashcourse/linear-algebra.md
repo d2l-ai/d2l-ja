@@ -364,13 +364,13 @@ nd.sum(nd.abs(x))
 
 ## まとめ
 
-In just a few pages (or one Jupyter notebook) we have taught you all the linear algebra you will need to understand a good chunk of neural networks. Of course there is a *lot* more to linear algebra. And a lot of that math *is* useful for machine learning. For example, matrices can be decomposed into factors, and these decompositions can reveal low-dimensional structure in real-world datasets. There are entire subfields of machine learning that focus on using matrix decompositions and their generalizations to high-order tensors to discover structure in datasets and solve prediction problems. But this book focuses on deep learning. And we believe you will be much more inclined to learn more mathematics once you have gotten your hands dirty deploying useful machine learning models on real datasets. So while we reserve the right to introduce more math much later on, we will wrap up this chapter here.
+ほんの数ページ（または1つのJupyterノートブック）で、ニューラルネットワークの大部分を理解するために必要な線形代数について説明しました。もちろん、線形代数には*もっと*たくさんの内容があります。そして、そうした数学の多くは機械学習を行う上で役に立ちます。たとえば、行列は因子に分解可能であり、これらの分解によって実世界のデータセットの低次元構造を明らかにすることができます。機械学習には、データセットの構造を明らかにしたり、予測問題を解くために、行列分解とその高次テンソルへの一般化に焦点を当てる分野が存在します。しかしこの本は、深層学習に焦点を当てています。そして、実際のデータセットに対して手を動かしながら有用な機械学習モデルを適用していくと、より多くの数学を学びたいと思うでしょう。したがって、数学のさらなる詳細については、以降紹介するつもりではありますが、この章はいったんここでまとめます。
 
-If you are eager to learn more about linear algebra, here are some of our favorite resources on the topic
+もし線形代数についてさらに学びたい方のために、著者のお気に入りの教材を以下に紹介します。
 
-* For a solid primer on basics, check out Gilbert Strang's book [Introduction to Linear Algebra](http://math.mit.edu/~gs/linearalgebra/)
-* Zico Kolter's [Linear Algebra Review and Reference](http://www.cs.cmu.edu/~zkolter/course/15-884/linalg-review.pdf)
+* 基礎をしっかり固めたい方は、Gilbert Strangの書籍をチェックしてください[Introduction to Linear Algebra](http://math.mit.edu/~gs/linearalgebra/)
+* Zico Kolter の [Linear Algebra Review and Reference](http://www.cs.cmu.edu/~zkolter/course/15-884/linalg-review.pdf)
 
-## Scan the QR Code to [Discuss](https://discuss.mxnet.io/t/2317)
+## [議論のための](https://discuss.mxnet.io/t/2317)QRコード
 
 ![](../img/qr_linear-algebra.svg)
