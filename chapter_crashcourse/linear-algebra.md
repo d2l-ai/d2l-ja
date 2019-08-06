@@ -353,17 +353,16 @@ nd.sum(nd.abs(x))
 * **分配法則** (x と y はベクトルで a と b はスカラーとする):
   $a(x+y) = ax + ay$,  $(a+b)x = ax +bx$.
 
-### Special matrices
+### 特殊な行列
 
-There are a number of special matrices that we will use throughout this tutorial. Let's look at them in a bit of detail:
+このチュートリアルでは、いくつかの特殊な行列を紹介します。詳細を少し覗いてみましょう。
 
-* **Symmetric Matrix** These are matrices where the entries below and above the diagonal are the same. In other words, we have that $M^\top = M$. An example of such matrices are those that describe pairwise distances, i.e. $M_{ij} = \|x_i - x_j\|$. Likewise, the Facebook friendship graph can be written as a symmetric matrix where $M_{ij} = 1$ if $i$ and $j$ are friends and $M_{ij} = 0$ if they are not. Note that the *Twitter* graph is asymmetric - $M_{ij} = 1$, i.e. $i$ following $j$ does not imply that $M_{ji} = 1$, i.e. $j$ following $i$.
-* **Antisymmetric Matrix** These matrices satisfy $M^\top = -M$. Note that any square matrix can always be decomposed into a symmetric and into an antisymmetric matrix by using $M = \frac{1}{2}(M + M^\top) + \frac{1}{2}(M - M^\top)$.
-* **Diagonally Dominant Matrix** These are matrices where the off-diagonal elements are small relative to the main diagonal elements. In particular we have that $M_{ii} \geq \sum_{j \neq i} M_{ij}$ and $M_{ii} \geq \sum_{j \neq i} M_{ji}$. If a matrix has this property, we can often approximate $M$ by its diagonal. This is often expressed as $\mathrm{diag}(M)$.
-* **Positive Definite Matrix** These are matrices that have the nice property where $x^\top M x > 0$ whenever $x \neq 0$. Intuitively, they are a generalization of the squared norm of a vector $\|x\|^2 = x^\top x$. It is easy to check that whenever $M = A^\top A$, this holds since there $x^\top M x = x^\top A^\top A x = \|A x\|^2$. There is a somewhat more profound theorem which states that all positive definite matrices can be written in this form.
+* **対称行列** 行列の対角線の下と上の要素が同じ行列です。つまり、$M^\top=M$になります。そのような行列の例としては、ペアとなるデータ間の距離を記述するもの、つまり$M_{ij} = \| x_i-x_j \|$を満たすような行列です。同様に、Facebook上のつながりを表すグラフは、対称行列として記述できます。つまり、$i$と$j$がつながっている場合は$M_{ij} = 1$、そうでない場合は$M_{ij} = 0$となるような行列として表現されます。 *Twitter*のグラフは非対称です - $M_{ij} = 1$ つまり$i$が$j$をフォローしているからといって、$M_{ji} = 1$つまり$j$が$i$をフォローしているとは限りません。
+* **交代行列** $M^\top = -M$を満たすような行列です。どのような正方行列も対称行列と交代行列に分解することが可能で、次の式を満たします。$M = \frac{1}{2}(M + M^\top) + \frac{1}{2}(M - M^\top)$
+* **対角優位行列** 対角項以外の要素が対角項の要素よりも小さい行列で、数学表記を用いると $M_{ii} \geq \sum_{j \neq i} M_{ij}$ ならびに $M_{ii} \geq \sum_{j \neq i} M_{ji}$ を満たす行列と表現できます。ある行列がこの特性を満たすなら、その行列 $M$ は対角成分$\mathrm{diag}(M)$によって近似することができるでしょう。
+* **正定値行列** 非負の$x$に対して$x^\top M x > 0$という性質を満たす行列です。直感的には、ベクトルの二乗ノルム$\|x\|^2 = x^\top x$の一般化であるといえます。$M = A^\top A$を満たすとき、$x^\top M x = x^\top A^\top A x = \|A x\|^2$が成立することを調べるのは容易です。実は正定値行列はここで書く内容より、もう少し深い内容があります。
 
-
-## Summary
+## まとめ
 
 In just a few pages (or one Jupyter notebook) we have taught you all the linear algebra you will need to understand a good chunk of neural networks. Of course there is a *lot* more to linear algebra. And a lot of that math *is* useful for machine learning. For example, matrices can be decomposed into factors, and these decompositions can reveal low-dimensional structure in real-world datasets. There are entire subfields of machine learning that focus on using matrix decompositions and their generalizations to high-order tensors to discover structure in datasets and solve prediction problems. But this book focuses on deep learning. And we believe you will be much more inclined to learn more mathematics once you have gotten your hands dirty deploying useful machine learning models on real datasets. So while we reserve the right to introduce more math much later on, we will wrap up this chapter here.
 
