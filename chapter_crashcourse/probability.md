@@ -72,8 +72,6 @@ totals / 1000
 
 まず、shapeが`(6, 1000)`の配列`counts`を見てみましょう。各時間ステップ (1000回中)、 `counts`はその出目が何回現れたかを表しています。したがって、 そのカウントを表すベクトルの$j$番目の列を、サイコロを振った回数で正規化すれば、ある時点における`現在の`推定確率を求めることができます。カウントを表すobjectは以下のようになります。
 
-To start let's take a look at the `counts` array which has shape `(6, 1000)`. For each time step (out of 1000), `counts` says how many times each of the numbers has shown up. So we can normalize each $j$-th column of the counts vector by the number of tosses to give the `current` estimated probabilities at that time. The counts object looks like this:
-
 ```{.python .input}
 counts
 ```
@@ -88,7 +86,8 @@ print(estimates[:,1])
 print(estimates[:,100])
 ```
 
-As you can see, after the first toss of the die, we get the extreme estimate that one of the numbers will be rolled with probability $1.0$ and that the others have probability $0$. After $100$ rolls, things already look a bit more reasonable. We can visualize this convergence by using the plotting package `matplotlib`. If you don't have it installed, now would be a good time to [install it](https://matplotlib.org/).
+ご覧のとおり、最初にサイコロを振った際は、数字の1つが$1.0$の確率で現れ、他の数字が$0$の確率となるような極端な推論が得られます。$100$回振ると、もう少しまともな結果を見ることができます。グラフ化パッケージ `matplotlib` を使用して、この収束を視覚化することができます。 インストールしていない場合は、[インストール](https://matplotlib.org/)をお勧めします。
+
 
 ```{.python .input}
 %matplotlib inline
@@ -105,20 +104,18 @@ plt.legend()
 plt.show()
 ```
 
-Each solid curve corresponds to one of the six values of the die and gives our estimated probability that the die turns up that value as assessed after each of the 1000 turns. The dashed black line gives the true underlying probability. As we get more data, the solid curves converge towards the true answer.
+各実線の曲線は、サイコロの6つの出目のうちの1つに対応しており、1000回振ったあとに評価される出目の確率を表します。黒い破線は、潜在的な真の確率を示しています。より多くのデータを取得すると、実線の曲線は真の解に向かって収束します。
 
-In our example of casting a die, we introduced the notion of a **random variable**. A random variable, which we denote here as $X$ can be pretty much any quantity and is not deterministic. Random variables could take one value among a set of possibilities. We denote sets with brackets, e.g., $\{\mathrm{cat}, \mathrm{dog}, \mathrm{rabbit}\}$. The items contained in the set are called *elements*, and we can say that an element $x$ is *in* the set S, by writing $x \in S$. The symbol $\in$ is read as "in" and denotes membership. For instance, we could truthfully say $\mathrm{dog} \in \{\mathrm{cat}, \mathrm{dog}, \mathrm{rabbit}\}$. When dealing with the rolls of die, we are concerned with a variable $X \in \{1, 2, 3, 4, 5, 6\}$.
+サイコロを振る例では**確率変数**の概念を導入しました。$X$として表される確率変数は、ほぼすべての値を取る可能性があり決定的ではありません。確率変数はとりうる可能性の集合の中から1つの値をとることができます。その集合を角括弧で示します（例：$\{\mathrm{cat}, \mathrm{dog}, \mathrm{rabbit} \}$）。集合に含まれる項目は*要素*と呼ばれ、$x\in S$と書くことで、要素$x$は集合Sに*含まれる*といえます。記号$\in$は"in"と読まれ、集合の要素であることを示します。たとえば、$\mathrm{dog} \in \{\mathrm{cat}, \mathrm{dog}, \mathrm{rabbit} \}$と確実に言うことができます。サイコロの出目を扱うとき、変数$X \in \{1, 2, 3, 4, 5, 6 \}$について関心があるといえるでしょう。
 
-Note that there is a subtle difference between discrete random variables, like the sides of a dice, and continuous ones, like the weight and the height of a person. There's little point in asking whether two people have exactly the same height. If we take precise enough measurements you'll find that no two people on the planet have the exact same height. In fact, if we take a fine enough measurement, you will not have the same height when you wake up and when you go to sleep. So there's no purpose in asking about the probability
-that someone is $2.00139278291028719210196740527486202$ meters tall. Given the world population of humans the probability is virtually 0. It makes more sense in this case to ask whether someone's height falls into a given interval, say between 1.99 and 2.01 meters. In these cases we quantify the likelihood that we see a value as a *density*. The height of exactly 2.0 meters has no probability, but nonzero density. In the interval between any two different heights we have nonzero probability.
+サイコロの面のような離散確率変数と、人の体重や身長のような連続確率変数との間には微妙な違いがあることに注意してください。 2人の人の身長がまったく同じかどうかを尋ねても意味がありません。十分に正確な測定を行うと、地球上の2人の人がまったく同じ身長にならないことがわかります。実際、十分に細かい測定を行った場合、目覚めたときと寝ているときの身長は同じになりません。そのため、ある人の身長が$ 2.00139278291028719210196740527486202 $メートルである確率について尋ねる人はまずいないでしょう。世界人口を考えると確率は事実上0です。この場合、誰かの身長が1.99から2.01メートルの間など、指定された間隔に収まるかどうかを確認する方が理にかなっています。こういった場合、可能性を*密度*という見える値で定量化します。ちょうど2.0メートルの高さをとる確率はありませんが、密度はゼロではありません。任意の2つの異なる高さの間には、ゼロ以外の確率があります。
 
+覚えておくべき確率に関する重要な公理を以下に示します。
 
-There are a few important axioms of probability that you'll want to remember:
-
-* For any event $z$, the probability is never negative, i.e. $\Pr(Z=z) \geq 0$.
-* For any two events $Z=z$ and $X=x$ the union is no more likely than the sum of the individual events, i.e. $\Pr(Z=z \cup X=x) \leq \Pr(Z=z) + \Pr(X=x)$.
-* For any random variable, the probabilities of all the values it can take must sum to 1, i.e. $\sum_{i=1}^n \Pr(Z=z_i) = 1$.
-* For any two *mutually exclusive* events $Z=z$ and $X=x$, the probability that either happens is equal to the sum of their individual probabilities, that is $\Pr(Z=z \cup X=x) = \Pr(Z=z) + \Pr(X=x)$.
+* 任意の事象 $z$ について, その確率は必ず非負となります。つまり $\Pr(Z=z) \geq 0$。
+* 任意の2つの事象 $Z=z$ と $X=x$ について、その結合事象は各事象の和ほど、起こりうることはありません。つまり$\Pr(Z=z \cup X=x) \leq \Pr(Z=z) + \Pr(X=x)$。
+* どの確率変数も、その値をとるすべての確率の和は必ず1です。つまり、$\sum_{i=1}^n \Pr(Z=z_i) = 1$。
+* 相互に排他的な2つの事象$Z=z$ と $X=x$ について、どちらかが起こる確率は、それぞれの確率の和に等しい。つまり$\Pr(Z=z \cup X=x) = \Pr(Z=z) + \Pr(X=x)$。
 
 ## Dealing with multiple random variables
 Very often, we'll want to consider more than one random variable at a time.
