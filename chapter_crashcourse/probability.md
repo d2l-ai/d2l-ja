@@ -18,60 +18,40 @@
 次に、2つ目のケースを考えてみましょう。いくつかの気象観測データから、明日台北で雨が降る確率を予測したいと思います。夏の場合、$.5$の確率で雨になるとします。画像の分類と天気予報、どちらの場合も注目している値があり、そして、どちらの場合も結果については不確かであるという共通点があります。
 しかし、2つのケースには重要な違いがあります。最初のケースでは、画像は実際には犬または猫のいずれかであり (ランダムなわけではない)、ただそのどちらかが分からないだけです。 2番目のケースでは、私達が思っているように (そしてほとんどの物理学者も思っているように)、結果はランダムに決まる事象です。したがって、確率は、私たちの確信の度合いを説明するために用いられるフレキシブルな言語であり、幅広いコンテキストで効果的に利用されています。
 
-## Basic probability theory
+## 確率理論の基礎
 
-Say that we cast a die and want to know what the chance is of seeing a $1$ rather than another digit. If the die is fair, all six outcomes $\mathcal{X} = \{1, \ldots, 6\}$ are equally likely to occur, and thus we would see a $1$ in $1$ out of $6$ cases. Formally we state that $1$ occurs with probability $\frac{1}{6}$.
+サイコロを投げて、別の数字ではなく$1$が表示される可能性を知りたいとします。サイコロが公平なものであれば、6種類の出目$\mathcal{X} = \{1, \ldots, 6\}$がすべて同様に発生する可能性があり、$6$つの場合の数のうち$1$つが$1$として観測されるでしょう。正式に記述すれば、$1$は確率$\frac{1}{6}$で発生するといえるでしょう。
 
-For a real die that we receive from a factory, we might not know those proportions and we would need to check whether it is tainted. The only way to investigate the die is by casting it many times and recording the outcomes. For each cast of the die, we'll observe a value $\{1, 2, \ldots, 6\}$. Given these outcomes, we want to investigate the probability of observing each outcome.
+工場から受け取った実際のサイコロについて、それらの比率がわからない可能性があれば、偏りがないかどうかを確認する必要があります。サイコロを調査する唯一の方法は、サイコロを何度も振って結果を記録することです。サイコロを振るたびに値\{1, 2, \ldots, 6\}$を観察します。これらの結果を考慮して、各出目を観測する確率を調査したいと思います。
 
-One natural approach for each value is to take the
-individual count for that value and to divide it by the total number of tosses.
-This gives us an *estimate* of the probability of a given event. The law of
-large numbers tell us that as the number of tosses grows this estimate will draw closer and closer to the true underlying probability. Before going into the details of what's going here, let's try it out.
+それぞれの確率を求める際の自然なアプローチとして、各出目の出現回数をカウントし、それをサイコロを投げた総回数で割ることです。これにより、特定のイベントの確率の*推定*を得ることができます。大数の法則では、サイコロを振る回数が増えると、潜在的な真の確率に推定の確率がますます近づくことが示されています。ここで何が起こっているか、詳細に入りこむ前に、試すことから始めてみましょう。
 
-To start, let's import the necessary packages:
+まず、必要なパッケージをインポートします。
 
 ```{.python .input}
 import mxnet as mx
 from mxnet import nd
 import numpy as np
 from matplotlib import pyplot as plt
-
 ```
 
-Next, we'll want to be able to cast the die. In statistics we call this process
-of drawing examples from probability distributions *sampling*.
-The distribution
-which assigns probabilities to a number of discrete choices is called the
-*multinomial* distribution. We'll give a more formal definition of
-*distribution* later, but at a high level, think of it as just an assignment of
-probabilities to events. In MXNet, we can sample from the multinomial
-distribution via the aptly named `nd.random.multinomial` function.
-The function
-can be called in many ways, but we'll focus on the simplest.
-To draw a single
-sample, we simply pass in a vector of probabilities.
+
+次に、サイコロを振れるようにします。統計では、確率分布からデータ例を引いてくるこのプロセスを*サンプリング*と呼びます。確率をいくつかの離散的な選択肢に割り当てる分布は*多項分布*と呼ばれます。*分布*のより正式な定義については後ほど述べますが、抽象的な見方をすると、イベントに対する単なる確率の割り当てと考えてください。MXNetでは、まさに相応しい名前をもった`nd.random.multinomial`という関数によって、多項分布からサンプリングすることができます。 この関数はさまざまな方法で呼び出すことができますが、ここでは最も単純なものに焦点を当てます。 単一のサンプルを引くためには、単純に確率のベクトルを渡します。
 
 ```{.python .input}
 probabilities = nd.ones(6) / 6
 nd.random.multinomial(probabilities)
 ```
 
-If you run the sampler a bunch of times, you'll find that you get out random
-values each time. As with estimating the fairness of a die, we often want to
-generate many samples from the same distribution. It would be unbearably slow to
-do this with a Python `for` loop, so `random.multinomial` supports drawing
-multiple samples at once, returning an array of independent samples in any shape
-we might desire.
+上記のサンプラーを何度も実行すると、毎回ランダムな値を取得することがわかります。サイコロの公平性を推定する場合と同様に、同じ分布から多くのサンプルを生成することがよくあります。 Pythonの`for`ループでこれを行うと耐えられないほど遅いため、`random.multinomial`は複数のサンプルを一度に生成することをサポートし、任意のshapeをもった独立したサンプルの配列を返します。
 
 ```{.python .input}
 print(nd.random.multinomial(probabilities, shape=(10)))
 print(nd.random.multinomial(probabilities, shape=(5,10)))
 ```
 
-Now that we know how to sample rolls of a die, we can simulate 1000 rolls. We
-can then go through and count, after each of the 1000 rolls, how many times each
-number was rolled.
+サイコロの出目をサンプリングする方法がわかったので、1000個の出目をシミュレーションすることができます。その後、1000回サイコロを振った後に、各出目が出た回数を数えます。
+
 
 ```{.python .input}
 rolls = nd.random.multinomial(probabilities, shape=(1000))
@@ -82,22 +62,21 @@ for i, roll in enumerate(rolls):
     counts[:, i] = totals
 ```
 
-To start, we can inspect the final tally at the end of $1000$ rolls.
+まず、$1000$回振った最終結果を見てみましょう。
 
 ```{.python .input}
 totals / 1000
 ```
 
-As you can see, the lowest estimated probability for any of the numbers is about $.15$ and the highest estimated probability is $0.188$. Because we generated the data from a fair die, we know that each number actually has probability of $1/6$, roughly $.167$, so these estimates are pretty good. We can also visualize how these probabilities converge over time towards reasonable estimates.
+結果を見ると、いずれの出目についても最小の確率は$0.15$で、最大の確率は$0.188$となっています。公平なサイコロからデータを生成したので、各出目は$1/6$の確率、つまり$.167$で現れることがわかっていますので、これらの推定値は非常に良いです。確率がれらの推定値にどのように収束していくかを可視化することもできます。
 
-To start let's take a look at the `counts` array which has shape `(6, 1000)`.
-For each time step (out of 1000), `counts` says how many times each of the numbers has shown up. So we can normalize each $j$-th column of the counts vector by the number of tosses to give the `current` estimated probabilities at that time. The counts object looks like this:
+まず、shapeが`(6, 1000)`の配列`counts`を見てみましょう。各時間ステップ (1000回中)、 `counts`はその出目が何回現れたかを表しています。したがって、 そのカウントを表すベクトルの$j$番目の列を、サイコロを振った回数で正規化すれば、ある時点における`現在の`推定確率を求めることができます。カウントを表すobjectは以下のようになります。
 
 ```{.python .input}
 counts
 ```
 
-Normalizing by the number of tosses, we get:
+振った回数で正規化すると、以下を得ることができます。
 
 ```{.python .input}
 x = nd.arange(1000).reshape((1,1000)) + 1
@@ -107,12 +86,8 @@ print(estimates[:,1])
 print(estimates[:,100])
 ```
 
-As you can see, after the first toss of the die, we get the extreme estimate
-that one of the numbers will be rolled with probability $1.0$ and that the
-others have probability $0$. After $100$ rolls, things already look a bit more
-reasonable. We can visualize this convergence by using the plotting package
-`matplotlib`. If you don't have it installed, now would be a good time to
-[install it](https://matplotlib.org/).
+ご覧のとおり、最初にサイコロを振った際は、数字の1つが$1.0$の確率で現れ、他の数字が$0$の確率となるような極端な推論が得られます。$100$回振ると、もう少しまともな結果を見ることができます。グラフ化パッケージ `matplotlib` を使用して、この収束を視覚化することができます。 インストールしていない場合は、[インストール](https://matplotlib.org/)をお勧めします。
+
 
 ```{.python .input}
 %matplotlib inline
@@ -129,20 +104,18 @@ plt.legend()
 plt.show()
 ```
 
-Each solid curve corresponds to one of the six values of the die and gives our estimated probability that the die turns up that value as assessed after each of the 1000 turns. The dashed black line gives the true underlying probability. As we get more data, the solid curves converge towards the true answer.
+各実線の曲線は、サイコロの6つの出目のうちの1つに対応しており、1000回振ったあとに評価される出目の確率を表します。黒い破線は、潜在的な真の確率を示しています。より多くのデータを取得すると、実線の曲線は真の解に向かって収束します。
 
-In our example of casting a die, we introduced the notion of a **random variable**. A random variable, which we denote here as $X$ can be pretty much any quantity and is not deterministic. Random variables could take one value among a set of possibilities. We denote sets with brackets, e.g., $\{\mathrm{cat}, \mathrm{dog}, \mathrm{rabbit}\}$. The items contained in the set are called *elements*, and we can say that an element $x$ is *in* the set S, by writing $x \in S$. The symbol $\in$ is read as "in" and denotes membership. For instance, we could truthfully say $\mathrm{dog} \in \{\mathrm{cat}, \mathrm{dog}, \mathrm{rabbit}\}$. When dealing with the rolls of die, we are concerned with a variable $X \in \{1, 2, 3, 4, 5, 6\}$.
+サイコロを振る例では**確率変数**の概念を導入しました。$X$として表される確率変数は、ほぼすべての値を取る可能性があり決定的ではありません。確率変数はとりうる可能性の集合の中から1つの値をとることができます。その集合を角括弧で示します（例：$\{\mathrm{cat}, \mathrm{dog}, \mathrm{rabbit} \}$）。集合に含まれる項目は*要素*と呼ばれ、$x\in S$と書くことで、要素$x$は集合Sに*含まれる*といえます。記号$\in$は"in"と読まれ、集合の要素であることを示します。たとえば、$\mathrm{dog} \in \{\mathrm{cat}, \mathrm{dog}, \mathrm{rabbit} \}$と確実に言うことができます。サイコロの出目を扱うとき、変数$X \in \{1, 2, 3, 4, 5, 6 \}$について関心があるといえるでしょう。
 
-Note that there is a subtle difference between discrete random variables, like the sides of a dice, and continuous ones, like the weight and the height of a person. There's little point in asking whether two people have exactly the same height. If we take precise enough measurements you'll find that no two people on the planet have the exact same height. In fact, if we take a fine enough measurement, you will not have the same height when you wake up and when you go to sleep. So there's no purpose in asking about the probability
-that someone is $2.00139278291028719210196740527486202$ meters tall. Given the world population of humans the probability is virtually 0. It makes more sense in this case to ask whether someone's height falls into a given interval, say between 1.99 and 2.01 meters. In these cases we quantify the likelihood that we see a value as a *density*. The height of exactly 2.0 meters has no probability, but nonzero density. In the interval between any two different heights we have nonzero probability.
+サイコロの面のような離散確率変数と、人の体重や身長のような連続確率変数との間には微妙な違いがあることに注意してください。 2人の人の身長がまったく同じかどうかを尋ねても意味がありません。十分に正確な測定を行うと、地球上の2人の人がまったく同じ身長にならないことがわかります。実際、十分に細かい測定を行った場合、目覚めたときと寝ているときの身長は同じになりません。そのため、ある人の身長が$ 2.00139278291028719210196740527486202 $メートルである確率について尋ねる人はまずいないでしょう。世界人口を考えると確率は事実上0です。この場合、誰かの身長が1.99から2.01メートルの間など、指定された間隔に収まるかどうかを確認する方が理にかなっています。こういった場合、可能性を*密度*という見える値で定量化します。ちょうど2.0メートルの高さをとる確率はありませんが、密度はゼロではありません。任意の2つの異なる高さの間には、ゼロ以外の確率があります。
 
+覚えておくべき確率に関する重要な公理を以下に示します。
 
-There are a few important axioms of probability that you'll want to remember:
-
-* For any event $z$, the probability is never negative, i.e. $\Pr(Z=z) \geq 0$.
-* For any two events $Z=z$ and $X=x$ the union is no more likely than the sum of the individual events, i.e. $\Pr(Z=z \cup X=x) \leq \Pr(Z=z) + \Pr(X=x)$.
-* For any random variable, the probabilities of all the values it can take must sum to 1, i.e. $\sum_{i=1}^n \Pr(Z=z_i) = 1$.
-* For any two *mutually exclusive* events $Z=z$ and $X=x$, the probability that either happens is equal to the sum of their individual probabilities, that is $\Pr(Z=z \cup X=x) = \Pr(Z=z) + \Pr(X=x)$.
+* 任意の事象 $z$ について, その確率は必ず非負となります。つまり $\Pr(Z=z) \geq 0$。
+* 任意の2つの事象 $Z=z$ と $X=x$ について、その結合事象は各事象の和ほど、起こりうることはありません。つまり$\Pr(Z=z \cup X=x) \leq \Pr(Z=z) + \Pr(X=x)$。
+* どの確率変数も、その値をとるすべての確率の和は必ず1です。つまり、$\sum_{i=1}^n \Pr(Z=z_i) = 1$。
+* 相互に排他的な2つの事象$Z=z$ と $X=x$ について、どちらかが起こる確率は、それぞれの確率の和に等しい。つまり$\Pr(Z=z \cup X=x) = \Pr(Z=z) + \Pr(X=x)$。
 
 ## Dealing with multiple random variables
 Very often, we'll want to consider more than one random variable at a time.
