@@ -117,14 +117,11 @@ plt.show()
 * どの確率変数も、その値をとるすべての確率の和は必ず1です。つまり、$\sum_{i=1}^n \Pr(Z=z_i) = 1$。
 * 相互に排他的な2つの事象$Z=z$ と $X=x$ について、どちらかが起こる確率は、それぞれの確率の和に等しい。つまり$\Pr(Z=z \cup X=x) = \Pr(Z=z) + \Pr(X=x)$。
 
-## Dealing with multiple random variables
-Very often, we'll want to consider more than one random variable at a time.
-For instance, we may want to model the relationship between diseases and symptoms. Given a disease and symptom, say 'flu' and 'cough', either may or may not occur in a patient with some probability. While we hope that the probability of both would be close to zero, we may want to estimate these probabilities and their relationships to each other so that we may apply our inferences to effect better medical care.
+## 複数の確率変数の取り扱い
 
-As a more complicated example, images contain millions of pixels, thus millions of random variables. And in many cases images will come with a
-label, identifying objects in the image. We can also think of the label as a
-random variable. We can even think of all the metadata as random variables
-such as location, time, aperture, focal length, ISO, focus distance, camera type, etc. All of these are random variables that occur jointly. When we deal with multiple random variables, there are several quantities of interest. The first is called the joint distribution $\Pr(A, B)$. Given any elements $a$ and $b$, the joint distribution lets us answer, what is the probability that $A=a$ and $B=b$ simultaneously? Note that for any values $a$ and $b$, $\Pr(A=a,B=b) \leq \Pr(A=a)$.
+一度に複数の確率変数を扱いたくなることが多くあります。例えば、病気と症状の関係をモデル化したい場合を考えましょう。例えば、「インフルエンザ」と「せき」のような病気と症状が与えられていて、ある確率で患者に発生したり、しなかったりするとします。その双方の確率がゼロであることを望みますが、その確率と関係性を推定することで、その推論をより良い医療看護につなげることができるでしょう。
+
+より複雑な例としては、数百万ピクセルの画像は、数百万の確率変数を含んでいると言えます。多くの場合、画像の中に写る物体を表すラベルを伴います。ラベルもまた確率変数と考えることができます。さらには、すべてのメタデータを確率変数と考えることもできるでしょう。例えば、場所、時間、レンズの口径、焦点距離、ISO、集束距離、カメラの種類などです。これらはすべて、同時に発生する確率変数です。複数の確率変数を扱う場合、いくつかの重要な概念があります。 1つ目は結合分布$\Pr(A,B)$です。結合分布は、$a$と$b$の要素が与えられたとき、$A=a$と$B=b$が同時に発生する確率を示します。あらゆる$a, b$に対して、$\Pr(A=a, B =b) \leq \Pr(A=a)$が成立することに注意してください。
 
 This has to be the case, since for $A$ and $B$ to happen, $A$ has to happen *and* $B$ also has to happen (and vice versa). Thus $A,B$ cannot be more likely than $A$ or $B$ individually. This brings us to an interesting ratio: $0 \leq \frac{\Pr(A,B)}{\Pr(A)} \leq 1$. We call this a **conditional probability**
 and denote it by $\Pr(B | A)$, the probability that $B$ happens, provided that
