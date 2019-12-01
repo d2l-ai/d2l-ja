@@ -144,10 +144,10 @@ $$\Pr(A) = \sum_{B'} \Pr(A,B') \text{ and
 
 ここまで学んだことを試してみましょう。医師が患者にエイズ検査を実施するとします。このテストはかなり正確であり、患者が健康であるにもかかわらず、感染していると誤診する確率は、たったの1%しかありません。また、患者が実際にHIVに感染していれば、HIVの検出に失敗することはありません。診断を$D$、HIVの感染の有無を$H$で表します。$\Pr(D|H)$を表として表すと次のようになります。
 
-|outcome| HIV positive | HIV negative |
+|結果| HIV 陽性 | HIV 陰性 |
 |:------------|-------------:|-------------:|
-|Test positive|            1 |0.01 |
-|Test negative|            0 |         0.99 |
+|検査 陽性|            1 |0.01 |
+|検査 陰性|            0 |         0.99 |
 
 条件付き確率は一般の確率と同様に足して1になる必要があるため、列方向の和はすべて1となる（ただし、行方向は1とならない）ことに注意してください。陽性の結果がでたときに、患者がAIDSに感染している確率を計算しましょう。明らかに、この計算にはこの病気がどれくらい一般的かに依存するでしょう。なぜなら、それによって誤検知の値が変わるからです。ここでは、母集団が非常に健康的な場合を考え、$\Pr(\text{HIV positive}) = 0.0015$としましょう。ベイズの定理を適用すると
 
@@ -165,17 +165,14 @@ $$\begin{aligned} \Pr(H = 1 | D = 1) =& \frac{\Pr(D=1 | H=1) \Pr(H=1)}{\Pr(D=1)}
 
 言い換えれば、検査の結果が99%正しいにも関わらず、患者が実際にAIDSに感染している確率は13.1%にすぎないことがわかります。このように統計は直感に反することがあります。
 
-## Conditional independence
-What should a patient do upon receiving such terrifying news? Likely, he/she
-would ask the physician to administer another test to get clarity. The second
-test has different characteristics (it isn't as good as the first one).
+## 条件付き独立
 
-|
-outcome |  HIV positive |  HIV negative |
+もし、患者が上記のようなおそろしいニュースを聞いたとしたらどうするでしょうか。おそらく、医者に対して、より正確な結果を得るための、追加のテストを実施するよう依頼するでしょう。2回目のテストはさきほどのテストとは異なる特徴があるとしましょう（そして最初よりも精度が悪いです）
+
+結果 |  HIV 陽性 |  HIV 陰性 |
 |:------------|--------------:|--------------:|
-|Test positive|          0.98 |
-0.03 |
-|Test negative|          0.02 |          0.97 |
+|テスト 陽性|          0.98 |0.03 |
+|テスト 陰性|          0.02 |          0.97 |
 
 Unfortunately, the second test comes back positive, too. Let us work out the requisite probabilities to invoke Bayes' Theorem.
 
