@@ -121,36 +121,36 @@ plt.show()
 
 一度に複数の確率変数を扱いたくなることが多くあります。例えば、病気と症状の関係をモデル化したい場合を考えましょう。例えば、「インフルエンザ」と「せき」のような病気と症状が与えられていて、ある確率で患者に発生したり、しなかったりするとします。その双方の確率がゼロであることを望みますが、その確率と関係性を推定することで、その推論をより良い医療看護につなげることができるでしょう。
 
-より複雑な例としては、数百万ピクセルの画像は、数百万の確率変数を含んでいると言えます。多くの場合、画像の中に写る物体を表すラベルを伴います。ラベルもまた確率変数と考えることができます。さらには、すべてのメタデータを確率変数と考えることもできるでしょう。例えば、場所、時間、レンズの口径、焦点距離、ISO、集束距離、カメラの種類などです。これらはすべて、同時に発生する確率変数です。複数の確率変数を扱う場合、いくつかの重要な概念があります。 1つ目は結合分布$\Pr(A,B)$です。結合分布は、$a$と$b$の要素が与えられたとき、$A=a$と$B=b$が同時に発生する確率を示します。あらゆる$a, b$に対して、$\Pr(A=a, B =b) \leq \Pr(A=a)$が成立することに注意してください。
+より複雑な例としては、数百万ピクセルの画像は、数百万の確率変数を含んでいると言えます。多くの場合、画像の中に写る物体を表すラベルを伴います。ラベルもまた確率変数と考えることができます。さらには、すべてのメタデータを確率変数と考えることもできるでしょう。例えば、場所、時間、レンズの口径、焦点距離、ISO、集束距離、カメラの種類などです。これらはすべて、同時に発生する確率変数です。複数の確率変数を扱う場合、いくつかの重要な概念があります。 1つ目は結合分布$\Pr(A,B)$です。結合分布は、$a$と$b$の要素が与えられたとき、$A=a$と$B=b$が同時に発生する確率を示します。あらゆる$a, b$に対して、$\Pr(A=a, B=b) \leq \Pr(A=a)$が成立することに注意してください。
 
-This has to be the case, since for $A$ and $B$ to happen, $A$ has to happen *and* $B$ also has to happen (and vice versa). Thus $A,B$ cannot be more likely than $A$ or $B$ individually. This brings us to an interesting ratio: $0 \leq \frac{\Pr(A,B)}{\Pr(A)} \leq 1$. We call this a **conditional probability**
-and denote it by $\Pr(B | A)$, the probability that $B$ happens, provided that
-$A$ has happened.
+これはつまり、$A$と$B$が発生するためには、$A$が発生して、*かつ*、$B$も発生する必要があるからです (逆も同様です)。したがって、$A, B$が個別に発生するよりも、$A$と$B$が同時に発生することはありません。これによって、$0 \leq \frac{\Pr(A,B)}{\Pr(A)} \leq 1$ という、確率の比に関する興味深い式を導くことができます。これを**条件付き確率**と呼び、$\Pr(B|A)$で表します。$A$が発生する条件のもとで$B$が発生する確率を表します。
+$ A $が発生しました。
 
-Using the definition of conditional probabilities, we can derive one of the most useful and celebrated equations in statistics—Bayes' theorem.
-It goes as follows: By construction, we have that $\Pr(A, B) = \Pr(B | A) \Pr(A)$. By symmetry, this also holds for $\Pr(A,B) = \Pr(A | B) \Pr(B)$. Solving for one of the conditional variables we get:
+条件付き確率の定義にもとづいて、ベイズ統計学で最も有用かる有名な方程式の1つを導くことができます。定義より $\Pr(A, B) = \Pr(B | A) \Pr(A)$ となり、対称性より $\Pr(A,B) = \Pr(A | B) \Pr(B)$ も成立します。これらの式から、条件付き確率に関して解くと、次のようになります。
 
-$$\Pr(A | B) = \frac{\Pr(B | A) \Pr(A)}{\Pr(B)}$$
+$$ \Pr(A | B)= \frac{\Pr(B|A) \Pr(A)}{\Pr(B)} $$
+
 
 This is very useful if we want to infer one thing from another, say cause and effect but we only know the properties in the reverse direction. One important operation that we need, to make this work, is **marginalization**, i.e., the operation of determining $\Pr(A)$ and $\Pr(B)$ from $\Pr(A,B)$. We can see that the probability of seeing $A$ amounts to accounting for all possible choices of $B$ and aggregating the joint probabilities over all of them, i.e.
+
+これは、原因と結果など、あるものを別のものから推測したいが、逆方向の特性しかわからない場合に非常に便利です。これを実現するために必要となる重要な操作として **marginalization (周辺化)** があります。つまり、$\Pr(A,B)$から$\Pr(A)$および$\Pr(B)$を決定することです。$A$を確認する確率は、$B$のすべての可能性を考慮し、それらすべてに関する結合確率を集約することで得られます。
 
 $$\Pr(A) = \sum_{B'} \Pr(A,B') \text{ and
 } \Pr(B) = \sum_{A'} \Pr(A',B)$$
 
-Another useful property to check for is **dependence** vs. **independence**.
-Independence is when the occurrence of one event does not reveal any information about the occurrence of the other. In this case $\Pr(B | A) = \Pr(B)$. Statisticians typically exress this as $A \perp\!\!\!\perp B$. From Bayes' Theorem, it follows immediately that also $\Pr(A | B) = \Pr(A)$. In all other cases we call $A$ and $B$ dependent. For instance, two successive rolls of a die are independent. On the other hand, the position of a light switch and the brightness in the room are not (they are not perfectly deterministic, though, since we could always have a broken lightbulb, power failure, or a broken switch).
 
-Let's put our skills to the test. Assume that a doctor administers an AIDS test to a patient. This test is fairly accurate and it fails only with 1% probability if the patient is healthy by reporting him as diseased. Moreover,
-it never fails to detect HIV if the patient actually has it. We use $D$ to indicate the diagnosis and $H$ to denote the HIV status. Written as a table the outcome $\Pr(D | H)$ looks as follows:
+チェックすべきもう一つの特性として、**dependence(依存性)**と**independence(独立性)**があります。独立性とは、あるイベントの発生が発生しても、他のイベントの発生に関する情報が明らかにならないことを意味します。この場合、$\Pr(B | A) = \Pr(B)$です。統計学者は通常、これを $A \perp\!\!\!\perp B$ と表現します。ベイズの定理から、すぐに$\Pr(A | B) = \Pr(A)$であることがわかります。その他の場合は、すべて、$A$および$B$に依存する (dependence) ことになります。たとえば、サイコロを連続で2回振ったときの出目は独立しています。一方、照明スイッチの位置と部屋の明るさは独立していません (ただし、電球、停電、またはスイッチが破損する可能性が常にあるため、
+独立しているかどうかは完全に決定論的とはいえません)。
 
-|
-outcome| HIV positive | HIV negative |
+ここまで学んだことを試してみましょう。医師が患者にエイズ検査を実施するとします。このテストはかなり正確であり、患者が健康であるにもかかわらず、感染していると誤診する確率は、たったの1%しかありません。また、患者が実際にHIVに感染していれば、HIVの検出に失敗することはありません。診断を$D$、HIVの感染の有無を$H$で表します。$\Pr(D|H)$を表として表すと次のようになります。
+
+|outcome| HIV positive | HIV negative |
 |:------------|-------------:|-------------:|
-|Test positive|            1 |
-0.01 |
+|Test positive|            1 |0.01 |
 |Test negative|            0 |         0.99 |
 
-Note that the column sums are all one (but the row sums aren't), since the conditional probability needs to sum up to $1$, just like the probability. Let us work out the probability of the patient having AIDS if the test comes back positive. Obviously this is going to depend on how common the disease is, since it affects the number of false alarms. Assume that the population is quite healthy, e.g. $\Pr(\text{HIV positive}) = 0.0015$. To apply Bayes' Theorem, we need to determine
+条件付き確率は一般の確率と同様に足して1になる必要があるため、列方向の和はすべて1となる（ただし、行方向は1とならない）ことに注意してください。陽性の結果がでたときに、患者がAIDSに感染している確率を計算しましょう。明らかに、この計算にはこの病気がどれくらい一般的かに依存するでしょう。なぜなら、それによって誤検知の値が変わるからです。ここでは、母集団が非常に健康的な場合を考え、$\Pr(\text{HIV positive}) = 0.0015$としましょう。ベイズの定理を適用すると
+
 $$\begin{aligned}
 \Pr(\text{Test positive}) =& \Pr(D=1 | H=0) \Pr(H=0) + \Pr(D=1
 | H=1) \Pr(H=1) \\
@@ -159,11 +159,11 @@ $$\begin{aligned}
 \end{aligned}
 $$
 
-Thus, we get
+したがって、
 
 $$\begin{aligned} \Pr(H = 1 | D = 1) =& \frac{\Pr(D=1 | H=1) \Pr(H=1)}{\Pr(D=1)} \\ =& \frac{1 \cdot 0.0015}{0.011485} \\ =& 0.131 \end{aligned} $$
 
-In other words, there's only a 13.1% chance that the patient actually has AIDS, despite using a test that is 99% accurate. As we can see, statistics can be quite counterintuitive.
+言い換えれば、検査の結果が99%正しいにも関わらず、患者が実際にAIDSに感染している確率は13.1%にすぎないことがわかります。このように統計は直感に反することがあります。
 
 ## Conditional independence
 What should a patient do upon receiving such terrifying news? Likely, he/she
