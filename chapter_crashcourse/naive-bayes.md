@@ -1,34 +1,33 @@
-# Naive Bayes Classification
+# ナイーブベイズ分類
 
-Before we worry about complex optimization algorithms or GPUs, we can already deploy our first classifier, relying only on simple statistical estimators and our understanding of conditional independence. Learning is all about making assumptions. If we want to classify a new data point that we've never seen before we have to make some assumptions about which data points are *similar* to each other.
+複雑な最適化アルゴリズムやGPUについて心配する前に、最初の分類器として、シンプルな統計的指標と条件付き独立を利用した分類器をデプロイしてみましょう。学習というものは、仮定を置くことにほかなりません。見たことのない新しいデータを分類するためには、互いに*類似*しているデータに関して仮定を置く必要があります。
 
-One popular (and remarkably simple) algorithm is the Naive Bayes Classifier. Note that one natural way to express the classification task is via the probabilistic question: *what is the most likely label given the features?*. Formally, we wish to output the prediction $\hat{y}$ given by the expression:
+最も利用されている (そして非常にシンプルな) アルゴリズムはナイーブベイズ分類器でしょう。分類のタスクを自然に表すとすれば、「その特徴から、最も可能性のあるラベルはなんですか?」という確率を考えた質問になるでしょう。数式で表すと、予測$\hat{y}$は以下の式で与えられるでしょう。
 
 $$\hat{y} = \text{argmax}_y \> p(y | \mathbf{x})$$
 
-Unfortunately, this requires that we estimate $p(y | \mathbf{x})$ for every value of $\mathbf{x} = x_1, ..., x_d$. Imagine that each feature could take one of $2$ values. For example, the feature $x_1 = 1$ might signify that the word apple appears in a given document and $x_1 = 1$ would signify that it does not. If we had $30$ such binary features, that would mean that we need to be prepared to classify any of $2^{30}$ (over 1 billion!) possible values of the input vector $\mathbf{x}$.
+残念ながら、これはすべての値 $\mathbf{x} = x_1, ..., x_d$に対して $p(y | \mathbf{x})$ を予測する必要があります。各特徴が2値のうちの1つをとる場合を考えてみましょう。例えば、特徴$x_1 = 1$が「りんご」がある文書に現れていることを、$x_1 = 0$は現れないことを表すとしましょう。$30$個の2値の特徴があれば、それは$2^{30}$、つまり10億以上の値をとりうる入力ベクトル$\mathbf{x}$を分類する必要があります。
 
-Moreover, where is the learning? If we need to see every single possible example in order to predict the corresponding label then we're not really learning a pattern but just memorizing the dataset. Fortunately, by making some assumptions about conditional independence, we can introduce some inductive bias and build a model capable of generalizing from a comparatively modest selection of training examples.
+さらに、学習はどうやって行うでしょうか? 対応するラベルを予測するために、すべての起こりうる値を見なければならないのであれば、パターンを学習しているとはいえず、それはデータセットを記憶しているに過ぎません。幸運にも条件付き独立に関するいくつかの仮定を置くことによって、帰納的な性質を設けることができ、学習データからそこまで多くないデータを選んで、一般化するようなモデルを作ることができます。
 
-To begin, let's use Bayes Theorem, to express the classifier as
+始めるにあたって、ベイズの定理を利用して、以下のように分類器を表現しましょう。
 
 $$\hat{y} = \text{argmax}_y \> \frac{p( \mathbf{x} | y) p(y)}{p(\mathbf{x})}$$
 
-Note that the denominator is the normalizing term $p(\mathbf{x})$ which does not depend on the value of the label $y$. As a result, we only need to worry about comparing the numerator across different values of $y$. Even if calculating the demoninator turned out to be intractable, we could get away with ignoring it, so long as we could evaluate the numerator. Fortunately, however, even if we wanted to recover the normalizing constant, we could, since we know that $\sum_y p(y | \mathbf{x}) = 1$, hence we can always recover the normalization term.
-Now, using the chain rule of probability, we can express the term $p( \mathbf{x} | y)$ as
+分母は正規化項$p(\mathbf{x})$でラベル$y$の値に依存しません。結果として、異なる$y$の値に対して、分子を比較することだけ考えれば良いです。たとえ、分母を計算することが非常に難しいことがわかっても、それを無視することができ、分子を評価するだけで良いです。幸運にも、正規化するための定数を計算したい場合は、$\sum_y p(y | \mathbf{x}) = 1$ということがわかっているので、その項をいつでも計算することができます。確率のチェインルールを利用することで、$p( \mathbf{x} | y)$の項は以下のように表現することができます。
 
 $$p(x_1 |y) \cdot p(x_2 | x_1, y) \cdot ... \cdot p( x_d | x_1, ..., x_{d-1} y)$$
 
-By itself, this expression doesn't get us any further. We still must estimate roughly $2^d$ parameters. However, if we assume that ***the features are conditionally indpendent of each other, given the label***, then suddenly we're in much better shape, as this term simplifies to $\prod_i p(x_i | y)$, giving us the predictor
+この式自体では、まだ何も進んでいません。まだ、大雑把に言って、$2^d$のパラメータを予測しなければならないからです。しかし、*ラベルに対して各特徴が互いに条件付き独立である*仮定を置くことによって、$\prod_i p(x_i | y)$という単純な形式に変換できます。予測式は以下のようになります。
 
 $$ \hat{y} = \text{argmax}_y \> = \prod_i p(x_i | y) p(y)$$
 
-Estimating each term in $\prod_i p(x_i | y)$ amounts to estimating just one parameter. So our assumption of conditional independence has taken the complexity of our model (in terms of the number of parameters) from an exponential dependence on the number of features to a linear dependence. Moreover, we can now make predictions for examples that we've never seen before, because we just need to estimate the terms $p(x_i | y)$, which can be estimated based on a number of different documents.
+$\prod_i p(x_i | y)$ の各項を予測することは、たった1つのパラメータを予測することと同じになりました。条件付き独立の仮定は、特徴の数に応じた指数的な依存関係を線形な関係へと変換し、パラメータ数の観点から複雑さを解消しました。さらに、以前見たことのないデータに対して予測行うこともできます。なぜなら、$p(x_i | y)$を求めればよいだけで、これをたくさんの異なる文書にもとづいて予測することができるからです。
 
-Let's take a closer look at the key assumption that the attributes are all independent of each other, given the labels, i.e., $p(\mathbf{x} | y) = \prod_i p(x_i | y)$. Consider classifying emails into spam and ham. It's fair to say that the occurrence of the words `Nigeria`, `prince`, `money`, `rich` are all likely indicators that the e-mail might be spam, whereas `theorem`, `network`, `Bayes` or `statistics` are good indicators that the exchange is less likely to be part of an orchestrated attempt to wheedle out your bank account numbers. Thus, we could model the probability of occurrence for each of these words, given the respective class and then use it to score the likelihood of a text. In fact, for a long time this *is* preciely how many so-called [Bayesian spam filters](https://en.wikipedia.org/wiki/Naive_Bayes_spam_filtering) worked.
+ラベルが与えられたとき、特徴が互いにすべて独立であるという重要な仮定、つまり$p(\mathbf{x} | y) = \prod_i p(x_i | y)$についてより詳しく見てみましょう。Eメールをスパムかそうでないかに分類することを考えます。`ナイジェリア`、`王子`、`金`、`リッチ`といった単語が現れればは、おそらくスパムの可能性があり、一方`理論`、`ネットワーク`,
+`ベイズ`、`統計学`という単語が現れれば、それは口座番号を聞き出す巧みな試みと関係ないものと考えられるでしょう。そこで、それぞれのクラスに対して各単語の起こりうる確率をモデル化し、文章の尤もらしさをスコア化しましょう。実際のところ、これはいわゆる[ベイズのパムフィルタ](https://en.wikipedia.org/wiki/Naive_Bayes_spam_filtering)として、長い間にわたって機能してきました。
 
-
-## Optical Character Recognition
+## 光学文字認識 (OCR; Optical Character Recognition)
 
 Since images are much easier to deal with, we will illustrate the workings of a Naive Bayes classifier for distinguishing digits on the MNIST dataset. The problem is that we don't actually know $p(y)$ and $p(x_i | y)$. So we need to *estimate* it given some training data first. This is what is called *training* the model. Estimating $p(y)$ is not too hard. Since we are only dealing with 10 classes, this is pretty easy - simply count the number of occurrences $n_y$ for each of the digits and divide it by the total amount of data $n$. For instance, if digit 8 occurs $n_8 = 5,800$ times and we have a total of $n = 60,000$ images, the probability estimate is $p(y=8) = 0.0967$.
 
