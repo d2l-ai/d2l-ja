@@ -51,13 +51,13 @@ When we apply dropout to the hidden layer, it amounts to removing hidden units w
 
 To implement the dropout function we have to draw as many random variables as the input has dimensions from the uniform distribution $U[0,1]$.
 According to the definition of dropout, we can implement it easily. The following `dropout` function will drop out the elements in the NDArray input `X` with the probability of `drop_prob`.
-
+<!--
 ```{.python .input}
 import sys
 sys.path.insert(0, '..')
 
 import d2l
-from mxnet import autograd, gluon, init, np, nd
+from mxnet import autograd, gluon, init, nd
 from mxnet.gluon import loss as gloss, nn
 
 def dropout(X, drop_prob):
@@ -67,7 +67,7 @@ def dropout(X, drop_prob):
         return X.zeros_like()
     mask = nd.random.uniform(0, 1, X.shape) > drop_prob
     return mask * X / (1.0-drop_prob)
-```
+``` -->
 
 Let us test how it works in a few examples. The dropout probability is 0, 0.5, and 1, respectively.
 
