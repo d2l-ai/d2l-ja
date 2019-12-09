@@ -1,86 +1,57 @@
-# Probability and Statistics
+# 確率と統計
+
+形は様々ですが、機械学習が行っていることはすべて予測です。患者の臨床歴を考慮して、来年に心臓発作に苦しむであろう患者の*確率*を予測することができます。異常検出では、飛行機が正常に動作している場合に、ジェットエンジンからの一連の測定値がとりうる値を評価することができます。強化学習では、環境下でエージェントが知的に行動することを望むでしょう。これは、利用可能な各行動の下で、高い報酬を得る確率について考えることを意味します。また、推薦システムを構築する際も確率について考慮する必要があります。たとえば、大規模なオンライン書店で*仮に*働いていたとします。ある顧客が特定の本を購入する確率を推定したいと考えるでしょう。このためには、確率と統計という言語を使用する必要があります。あらゆるコース、専攻、学位論文、キャリア、さらには学科まで、確率に深く関わっているのです。したがって当然ですが、この節の目標はこのトピック全体について説明することではありません。代わりに、最初の機械学習モデルを構築するために必要な部分だけ説明し、あとは必要に応じて読者が自分自身で情報を探し求められるようにしたいと思います。
 
 
-In some form or another, machine learning is all about making predictions.
-We might want to predict the *probability* of a patient suffering a heart attack in the next year, given their clinical history. In anomaly detection, we might want to assess how *likely* a set of readings from an airplane's jet engine would be, were it operating normally. In reinforcement learning, we want an agent to act intelligently in an environment. This means we need to think about the probability of getting a high reward under each of the available action. And when we build recommender systems we also need to think about probability. For example, say *hypothetically* that worked for a large online bookseller. We might want to estimate the probability that a particular user would buy a particular book. For this we need to use the language of probability and statistics. Entire courses, majors, theses, careers, and even departments, are devoted to probability. So naturally, our goal in this section isn't to teach the whole subject. Instead we hope to get you off the ground, to teach you just enough that you can start building your first machine
-learning models, and to give you enough of a flavor for the subject that you can begin to explore it on your own if you wish.
+前の節では、確率を正確に説明したり、具体的な例を挙げたりすることはしませんでしたが、すでに確率については話をしていました。写真からイヌとネコを区別する問題について、より深く考えてみましょう。これは簡単に聞こえるかもしれませんが実際は手ごわいです。まず、イヌとネコを区別する問題の難易度は画像の解像度に依存する場合があります。
 
 
-We've already invoked probabilities in previous sections without articulating what precisely they are or giving a concrete example. Let's get more serious now by considering the problem of distinguishing cats and dogs based on photographs. This might sound simple but it's actually a formidable challenge. To start with, the difficulty of the problem may depend on the resolution of the image.
 
-| 10px | 20px | 40px
-| 80px | 160px |
+| 10px | 20px | 40px | 80px | 160px |
 |:----:|:----:|:----:|:----:|:-----:|
 |![](../img/whitecat10.jpg)|![](../img/whitecat20.jpg)|![](../img/whitecat40.jpg)|![](../img/whitecat80.jpg)|![](../img/whitecat160.jpg)|
 |![](../img/whitedog10.jpg)|![](../img/whitedog20.jpg)|![](../img/whitedog40.jpg)|![](../img/whitedog80.jpg)|![](../img/whitedog160.jpg)|
-While it's easy for humans to recognize cats and dogs at 320 pixel resolution,
-it becomes challenging at 40 pixels and next to impossible at 10 pixels. In
-other words, our ability to tell cats and dogs apart at a large distance (and thus low resolution) might approach uninformed guessing. Probability gives us a
-formal way of reasoning about our level of certainty. If we are completely sure
-that the image depicts a cat, we say that the *probability* that the corresponding label $l$ is $\mathrm{cat}$, denoted $P(l=\mathrm{cat})$ equals
-1.0. If we had no evidence to suggest that $l =\mathrm{cat}$ or that $l =
-\mathrm{dog}$, then we might say that the two possibilities were equally
-$likely$ expressing this as $P(l=\mathrm{cat}) = 0.5$. If we were reasonably
-confident, but not sure that the image depicted a cat, we might assign a
-probability $.5  < P(l=\mathrm{cat}) < 1.0$.
 
-Now consider a second case: given some weather monitoring data, we want to predict the probability that it will rain in Taipei tomorrow. If it's summertime, the rain might come with probability $.5$. In both cases, we have some value of interest. And in both cases we are uncertain about the outcome.
-But there's a key difference between the two cases. In this first case, the image is in fact either a dog or a cat, we just don't know which. In the second case, the outcome may actually be a random event, if you believe in such things (and most physicists do). So probability is a flexible language for reasoning about our level of certainty, and it can be applied effectively in a broad set of contexts.
+人間は320ピクセルの解像度で猫と犬を簡単に認識できますが、40ピクセルでは難しく、10ピクセルではほとんど不可能になります。言い換えると、猫と犬を遠距離で区別する (つまり解像度が低い状態で区別する) 能力は、十分な情報が与えられていない状況での推測に近いとも言えます。確率は、私たちの確信する度合いについて説明する、形式的な方法を提供します。画像に猫が写っていることを完全に確信している場合、対応するラベル$l$が$\mathrm{cat}$であるという*確率* $P(l=\mathrm{cat})$が1.0に等しいことを意味します。$l = \mathrm{cat}$または$l=\mathrm{dog}$を示唆する証拠がなかった場合、両者に判定される確率は等しく二分され、$P(l = \mathrm{cat})= 0.5$になります。ある程度確信はあるが、画像に猫が写っているかどうかわからない場合は、$.5 <P(l =\mathrm{cat})<1.0$の確率が割り当てられるでしょう。
 
-## Basic probability theory
 
-Say that we cast a die and want to know what the chance is of seeing a $1$ rather than another digit. If the die is fair, all six outcomes $\mathcal{X} = \{1, \ldots, 6\}$ are equally likely to occur, and thus we would see a $1$ in $1$ out of $6$ cases. Formally we state that $1$ occurs with probability $\frac{1}{6}$.
+次に、2つ目のケースを考えてみましょう。いくつかの気象観測データから、明日台北で雨が降る確率を予測したいと思います。夏の場合、$.5$の確率で雨になるとします。画像の分類と天気予報、どちらの場合も注目している値があり、そして、どちらの場合も結果については不確かであるという共通点があります。
+しかし、2つのケースには重要な違いがあります。最初のケースでは、画像は実際には犬または猫のいずれかであり (ランダムなわけではない)、ただそのどちらかが分からないだけです。 2番目のケースでは、私達が思っているように (そしてほとんどの物理学者も思っているように)、結果はランダムに決まる事象です。したがって、確率は、私たちの確信の度合いを説明するために用いられるフレキシブルな言語であり、幅広いコンテキストで効果的に利用されています。
 
-For a real die that we receive from a factory, we might not know those proportions and we would need to check whether it is tainted. The only way to investigate the die is by casting it many times and recording the outcomes. For each cast of the die, we'll observe a value $\{1, 2, \ldots, 6\}$. Given these outcomes, we want to investigate the probability of observing each outcome.
+## 確率理論の基礎
 
-One natural approach for each value is to take the
-individual count for that value and to divide it by the total number of tosses.
-This gives us an *estimate* of the probability of a given event. The law of
-large numbers tell us that as the number of tosses grows this estimate will draw closer and closer to the true underlying probability. Before going into the details of what's going here, let's try it out.
+サイコロを投げて、別の数字ではなく$1$が表示される可能性を知りたいとします。サイコロが公平なものであれば、6種類の出目$\mathcal{X} = \{1, \ldots, 6\}$がすべて同様に発生する可能性があり、$6$つの場合の数のうち$1$つが$1$として観測されるでしょう。正式に記述すれば、$1$は確率$\frac{1}{6}$で発生するといえるでしょう。
 
-To start, let's import the necessary packages:
+工場から受け取った実際のサイコロについて、それらの比率がわからない可能性があれば、偏りがないかどうかを確認する必要があります。サイコロを調査する唯一の方法は、サイコロを何度も振って結果を記録することです。サイコロを振るたびに値\{1, 2, \ldots, 6\}$を観察します。これらの結果を考慮して、各出目を観測する確率を調査したいと思います。
+
+それぞれの確率を求める際の自然なアプローチとして、各出目の出現回数をカウントし、それをサイコロを投げた総回数で割ることです。これにより、特定のイベントの確率の*推定*を得ることができます。大数の法則では、サイコロを振る回数が増えると、潜在的な真の確率に推定の確率がますます近づくことが示されています。ここで何が起こっているか、詳細に入りこむ前に、試すことから始めてみましょう。
+
+まず、必要なパッケージをインポートします。
 
 ```{.python .input}
 import mxnet as mx
 from mxnet import nd
 import numpy as np
 from matplotlib import pyplot as plt
-
 ```
 
-Next, we'll want to be able to cast the die. In statistics we call this process
-of drawing examples from probability distributions *sampling*.
-The distribution
-which assigns probabilities to a number of discrete choices is called the
-*multinomial* distribution. We'll give a more formal definition of
-*distribution* later, but at a high level, think of it as just an assignment of
-probabilities to events. In MXNet, we can sample from the multinomial
-distribution via the aptly named `nd.random.multinomial` function.
-The function
-can be called in many ways, but we'll focus on the simplest.
-To draw a single
-sample, we simply pass in a vector of probabilities.
+
+次に、サイコロを振れるようにします。統計では、確率分布からデータ例を引いてくるこのプロセスを*サンプリング*と呼びます。確率をいくつかの離散的な選択肢に割り当てる分布は*多項分布*と呼ばれます。*分布*のより正式な定義については後ほど述べますが、抽象的な見方をすると、イベントに対する単なる確率の割り当てと考えてください。MXNetでは、まさに相応しい名前をもった`nd.random.multinomial`という関数によって、多項分布からサンプリングすることができます。 この関数はさまざまな方法で呼び出すことができますが、ここでは最も単純なものに焦点を当てます。 単一のサンプルを引くためには、単純に確率のベクトルを渡します。
 
 ```{.python .input}
 probabilities = nd.ones(6) / 6
 nd.random.multinomial(probabilities)
 ```
 
-If you run the sampler a bunch of times, you'll find that you get out random
-values each time. As with estimating the fairness of a die, we often want to
-generate many samples from the same distribution. It would be unbearably slow to
-do this with a Python `for` loop, so `random.multinomial` supports drawing
-multiple samples at once, returning an array of independent samples in any shape
-we might desire.
+上記のサンプラーを何度も実行すると、毎回ランダムな値を取得することがわかります。サイコロの公平性を推定する場合と同様に、同じ分布から多くのサンプルを生成することがよくあります。 Pythonの`for`ループでこれを行うと耐えられないほど遅いため、`random.multinomial`は複数のサンプルを一度に生成することをサポートし、任意のshapeをもった独立したサンプルの配列を返します。
 
 ```{.python .input}
 print(nd.random.multinomial(probabilities, shape=(10)))
 print(nd.random.multinomial(probabilities, shape=(5,10)))
 ```
 
-Now that we know how to sample rolls of a die, we can simulate 1000 rolls. We
-can then go through and count, after each of the 1000 rolls, how many times each
-number was rolled.
+サイコロの出目をサンプリングする方法がわかったので、1000個の出目をシミュレーションすることができます。その後、1000回サイコロを振った後に、各出目が出た回数を数えます。
+
 
 ```{.python .input}
 rolls = nd.random.multinomial(probabilities, shape=(1000))
@@ -91,22 +62,21 @@ for i, roll in enumerate(rolls):
     counts[:, i] = totals
 ```
 
-To start, we can inspect the final tally at the end of $1000$ rolls.
+まず、$1000$回振った最終結果を見てみましょう。
 
 ```{.python .input}
 totals / 1000
 ```
 
-As you can see, the lowest estimated probability for any of the numbers is about $.15$ and the highest estimated probability is $0.188$. Because we generated the data from a fair die, we know that each number actually has probability of $1/6$, roughly $.167$, so these estimates are pretty good. We can also visualize how these probabilities converge over time towards reasonable estimates.
+結果を見ると、いずれの出目についても最小の確率は$0.15$で、最大の確率は$0.188$となっています。公平なサイコロからデータを生成したので、各出目は$1/6$の確率、つまり$.167$で現れることがわかっていますので、これらの推定値は非常に良いです。確率がれらの推定値にどのように収束していくかを可視化することもできます。
 
-To start let's take a look at the `counts` array which has shape `(6, 1000)`.
-For each time step (out of 1000), `counts` says how many times each of the numbers has shown up. So we can normalize each $j$-th column of the counts vector by the number of tosses to give the `current` estimated probabilities at that time. The counts object looks like this:
+まず、shapeが`(6, 1000)`の配列`counts`を見てみましょう。各時間ステップ (1000回中)、 `counts`はその出目が何回現れたかを表しています。したがって、 そのカウントを表すベクトルの$j$番目の列を、サイコロを振った回数で正規化すれば、ある時点における`現在の`推定確率を求めることができます。カウントを表すobjectは以下のようになります。
 
 ```{.python .input}
 counts
 ```
 
-Normalizing by the number of tosses, we get:
+振った回数で正規化すると、以下を得ることができます。
 
 ```{.python .input}
 x = nd.arange(1000).reshape((1,1000)) + 1
@@ -116,12 +86,8 @@ print(estimates[:,1])
 print(estimates[:,100])
 ```
 
-As you can see, after the first toss of the die, we get the extreme estimate
-that one of the numbers will be rolled with probability $1.0$ and that the
-others have probability $0$. After $100$ rolls, things already look a bit more
-reasonable. We can visualize this convergence by using the plotting package
-`matplotlib`. If you don't have it installed, now would be a good time to
-[install it](https://matplotlib.org/).
+ご覧のとおり、最初にサイコロを振った際は、数字の1つが$1.0$の確率で現れ、他の数字が$0$の確率となるような極端な推論が得られます。$100$回振ると、もう少しまともな結果を見ることができます。グラフ化パッケージ `matplotlib` を使用して、この収束を視覚化することができます。 インストールしていない場合は、[インストール](https://matplotlib.org/)をお勧めします。
+
 
 ```{.python .input}
 %matplotlib inline
@@ -138,58 +104,53 @@ plt.legend()
 plt.show()
 ```
 
-Each solid curve corresponds to one of the six values of the die and gives our estimated probability that the die turns up that value as assessed after each of the 1000 turns. The dashed black line gives the true underlying probability. As we get more data, the solid curves converge towards the true answer.
+各実線の曲線は、サイコロの6つの出目のうちの1つに対応しており、1000回振ったあとに評価される出目の確率を表します。黒い破線は、潜在的な真の確率を示しています。より多くのデータを取得すると、実線の曲線は真の解に向かって収束します。
 
-In our example of casting a die, we introduced the notion of a **random variable**. A random variable, which we denote here as $X$ can be pretty much any quantity and is not deterministic. Random variables could take one value among a set of possibilities. We denote sets with brackets, e.g., $\{\mathrm{cat}, \mathrm{dog}, \mathrm{rabbit}\}$. The items contained in the set are called *elements*, and we can say that an element $x$ is *in* the set S, by writing $x \in S$. The symbol $\in$ is read as "in" and denotes membership. For instance, we could truthfully say $\mathrm{dog} \in \{\mathrm{cat}, \mathrm{dog}, \mathrm{rabbit}\}$. When dealing with the rolls of die, we are concerned with a variable $X \in \{1, 2, 3, 4, 5, 6\}$.
+サイコロを振る例では**確率変数**の概念を導入しました。$X$として表される確率変数は、ほぼすべての値を取る可能性があり決定的ではありません。確率変数はとりうる可能性の集合の中から1つの値をとることができます。その集合を角括弧で示します（例：$\{\mathrm{cat}, \mathrm{dog}, \mathrm{rabbit} \}$）。集合に含まれる項目は*要素*と呼ばれ、$x\in S$と書くことで、要素$x$は集合Sに*含まれる*といえます。記号$\in$は"in"と読まれ、集合の要素であることを示します。たとえば、$\mathrm{dog} \in \{\mathrm{cat}, \mathrm{dog}, \mathrm{rabbit} \}$と確実に言うことができます。サイコロの出目を扱うとき、変数$X \in \{1, 2, 3, 4, 5, 6 \}$について関心があるといえるでしょう。
 
-Note that there is a subtle difference between discrete random variables, like the sides of a dice, and continuous ones, like the weight and the height of a person. There's little point in asking whether two people have exactly the same height. If we take precise enough measurements you'll find that no two people on the planet have the exact same height. In fact, if we take a fine enough measurement, you will not have the same height when you wake up and when you go to sleep. So there's no purpose in asking about the probability
-that someone is $2.00139278291028719210196740527486202$ meters tall. Given the world population of humans the probability is virtually 0. It makes more sense in this case to ask whether someone's height falls into a given interval, say between 1.99 and 2.01 meters. In these cases we quantify the likelihood that we see a value as a *density*. The height of exactly 2.0 meters has no probability, but nonzero density. In the interval between any two different heights we have nonzero probability.
+サイコロの面のような離散確率変数と、人の体重や身長のような連続確率変数との間には微妙な違いがあることに注意してください。 2人の人の身長がまったく同じかどうかを尋ねても意味がありません。十分に正確な測定を行うと、地球上の2人の人がまったく同じ身長にならないことがわかります。実際、十分に細かい測定を行った場合、目覚めたときと寝ているときの身長は同じになりません。そのため、ある人の身長が$ 2.00139278291028719210196740527486202 $メートルである確率について尋ねる人はまずいないでしょう。世界人口を考えると確率は事実上0です。この場合、誰かの身長が1.99から2.01メートルの間など、指定された間隔に収まるかどうかを確認する方が理にかなっています。こういった場合、可能性を*密度*という見える値で定量化します。ちょうど2.0メートルの高さをとる確率はありませんが、密度はゼロではありません。任意の2つの異なる高さの間には、ゼロ以外の確率があります。
 
+覚えておくべき確率に関する重要な公理を以下に示します。
 
-There are a few important axioms of probability that you'll want to remember:
+* 任意の事象 $z$ について, その確率は必ず非負となります。つまり $\Pr(Z=z) \geq 0$。
+* 任意の2つの事象 $Z=z$ と $X=x$ について、その結合事象は各事象の和ほど、起こりうることはありません。つまり$\Pr(Z=z \cup X=x) \leq \Pr(Z=z) + \Pr(X=x)$。
+* どの確率変数も、その値をとるすべての確率の和は必ず1です。つまり、$\sum_{i=1}^n \Pr(Z=z_i) = 1$。
+* 相互に排他的な2つの事象$Z=z$ と $X=x$ について、どちらかが起こる確率は、それぞれの確率の和に等しい。つまり$\Pr(Z=z \cup X=x) = \Pr(Z=z) + \Pr(X=x)$。
 
-* For any event $z$, the probability is never negative, i.e. $\Pr(Z=z) \geq 0$.
-* For any two events $Z=z$ and $X=x$ the union is no more likely than the sum of the individual events, i.e. $\Pr(Z=z \cup X=x) \leq \Pr(Z=z) + \Pr(X=x)$.
-* For any random variable, the probabilities of all the values it can take must sum to 1, i.e. $\sum_{i=1}^n \Pr(Z=z_i) = 1$.
-* For any two *mutually exclusive* events $Z=z$ and $X=x$, the probability that either happens is equal to the sum of their individual probabilities, that is $\Pr(Z=z \cup X=x) = \Pr(Z=z) + \Pr(X=x)$.
+## 複数の確率変数の取り扱い
 
-## Dealing with multiple random variables
-Very often, we'll want to consider more than one random variable at a time.
-For instance, we may want to model the relationship between diseases and symptoms. Given a disease and symptom, say 'flu' and 'cough', either may or may not occur in a patient with some probability. While we hope that the probability of both would be close to zero, we may want to estimate these probabilities and their relationships to each other so that we may apply our inferences to effect better medical care.
+一度に複数の確率変数を扱いたくなることが多くあります。例えば、病気と症状の関係をモデル化したい場合を考えましょう。例えば、「インフルエンザ」と「せき」のような病気と症状が与えられていて、ある確率で患者に発生したり、しなかったりするとします。その双方の確率がゼロであることを望みますが、その確率と関係性を推定することで、その推論をより良い医療看護につなげることができるでしょう。
 
-As a more complicated example, images contain millions of pixels, thus millions of random variables. And in many cases images will come with a
-label, identifying objects in the image. We can also think of the label as a
-random variable. We can even think of all the metadata as random variables
-such as location, time, aperture, focal length, ISO, focus distance, camera type, etc. All of these are random variables that occur jointly. When we deal with multiple random variables, there are several quantities of interest. The first is called the joint distribution $\Pr(A, B)$. Given any elements $a$ and $b$, the joint distribution lets us answer, what is the probability that $A=a$ and $B=b$ simultaneously? Note that for any values $a$ and $b$, $\Pr(A=a,B=b) \leq \Pr(A=a)$.
+より複雑な例としては、数百万ピクセルの画像は、数百万の確率変数を含んでいると言えます。多くの場合、画像の中に写る物体を表すラベルを伴います。ラベルもまた確率変数と考えることができます。さらには、すべてのメタデータを確率変数と考えることもできるでしょう。例えば、場所、時間、レンズの口径、焦点距離、ISO、集束距離、カメラの種類などです。これらはすべて、同時に発生する確率変数です。複数の確率変数を扱う場合、いくつかの重要な概念があります。 1つ目は結合分布$\Pr(A,B)$です。結合分布は、$a$と$b$の要素が与えられたとき、$A=a$と$B=b$が同時に発生する確率を示します。あらゆる$a, b$に対して、$\Pr(A=a, B=b) \leq \Pr(A=a)$が成立することに注意してください。
 
-This has to be the case, since for $A$ and $B$ to happen, $A$ has to happen *and* $B$ also has to happen (and vice versa). Thus $A,B$ cannot be more likely than $A$ or $B$ individually. This brings us to an interesting ratio: $0 \leq \frac{\Pr(A,B)}{\Pr(A)} \leq 1$. We call this a **conditional probability**
-and denote it by $\Pr(B | A)$, the probability that $B$ happens, provided that
-$A$ has happened.
+これはつまり、$A$と$B$が発生するためには、$A$が発生して、*かつ*、$B$も発生する必要があるからです (逆も同様です)。したがって、$A, B$が個別に発生するよりも、$A$と$B$が同時に発生することはありません。これによって、$0 \leq \frac{\Pr(A,B)}{\Pr(A)} \leq 1$ という、確率の比に関する興味深い式を導くことができます。これを**条件付き確率**と呼び、$\Pr(B|A)$で表します。$A$が発生する条件のもとで$B$が発生する確率を表します。
+$ A $が発生しました。
 
-Using the definition of conditional probabilities, we can derive one of the most useful and celebrated equations in statistics—Bayes' theorem.
-It goes as follows: By construction, we have that $\Pr(A, B) = \Pr(B | A) \Pr(A)$. By symmetry, this also holds for $\Pr(A,B) = \Pr(A | B) \Pr(B)$. Solving for one of the conditional variables we get:
+条件付き確率の定義にもとづいて、ベイズ統計学で最も有用かる有名な方程式の1つを導くことができます。定義より $\Pr(A, B) = \Pr(B | A) \Pr(A)$ となり、対称性より $\Pr(A,B) = \Pr(A | B) \Pr(B)$ も成立します。これらの式から、条件付き確率に関して解くと、次のようになります。
 
-$$\Pr(A | B) = \frac{\Pr(B | A) \Pr(A)}{\Pr(B)}$$
+$$ \Pr(A | B)= \frac{\Pr(B|A) \Pr(A)}{\Pr(B)} $$
+
 
 This is very useful if we want to infer one thing from another, say cause and effect but we only know the properties in the reverse direction. One important operation that we need, to make this work, is **marginalization**, i.e., the operation of determining $\Pr(A)$ and $\Pr(B)$ from $\Pr(A,B)$. We can see that the probability of seeing $A$ amounts to accounting for all possible choices of $B$ and aggregating the joint probabilities over all of them, i.e.
+
+これは、原因と結果など、あるものを別のものから推測したいが、逆方向の特性しかわからない場合に非常に便利です。これを実現するために必要となる重要な操作として **marginalization (周辺化)** があります。つまり、$\Pr(A,B)$から$\Pr(A)$および$\Pr(B)$を決定することです。$A$を確認する確率は、$B$のすべての可能性を考慮し、それらすべてに関する結合確率を集約することで得られます。
 
 $$\Pr(A) = \sum_{B'} \Pr(A,B') \text{ and
 } \Pr(B) = \sum_{A'} \Pr(A',B)$$
 
-Another useful property to check for is **dependence** vs. **independence**.
-Independence is when the occurrence of one event does not reveal any information about the occurrence of the other. In this case $\Pr(B | A) = \Pr(B)$. Statisticians typically exress this as $A \perp\!\!\!\perp B$. From Bayes' Theorem, it follows immediately that also $\Pr(A | B) = \Pr(A)$. In all other cases we call $A$ and $B$ dependent. For instance, two successive rolls of a die are independent. On the other hand, the position of a light switch and the brightness in the room are not (they are not perfectly deterministic, though, since we could always have a broken lightbulb, power failure, or a broken switch).
 
-Let's put our skills to the test. Assume that a doctor administers an AIDS test to a patient. This test is fairly accurate and it fails only with 1% probability if the patient is healthy by reporting him as diseased. Moreover,
-it never fails to detect HIV if the patient actually has it. We use $D$ to indicate the diagnosis and $H$ to denote the HIV status. Written as a table the outcome $\Pr(D | H)$ looks as follows:
+チェックすべきもう一つの特性として、**dependence(依存性)**と**independence(独立性)**があります。独立性とは、あるイベントの発生が発生しても、他のイベントの発生に関する情報が明らかにならないことを意味します。この場合、$\Pr(B | A) = \Pr(B)$です。統計学者は通常、これを $A \perp\!\!\!\perp B$ と表現します。ベイズの定理から、すぐに$\Pr(A | B) = \Pr(A)$であることがわかります。その他の場合は、すべて、$A$および$B$に依存する (dependence) ことになります。たとえば、サイコロを連続で2回振ったときの出目は独立しています。一方、照明スイッチの位置と部屋の明るさは独立していません (ただし、電球、停電、またはスイッチが破損する可能性が常にあるため、
+独立しているかどうかは完全に決定論的とはいえません)。
 
-|
-outcome| HIV positive | HIV negative |
+ここまで学んだことを試してみましょう。医師が患者にエイズ検査を実施するとします。このテストはかなり正確であり、患者が健康であるにもかかわらず、感染していると誤診する確率は、たったの1%しかありません。また、患者が実際にHIVに感染していれば、HIVの検出に失敗することはありません。診断を$D$、HIVの感染の有無を$H$で表します。$\Pr(D|H)$を表として表すと次のようになります。
+
+|結果| HIV 陽性 | HIV 陰性 |
 |:------------|-------------:|-------------:|
-|Test positive|            1 |
-0.01 |
-|Test negative|            0 |         0.99 |
+|検査 陽性|            1 |0.01 |
+|検査 陰性|            0 |         0.99 |
 
-Note that the column sums are all one (but the row sums aren't), since the conditional probability needs to sum up to $1$, just like the probability. Let us work out the probability of the patient having AIDS if the test comes back positive. Obviously this is going to depend on how common the disease is, since it affects the number of false alarms. Assume that the population is quite healthy, e.g. $\Pr(\text{HIV positive}) = 0.0015$. To apply Bayes' Theorem, we need to determine
+条件付き確率は一般の確率と同様に足して1になる必要があるため、列方向の和はすべて1となる（ただし、行方向は1とならない）ことに注意してください。陽性の結果がでたときに、患者がAIDSに感染している確率を計算しましょう。明らかに、この計算にはこの病気がどれくらい一般的かに依存するでしょう。なぜなら、それによって誤検知の値が変わるからです。ここでは、母集団が非常に健康的な場合を考え、$\Pr(\text{HIV positive}) = 0.0015$としましょう。ベイズの定理を適用すると
+
 $$\begin{aligned}
 \Pr(\text{Test positive}) =& \Pr(D=1 | H=0) \Pr(H=0) + \Pr(D=1
 | H=1) \Pr(H=1) \\
@@ -198,36 +159,33 @@ $$\begin{aligned}
 \end{aligned}
 $$
 
-Thus, we get
+したがって、
 
 $$\begin{aligned} \Pr(H = 1 | D = 1) =& \frac{\Pr(D=1 | H=1) \Pr(H=1)}{\Pr(D=1)} \\ =& \frac{1 \cdot 0.0015}{0.011485} \\ =& 0.131 \end{aligned} $$
 
-In other words, there's only a 13.1% chance that the patient actually has AIDS, despite using a test that is 99% accurate. As we can see, statistics can be quite counterintuitive.
+言い換えれば、検査の結果が99%正しいにも関わらず、患者が実際にAIDSに感染している確率は13.1%にすぎないことがわかります。このように統計は直感に反することがあります。
 
-## Conditional independence
-What should a patient do upon receiving such terrifying news? Likely, he/she
-would ask the physician to administer another test to get clarity. The second
-test has different characteristics (it isn't as good as the first one).
+## 条件付き独立
 
-|
-outcome |  HIV positive |  HIV negative |
+もし、患者が上記のようなおそろしいニュースを聞いたとしたらどうするでしょうか。おそらく、医者に対して、より正確な結果を得るための、追加のテストを実施するよう依頼するでしょう。2回目のテストはさきほどのテストとは異なる特徴があるとしましょう（そして最初よりも精度が悪いです）
+
+結果 |  HIV 陽性 |  HIV 陰性 |
 |:------------|--------------:|--------------:|
-|Test positive|          0.98 |
-0.03 |
-|Test negative|          0.02 |          0.97 |
+|テスト 陽性|          0.98 |0.03 |
+|テスト 陰性|          0.02 |          0.97 |
 
-Unfortunately, the second test comes back positive, too. Let us work out the requisite probabilities to invoke Bayes' Theorem.
+残念ながら、2回目も陽性だったとしましょう。ベイズ理論を利用して必要な確率を計算しましょう。
 
 * $\Pr(D_1 = 1 \text{ and } D_2 = 1 | H = 0) = 0.01 \cdot 0.03 = 0.0003$
 * $\Pr(D_1 = 1 \text{ and } D_2 = 1 | H = 1) = 1 \cdot 0.98 = 0.98$
 * $\Pr(D_1 = 1 \text{ and } D_2 = 1) = 0.0003 \cdot 0.9985 + 0.98 \cdot 0.0015 = 0.00176955$
 * $\Pr(H = 1 | D_1 = 1 \text{ and } D_2 = 1) = \frac{0.98 \cdot 0.0015}{0.00176955} = 0.831$
 
-That is, the second test allowed us to gain much higher confidence that not all is well. Despite the second test being considerably less accurate than the first one, it still improved our estimate quite a bit. You might ask, *why couldn't we just run the first test a second time?* After all, the first test was more accurate. The reason is that we needed a second test whose result is *independent* of the first test (given the true diagnosis). In other words, we made the tacit assumption that $\Pr(D_1, D_2 | H) = \Pr(D_1 | H) \Pr(D_2 | H)$. Statisticians call such random variables **conditionally independent**. This is expressed as $D_1 \perp\!\!\!\perp D_2  | H$.
+2回目の検査によって、HIVの感染に関してより確信を得ることができました。2回目の検査は1回目の検査よりもかなり精度が低いにも関わらず、推定の結果を改善しました。*なぜ1回目の検査を2回実施しないのか?*と尋ねたくなるかもしれません。確かに1回目の検査のほうが精度が高かったです。理由は、2回目の検査の結果が1回目の検査の結果と独立しているからです。言い換えれば、$\Pr(D_1, D_2 | H) = \Pr(D_1 | H) \Pr(D_2 | H)$ という暗黙の仮定をおいています。統計学者はこのような確率変数を*条件付き独立*と呼び、$D_1 \perp\!\!\!\perp D_2  | H$ で表します。
 
-## Sampling
+## サンプリング
 
-Often, when working with probabilistic models, we'll want not just to estimate distributions from data, but also to generate data by sampling from distributions. One of the simplest ways to sample random numbers is to invoke the `random` method from Python's `random` package.
+確率モデルを扱うとき、データから分布を推定するだけではなく、分布からのサンプリングでデータを生成することがよくあります。もっとも単純な乱数のサンプリングの方法として、`random`のメソッドを Python の `random` のパッケージから呼び出す方法があります。
 
 ```{.python .input}
 import random
@@ -235,18 +193,15 @@ for i in range(10):
     print(random.random())
 ```
 
-### Uniform Distribution
+### 一様分布
 
-These numbers likely *appear* random. Note that their range is between 0 and 1 and they are evenly distributed. Because these numbers are generated by default from the uniform distribution, there should be no two sub-intervals of $[0,1]$ of equal size where numbers are more likely to lie in one interval than the other. In other words, the chances of any of these numbers to fall into the interval $[0.2,0.3)$ are the same as in the interval $[.593264, .693264)$. In fact, these numbers are pseudo-random, and the computer generates them by first producing a random integer and then dividing it by its maximum range. To sample random integers directly, we can run the following snippet, which generates integers in the range between 1 and 100.
+上記で生成した値はランダムに*見えます*。その値の範囲は0から1までで一様に分布します。一様乱数からデフォルトで生成した値なので、$[0,1]$でサイズが同じ部分的な区間を2つとったとき、どちらかの区間が、一方の区間よりも数字が起こりやすいということはありません。言い換えれば、$[0.2,0.3)$ に発生する数の確率と、 $[.593264, .693264)$で発生する数の確率は同じです。実際、これらの値は擬似乱数なので、計算機はランダムな整数を生成して、それを範囲の最大値で割ることで乱数を生成しています。直接整数の乱数を生成したいときは、次のコードを実行します。これは1から100までの範囲の整数を生成します。
 
 ```{.python .input}
 for i in range(10):
     print(random.randint(1, 100))
 ```
-
-How might we check that ``randint`` is really uniform? Intuitively, the best
-strategy would be to run sampler many times, say 1 million, and then count the
-number of times it generates each value to ensure that the results are approximately uniform.
+``randint``が本当に一様かどうかチェックする方法はあるでしょうか? 直感的に、一番良い方法はたくさんの数、例えば100万回サンプリングして、発生した数を1から100までの数値ごとにカウントし、近似的に一様であることを確かめることでしょう。
 
 ```{.python .input}
 import math
@@ -261,15 +216,11 @@ for i in range(1, 1000001):
         axes[int(math.log10(i))-1].bar(np.arange(1, 101), counts)
 plt.show()
 ```
+これらの図から、カウントする最初のほうでは、一様でないことが*際立っています*。100回未満のサンプリングの場合、一様になりそうに見えます。しかし、1000サンプルを超えても、まだ1から100の値には明確な違いが見られます。ここでは、数値 $x$ が発生する確率が  $p(x)$ で与えられる状況を求めています。
 
-We can see from these figures that the initial number of counts looks *strikingly* uneven. If we sample fewer than 100 draws from a distribution over
-100 outcomes this should be expected. But even for 1000 samples there is a
-significant variability between the draws. What we are really aiming for is a
-situation where the probability of drawing a number $x$ is given by $p(x)$.
+### カテゴリカル分布
 
-### The categorical distribution
-
-Drawing from a uniform distribution over a set of 100 outcomes is simple. But what if we have nonuniform probabilities? Let's start with a simple case, a biased coin which comes up heads with probability 0.35 and tails with probability 0.65. A simple way to sample from that is to generate a uniform random variable over $[0,1]$ and if the number is less than $0.35$, we output heads and otherwise we generate tails. Let's try this out.
+100回分の数を一様分布から引くことは簡単です。しかし、もし一様分布でないとしたらどうでしょう。単純なケースとして、表が0.35、裏が0.65で出るようなひしゃげたコインを考えましょう。単純な方法は、$[0,1]$の範囲で一様乱数を生成し、その値が0.35未満であれば表とし、そうでなければ裏とします。さあやってみましょう。
 
 ```{.python .input}
 # Number of samples
@@ -286,17 +237,13 @@ plt.semilogx(x, p1)
 plt.show()
 ```
 
-As we can see, on average, this sampler will generate 35% zeros and 65% ones.
-Now what if we have more than two possible outcomes? We can simply generalize
-this idea as follows. Given any probability distribution, e.g. $p = [0.1, 0.2, 0.05, 0.3, 0.25, 0.1]$ we can compute its cumulative distribution (python's ``cumsum`` will do this for you) $F = [0.1, 0.3, 0.35, 0.65, 0.9, 1]$. Once we have this we draw a random variable $x$ from the uniform distribution $U[0,1]$ and then find the interval where $F[i-1] \leq x < F[i]$. We then return $i$ as the sample. By construction, the chances of hitting interval $[F[i-1], F[i])$ has probability $p(i)$.
+図から確認できるように、平均的には35%の確率で0、65%の確率で1をサンプリングしています。では、表と裏だけでなく2つ以上の結果があるとしたらどうでしょう。上記のアイデアを一般化しましょう。ｄののような確率分布、例えば、 $p = [0.1, 0.2, 0.05, 0.3, 0.25, 0.1]$が与えられても、累積分布$F = [0.1, 0.3, 0.35, 0.65, 0.9, 1]$を計算することができます (Python の ``cumsum``を利用できるでしょう)。一様分布 確率変数$U[0,1]$から確率変数$x$のサンプリングを行い、$F[i-1] \leq x < F[i]$となるような区間を探します。そして $i$ を出た結果とします。定義から、$[F[i-1], F[i])$の区間に入る確率は$p(i)$となります。
 
-Note that there are many more efficient algorithms for sampling than the one above. For instance, binary search over $F$ will run in $O(\log n)$ time for $n$ random variables. There are even more clever algorithms, such as the [Alias
-Method](https://en.wikipedia.org/wiki/Alias_method) to sample in constant time,
-after $O(n)$ preprocessing.
+上記で延べた方法よりも効率的なアルゴリズムは多数存在します。例えば、$n$個の確率変数に対して、Fを探索する2分探索は$O(\log n)$のオーダーで実行できます。より賢いアルゴリズムもあり、例えば、 [Alias Method](https://en.wikipedia.org/wiki/Alias_method) は、$O(n)$の前処理を行うことによって定数時間でサンプリングすることができます。
 
-### The Normal distribution
+### 正規分布
 
-The standard Normal distribution (aka the standard Gaussian distribution) is given by $p(x) = \frac{1}{\sqrt{2 \pi}} \exp\left(-\frac{1}{2} x^2\right)$. Let's plot it to get a feel for it.
+標準正規分布 (別名 標準ガウス分布) は、$p(x) = \frac{1}{\sqrt{2 \pi}} \exp\left(-\frac{1}{2} x^2\right)$として与えられます。体験するために実際にプロットしてみましょう。
 
 ```{.python .input}
 x = np.arange(-10, 10, 0.01)
@@ -306,37 +253,39 @@ plt.plot(x, p)
 plt.show()
 ```
 
-Sampling from this distribution is less trivial. First off, the support is
-infinite, that is, for any $x$ the density $p(x)$ is positive. Secondly, the
-density is nonuniform. There are many tricks for sampling from it - the key idea in all algorithms is to stratify $p(x)$ in such a way as to map it to the
-uniform distribution $U[0,1]$. One way to do this is with the probability
-integral transform.
+この分布からサンプリングすることは単純ではありません。まず、値の範囲は無限大で、つまりはあらゆる
+$x$ に対して、確率密度 $p(x)$ は正の値をとります。次に、確率密度は一様ではありません。そこからのサンプリングにはいくつかの工夫が必要です。あらゆるアルゴリズムで重要となる考え方は、一様分布 $U[0,1]$に対応するように$p(x)$を変換することです。一つの方法は確率積分変換です。
 
-Denote by $F(x) = \int_{-\infty}^x p(z) dz$ the cumulative distribution function (CDF) of $p$. This is in a way the continuous version of the cumulative sum that we used previously. In the same way we can now define the inverse map $F^{-1}(\xi)$, where $\xi$ is drawn uniformly. Unlike previously where we needed to find the correct interval for the vector $F$ (i.e. for the piecewise constant function), we now invert the function $F(x)$.
+$p$ の累積分布関数 (CDF) を $F(x) = \int_{-\infty}^x p(z) dz$ で表します。これはさきほど利用した累積和の連続系のものです。同様に、$x$ が一様にサンプリングされるような逆写像 $F^{-1}(\xi)$ を定義します。ベクトル$F$のために正しい区間を定める必要があった（区間に区切られた定数の関数を用意した）先ほどとは異なり、関数$F(x)$の逆関数をとります。
 
-In practice, this is slightly more tricky since inverting the CDF is hard in the case of a Gaussian. It turns out that the *twodimensional* integral is much easier to deal with, thus yielding two normal random variables than one, albeit at the price of two uniformly distributed ones. For now, suffice it to say that there are built-in algorithms to address this.
+実際は、ガウス分布におけるCDFの逆関数を求めることは難しいため、少し複雑なことを行う必要があります。*2次元*積分は簡単に実行することができるため、これによって、1つではなく2つの確率変数を生成し、2つの一様分布の代わりとして利用します。いまのところ、そういった問題を解くためのアルゴリズムがすでにあるという認識で構いません。
 
-The normal distribution has yet another desirable property. In a way all distributions converge to it, if we only average over a sufficiently large number of draws from any other distribution. To understand this in a bit more detail, we need to introduce three important things: expected values, means and variances.
+正規分布はさらに重要な性質をもっています。どんな分布であっても、そこから十分な数のサンプリングを行い平均をとれば、その分布は正規分布に収束します。より詳細を理解するために、期待値、平均、分散を導入という3つの重要な要素を紹介します。
 
-* The expected value $\mathbf{E}_{x \sim p(x)}[f(x)]$ of a function $f$ under a distribution $p$ is given by the integral $\int_x p(x) f(x) dx$. That is, we average over all possible outcomes, as given by $p$.
-* A particularly important expected value is
-that for the function $f(x) = x$, i.e. $\mu := \mathbf{E}_{x \sim p(x)}[x]$. It
-provides us with some idea about the typical values of $x$.
-* Another important quantity is the variance, i.e. the typical deviation from the mean $\sigma^2 := \mathbf{E}_{x \sim p(x)}[(x-\mu)^2]$. Simple math shows (check it as an exercise) that $\sigma^2 = \mathbf{E}_{x \sim p(x)}[x^2] - \mathbf{E}^2_{x \sim p(x)}[x]$.
 
-The above allows us to change both mean and variance of random variables. Quite obviously for some random variable $x$ with mean $\mu$, the random variable $x + c$ has mean $\mu + c$. Moreover, $\gamma x$ has the variance $\gamma^2 \sigma^2$. Applying this to the normal distribution we see that one with mean $\mu$ and variance $\sigma^2$ has the form $p(x) = \frac{1}{\sqrt{2 \sigma^2 \pi}} \exp\left(-\frac{1}{2 \sigma^2} (x-\mu)^2\right)$. Note the scaling factor $\frac{1}{\sigma}$—it arises from the fact that if we stretch the distribution by $\sigma$, we need to lower it by $\frac{1}{\sigma}$ to retain the same probability mass (i.e. the weight under the distribution always needs to integrate out to 1).
+* 分布$p$の下での関数$f$の期待値$\mathbf{E}_{x \sim p(x)}[f(x)]$は積分$\int_x p(x) f(x) dx$によって得られます。それは、得られるすべての結果に対して、$p$の重みをつけて平均をとったものになります。
+* 特に重要な期待値としては関数$f(x) = x$であるような場合で、平均は$\mu := \mathbf{E}_{x \sim p(x)}[x]$となります。これは、$x$において起こりうる値について、いくつかの情報を提供してくれるでしょう。
 
-Now we are ready to state one of the most fundamental theorems in statistics, the [Central Limit Theorem](https://en.wikipedia.org/wiki/Central_limit_theorem). It states that for sufficiently well-behaved random variables, in particular random variables with well-defined mean and variance, the sum tends toward a normal distribution. To get some idea, let's repeat the experiment described in the beginning, but now using random variables with integer values of $\{0, 1, 2\}$.
+* さらに重要な値としては分散があり、それは平均からの差分を表す値 $\sigma^2 := \mathbf{E}_{x \sim p(x)}[(x-\mu)^2]$となります。ちょっとした数学を利用することで$\sigma^2 = \mathbf{E}_{x \sim p(x)}[x^2] - \mathbf{E}^2_{x \sim p(x)}[x]$ となることがわかります (練習の項目でチェックしてみてください)。
+
+
+上記により、確率変数の平均と分散の両方に対して、変更を加えることができます。平均$\mu$の確率変数$x$の関しては、確率変数$x+c$が平均$\mu+c$となることは明らかです。
+また、$\gamma x$の分散は、$\gamma^2 \ sigma^2$ となるでしょう。これを正規分布に適用すると、平均$\mu$、分散$\sigma^2$に対して、分布を表す関数は$p(x) = \frac{1}{\sqrt{2 \sigma^2 \pi}} \exp\left(-\frac{1}{2 \sigma^2} (x-\mu)^2\right)$となります。
+
+スケーリングの係数$\frac{1}{\sigma}$は、分布を$\sigma$だけ引き伸ばせば、同じ確率質量を保持するために、分布を$\frac{1}{\sigma}$だけ小さくしなければならないことを表しています (つまり、分布の下の重みを積分すれば1になる必要があります)。
+
+これで、統計の最も基本的な定理の1つである[中心極限定理](https://en.wikipedia.org/wiki/Central_limit_theorem)を説明する準備が整いました。正しい振る舞いをする確率変数、特に明確に定義された平均と分散をもつ確率変数に対して、その合計は正規分布に向かう傾向があります。より理解を深めるために、最初に説明した実験を繰り返しましょう。ただしここでは、整数値が$\{0,1,2\}$の確率変数を使用します。
+
 
 ```{.python .input}
-# Generate 10 random sequences of 10,000 uniformly distributed random variables
+# 10000個の一様に分布した確率変数から10個の系列を生成
 tmp = np.random.uniform(size=(10000,10))
 x = 1.0 * (tmp > 0.3) + 1.0 * (tmp > 0.8)
 mean = 1 * 0.5 + 2 * 0.2
 variance = 1 * 0.5 + 4 * 0.2 - mean**2
 print('mean {}, variance {}'.format(mean, variance))
 
-# Cumulative sum and normalization
+# 累積和と正規化
 y = np.arange(1,10001).reshape(10000,1)
 z = np.cumsum(x,axis=0) / y
 
@@ -349,37 +298,39 @@ plt.semilogx(y,-(variance**0.5) * np.power(y,-0.5) + mean,'r')
 plt.show()
 ```
 
-This looks very similar to the initial example, at least in the limit of averages of large numbers of variables. This is confirmed by theory. Denote by
-mean and variance of a random variable the quantities
+これは、少なくとも多数の変数の平均をとるという制限はありますが、最初の例と非常によく似ています。これは理論によって確認されています。確率変数の平均と分散を以下のように表します。
 
 $$\mu[p] := \mathbf{E}_{x \sim p(x)}[x] \text{ and } \sigma^2[p] := \mathbf{E}_{x \sim p(x)}[(x - \mu[p])^2]$$
 
-Then we have that $\lim_{n\to \infty} \frac{1}{\sqrt{n}} \sum_{i=1}^n \frac{x_i - \mu}{\sigma} \to \mathcal{N}(0, 1)$. In other words, regardless of what we started out with, we will always converge to a Gaussian. This is one of the reasons why Gaussians are so popular in statistics.
+これによって次を得ることができます。
+$\lim_{n\to \infty} \frac{1}{\sqrt{n}} \sum_{i=1}^n \frac{x_i - \mu}{\sigma} \to \mathcal{N}(0, 1)$.
+良いかれば、どのような分布で始めたとしても、常にガウス分布に収束するのです。これは、ガウス分布が統計学のなかで良く用いられる一つの理由になっています。
+
+### その他の分布
 
 
-### More distributions
-
-Many more useful distributions exist. If you're interested in going deeper, we recommend consulting a dedicated book on statistics or looking up some common distributions on Wikipedia for further detail. Some important distirbutions to be aware of include:
-
-* **Binomial Distribution** It is used to describe the distribution over multiple draws from the same distribution, e.g. the number of heads when tossing a biased coin (i.e. a coin with probability $\pi \in [0, 1]$ of returning heads) 10 times. The binomial probability is given by $p(x) = {n \choose x} \pi^x (1-\pi)^{n-x}$.
-* **Multinomial Distribution** Often, we are concerned with more than two
-outcomes, e.g. when rolling a dice multiple times. In this case, the
-distribution is given by $p(x) = \frac{n!}{\prod_{i=1}^k x_i!} \prod_{i=1}^k \pi_i^{x_i}$.
-* **Poisson Distribution** This distribution models the occurrence of point events that happen with a given rate, e.g. the number of raindrops arriving within a given amount of time in an area (weird fact - the number of Prussian soldiers being killed by horses kicking them followed that distribution). Given a rate $\lambda$, the number of occurrences is given by $p(x) = \frac{1}{x!} \lambda^x e^{-\lambda}$.
-* **Beta, Dirichlet, Gamma, and Wishart Distributions** They are what statisticians call *conjugate* to the Binomial, Multinomial, Poisson and Gaussian respectively. Without going into detail, these distributions are often used as priors for coefficients of the latter set of distributions, e.g. a Beta distribution as a prior for modeling the probability for binomial outcomes.
+さらに多くの便利な分布が存在します。さらに詳しく知りたい場合は、統計に関する専門書を参照するか、Wikipediaで一般的な分布を調べて詳細を調べることをお勧めします。知っておくべき重要な分布は次のとおりです。
 
 
+* **二項分布** 同じ分布からの複数のサンプリングした結果の分布を表現するために使用されます。例えば、ひしゃげたコインを10回投げて(コインは確率$\pi \in [0, 1]$で表がでるものとします)、表が出た数などを表します。その二項分布は$p(x) = {n \choose x} \pi^x (1-\pi)^{n-x}$として表現されます。
 
-## Summary
+* **多項分布** 多くの場合、2つより多くの結果が出る場合を気にするでしょう。例えば、サイコロを複数回振るような場合です。この場合、分布は $p(x) = \frac{n!}{\prod_{i=1}^k x_i!} \prod_{i=1}^k \pi_i^{x_i}$ として与えられます。
 
-So far, we covered probabilities, independence, conditional independence, and how to use this to draw some basic conclusions. We also introduced some fundamental probability distributions and demonstrated how to sample from them using Apache MXNet. This is already a powerful bit of knowledge, and by itself a sufficient set of tools for developing some classic machine learning models. In the next section, we will see how to operationalize this knowlege to build your first machine learning model: the Naive Bayes classifier.
+* **ポアソン分布** この分布は、ある割合で起こる単一事象の発生をモデル化します。例えば、ある地域で一定時間内に降る雨粒の数などです (奇妙な事実として、馬に蹴られて殺されたプロイセン兵の数はこの分布に従っています)。割合$\lambda$に対して、生起する確率は $p(x) = \frac{1}{x!} \lambda^x e^{-\lambda}$ として与えられます。
 
-## Exercises
+* **ベータ、ディリクレ、ガンマ、およびウィシャートの分布**
+これらは、統計学者がそれぞれ二項、多項、ポアソンおよびガウスと*共役*であると呼んでいる分布です。詳細には触れませんが、これらの分布は、後者の分布の係数の事前分布としてよく使用されます。例えば、二項分布の結果の確率をモデル化するための事前分布としてのベータ分布が用いられます。
 
-1. Given two events with probability $\Pr(A)$ and $\Pr(B)$, compute upper and lower bounds on $\Pr(A \cup B)$ and $\Pr(A \cap B)$. Hint - display the situation using a [Venn Diagram](https://en.wikipedia.org/wiki/Venn_diagram).
-1. Assume that we have a sequence of events, say $A$, $B$ and $C$, where $B$ only depends on $A$ and $C$ only on $B$, can you simplify the joint probability? Hint - this is a [Markov Chain](https://en.wikipedia.org/wiki/Markov_chain).
+## まとめ
 
-## Scan the QR Code to
-[Discuss](https://discuss.mxnet.io/t/2319)
+
+これまで、確率、独立性、条件付き独立性、およびこれらを使用していくつかの基本的な結論を導く方法について説明しました。また、いくつかの基本的な確率分布を紹介し、Apache MXNetを使用して、それらからサンプリングする方法を示しました。これはすでに強力な知識であり、それ自体は古典的な機械学習モデルを開発する上では十分なものです。次の節では、この知識を活用して、最初の機械学習モデルであるNaive Bayes分類器を構築する方法について説明します。
+
+## 練習
+
+1. 確率$\Pr(A)$と$\Pr(B)$で発生する2つの事象について、$\Pr(A \cup B)$と$\Pr(A \cap B)$の上限と下限を計算してください。ヒント: [ベン図](https://en.wikipedia.org/wiki/Venn_diagram)を利用して状況を表してみましょう。
+1. $A, $B$, $C$ という事象の系列があり、$B$は$A$と$C$に依存し、$A$と$C$は$B$のみに依存する場合、その同時確率を単純化することは可能ですか? ヒント: これは[マルコフ連鎖](https://en.wikipedia.org/wiki/Markov_chain)です。
+
+## [議論](https://discuss.mxnet.io/t/2319)のためのQRコードをスキャン
 
 ![](../img/qr_probability.svg)

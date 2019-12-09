@@ -333,58 +333,44 @@ nd.sum(nd.abs(x))
 ここで少し先の話になってしまいますが、なぜこれらの概念が役に立つのかをあなたに予想してもらおうと思います。機械学習では最適化問題を解くことがよくあります。最適化問題においては、*観測されたデータに割り当てられる確率を最大化したり、予測と真実の観測との間の距離を*最小化*します。つまり、アイテム (単語、商品、ニュース記事など) をベクトルで表現し、類似アイテム間の距離を最小化したり、非類似アイテム間の距離を最大化します。これらの目的は、おそらく機械学習アルゴリズムの最も重要な構成要素（データに加えて）であり、ノルムとして表現されます。
 
 
-## Intermediate linear algebra
+## 線形代数: 中級
 
-If you have made it this far, and understand everything that we have covered,
-then honestly, you *are* ready to begin modeling.
-If you are feeling antsy, this is a perfectly reasonable place to move on.
-You already know nearly all of the linear algebra required
-to implement a number of many practically useful models
-and you can always circle back when you want to learn more.
+ここまでの内容をすべて理解していれば、正直なところモデリングを始める準備ができています。もし不安を感じていれば、ここから、さらに学習を進めるべきでしょう。多くの実用的なモデルを実装するために必要な線形代数について、それらのほぼすべてを知っているので、さらに学習したいときにはいつでもここに戻ることができます。
 
-But there is a lot more to linear algebra, even as concerns machine learning.
-At some point, if you plan to make a career in machine learning,
-you will need to know more than what we have covered so far.
-In the rest of this chapter, we introduce some useful, more advanced concepts.
+しかし、機械学習に関係があるといっても、線形代数が含む内容にはさらに多くのものがあります。あるとき、機械学習でキャリアを積もうと考えたなら、これまでに扱ってきた以上のことを知る必要があります。この章の残りの部分では、便利で高度な概念をいくつか紹介します。
 
 
+### 基本的なベクトルの性質
 
-### Basic vector properties
+ベクトルには、数値を受け渡すためのデータ構造以上に有用な点があります。ベクトルの要素に対する値の読み取りと書き込みや、有用な数学演算の実行に加えて、いくつかの興味深い特性をみることができます。
 
-Vectors are useful beyond being data structures to carry numbers.
-In addition to reading and writing values to the components of a vector,
-and performing some useful mathematical operations,
-we can analyze vectors in some interesting ways.
+1つの重要な概念はベクトル空間の概念です。ベクトル空間を構成する条件は次のとおりです。
 
-One important concept is the notion of a vector space.
-Here are the conditions that make a vector space:
+* **交換法則** (x, y, z はすべてベクトルとする):
+  $x+y = y+x$, $(x+y)+z = x+(y+z)$, $0+x = x+0 = x$, $(-x) + x = x + (-x) = 0$.
+* **スカラー倍** (x はベクトルで a と b はスカラーとする):
+  $0 \cdot x = 0$, $1 \cdot x = x$, $(a b) x = a (b x)$.
+* **分配法則** (x と y はベクトルで a と b はスカラーとする):
+  $a(x+y) = ax + ay$,  $(a+b)x = ax +bx$.
 
-* **Additive axioms** (we assume that x,y,z are all vectors):
-  $x+y = y+x$ and $(x+y)+z = x+(y+z)$ and $0+x = x+0 = x$ and $(-x) + x = x + (-x) = 0$.
-* **Multiplicative axioms** (we assume that x is a vector and a, b are scalars):
-  $0 \cdot x = 0$ and $1 \cdot x = x$ and $(a b) x = a (b x)$.
-* **Distributive axioms** (we assume that x and y are vectors and a, b are scalars):
-  $a(x+y) = ax + ay$ and $(a+b)x = ax +bx$.
+### 特殊な行列
 
-### Special matrices
+このチュートリアルでは、いくつかの特殊な行列を紹介します。詳細を少し覗いてみましょう。
 
-There are a number of special matrices that we will use throughout this tutorial. Let's look at them in a bit of detail:
+* **対称行列** 行列の対角線の下と上の要素が同じ行列です。つまり、$M^\top=M$になります。そのような行列の例としては、ペアとなるデータ間の距離を記述するもの、つまり$M_{ij} = \| x_i-x_j \|$を満たすような行列です。同様に、Facebook上のつながりを表すグラフは、対称行列として記述できます。つまり、$i$と$j$がつながっている場合は$M_{ij} = 1$、そうでない場合は$M_{ij} = 0$となるような行列として表現されます。 *Twitter*のグラフは非対称です - $M_{ij} = 1$ つまり$i$が$j$をフォローしているからといって、$M_{ji} = 1$つまり$j$が$i$をフォローしているとは限りません。
+* **交代行列** $M^\top = -M$を満たすような行列です。どのような正方行列も対称行列と交代行列に分解することが可能で、次の式を満たします。$M = \frac{1}{2}(M + M^\top) + \frac{1}{2}(M - M^\top)$
+* **対角優位行列** 対角項以外の要素が対角項の要素よりも小さい行列で、数学表記を用いると $M_{ii} \geq \sum_{j \neq i} M_{ij}$ ならびに $M_{ii} \geq \sum_{j \neq i} M_{ji}$ を満たす行列と表現できます。ある行列がこの特性を満たすなら、その行列 $M$ は対角成分$\mathrm{diag}(M)$によって近似することができるでしょう。
+* **正定値行列** 非負の$x$に対して$x^\top M x > 0$という性質を満たす行列です。直感的には、ベクトルの二乗ノルム$\|x\|^2 = x^\top x$の一般化であるといえます。$M = A^\top A$を満たすとき、$x^\top M x = x^\top A^\top A x = \|A x\|^2$が成立することを調べるのは容易です。実は正定値行列はここで書く内容より、もう少し深い内容があります。
 
-* **Symmetric Matrix** These are matrices where the entries below and above the diagonal are the same. In other words, we have that $M^\top = M$. An example of such matrices are those that describe pairwise distances, i.e. $M_{ij} = \|x_i - x_j\|$. Likewise, the Facebook friendship graph can be written as a symmetric matrix where $M_{ij} = 1$ if $i$ and $j$ are friends and $M_{ij} = 0$ if they are not. Note that the *Twitter* graph is asymmetric - $M_{ij} = 1$, i.e. $i$ following $j$ does not imply that $M_{ji} = 1$, i.e. $j$ following $i$.
-* **Antisymmetric Matrix** These matrices satisfy $M^\top = -M$. Note that any square matrix can always be decomposed into a symmetric and into an antisymmetric matrix by using $M = \frac{1}{2}(M + M^\top) + \frac{1}{2}(M - M^\top)$.
-* **Diagonally Dominant Matrix** These are matrices where the off-diagonal elements are small relative to the main diagonal elements. In particular we have that $M_{ii} \geq \sum_{j \neq i} M_{ij}$ and $M_{ii} \geq \sum_{j \neq i} M_{ji}$. If a matrix has this property, we can often approximate $M$ by its diagonal. This is often expressed as $\mathrm{diag}(M)$.
-* **Positive Definite Matrix** These are matrices that have the nice property where $x^\top M x > 0$ whenever $x \neq 0$. Intuitively, they are a generalization of the squared norm of a vector $\|x\|^2 = x^\top x$. It is easy to check that whenever $M = A^\top A$, this holds since there $x^\top M x = x^\top A^\top A x = \|A x\|^2$. There is a somewhat more profound theorem which states that all positive definite matrices can be written in this form.
+## まとめ
 
+ほんの数ページ（または1つのJupyterノートブック）で、ニューラルネットワークの大部分を理解するために必要な線形代数について説明しました。もちろん、線形代数には*もっと*たくさんの内容があります。そして、そうした数学の多くは機械学習を行う上で役に立ちます。たとえば、行列は因子に分解可能であり、これらの分解によって実世界のデータセットの低次元構造を明らかにすることができます。機械学習には、データセットの構造を明らかにしたり、予測問題を解くために、行列分解とその高次テンソルへの一般化に焦点を当てる分野が存在します。しかしこの本は、深層学習に焦点を当てています。そして、実際のデータセットに対して手を動かしながら有用な機械学習モデルを適用していくと、より多くの数学を学びたいと思うでしょう。したがって、数学のさらなる詳細については、以降紹介するつもりではありますが、この章はいったんここでまとめます。
 
-## Summary
+もし線形代数についてさらに学びたい方のために、著者のお気に入りの教材を以下に紹介します。
 
-In just a few pages (or one Jupyter notebook) we have taught you all the linear algebra you will need to understand a good chunk of neural networks. Of course there is a *lot* more to linear algebra. And a lot of that math *is* useful for machine learning. For example, matrices can be decomposed into factors, and these decompositions can reveal low-dimensional structure in real-world datasets. There are entire subfields of machine learning that focus on using matrix decompositions and their generalizations to high-order tensors to discover structure in datasets and solve prediction problems. But this book focuses on deep learning. And we believe you will be much more inclined to learn more mathematics once you have gotten your hands dirty deploying useful machine learning models on real datasets. So while we reserve the right to introduce more math much later on, we will wrap up this chapter here.
+* 基礎をしっかり固めたい方は、Gilbert Strangの書籍をチェックしてください[Introduction to Linear Algebra](http://math.mit.edu/~gs/linearalgebra/)
+* Zico Kolter の [Linear Algebra Review and Reference](http://www.cs.cmu.edu/~zkolter/course/15-884/linalg-review.pdf)
 
-If you are eager to learn more about linear algebra, here are some of our favorite resources on the topic
-
-* For a solid primer on basics, check out Gilbert Strang's book [Introduction to Linear Algebra](http://math.mit.edu/~gs/linearalgebra/)
-* Zico Kolter's [Linear Algebra Review and Reference](http://www.cs.cmu.edu/~zkolter/course/15-884/linalg-review.pdf)
-
-## Scan the QR Code to [Discuss](https://discuss.mxnet.io/t/2317)
+## [議論のための](https://discuss.mxnet.io/t/2317)QRコード
 
 ![](../img/qr_linear-algebra.svg)

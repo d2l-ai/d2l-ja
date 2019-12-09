@@ -1,38 +1,37 @@
-# Naive Bayes Classification
+# ナイーブベイズ分類
 
-Before we worry about complex optimization algorithms or GPUs, we can already deploy our first classifier, relying only on simple statistical estimators and our understanding of conditional independence. Learning is all about making assumptions. If we want to classify a new data point that we've never seen before we have to make some assumptions about which data points are *similar* to each other.
+複雑な最適化アルゴリズムやGPUについて心配する前に、最初の分類器として、シンプルな統計的指標と条件付き独立を利用した分類器をデプロイしてみましょう。学習というものは、仮定を置くことにほかなりません。見たことのない新しいデータを分類するためには、互いに*類似*しているデータに関して仮定を置く必要があります。
 
-One popular (and remarkably simple) algorithm is the Naive Bayes Classifier. Note that one natural way to express the classification task is via the probabilistic question: *what is the most likely label given the features?*. Formally, we wish to output the prediction $\hat{y}$ given by the expression:
+最も利用されている (そして非常にシンプルな) アルゴリズムはナイーブベイズ分類器でしょう。分類のタスクを自然に表すとすれば、「その特徴から、最も可能性のあるラベルはなんですか?」という確率を考えた質問になるでしょう。数式で表すと、予測$\hat{y}$は以下の式で与えられるでしょう。
 
 $$\hat{y} = \text{argmax}_y \> p(y | \mathbf{x})$$
 
-Unfortunately, this requires that we estimate $p(y | \mathbf{x})$ for every value of $\mathbf{x} = x_1, ..., x_d$. Imagine that each feature could take one of $2$ values. For example, the feature $x_1 = 1$ might signify that the word apple appears in a given document and $x_1 = 1$ would signify that it does not. If we had $30$ such binary features, that would mean that we need to be prepared to classify any of $2^{30}$ (over 1 billion!) possible values of the input vector $\mathbf{x}$.
+残念ながら、これはすべての値 $\mathbf{x} = x_1, ..., x_d$に対して $p(y | \mathbf{x})$ を予測する必要があります。各特徴が2値のうちの1つをとる場合を考えてみましょう。例えば、特徴$x_1 = 1$が「りんご」がある文書に現れていることを、$x_1 = 0$は現れないことを表すとしましょう。$30$個の2値の特徴があれば、それは$2^{30}$、つまり10億以上の値をとりうる入力ベクトル$\mathbf{x}$を分類する必要があります。
 
-Moreover, where is the learning? If we need to see every single possible example in order to predict the corresponding label then we're not really learning a pattern but just memorizing the dataset. Fortunately, by making some assumptions about conditional independence, we can introduce some inductive bias and build a model capable of generalizing from a comparatively modest selection of training examples.
+さらに、学習はどうやって行うでしょうか? 対応するラベルを予測するために、すべての起こりうる値を見なければならないのであれば、パターンを学習しているとはいえず、それはデータセットを記憶しているに過ぎません。幸運にも条件付き独立に関するいくつかの仮定を置くことによって、帰納的な性質を設けることができ、学習データからそこまで多くないデータを選んで、一般化するようなモデルを作ることができます。
 
-To begin, let's use Bayes Theorem, to express the classifier as
+始めるにあたって、ベイズの定理を利用して、以下のように分類器を表現しましょう。
 
 $$\hat{y} = \text{argmax}_y \> \frac{p( \mathbf{x} | y) p(y)}{p(\mathbf{x})}$$
 
-Note that the denominator is the normalizing term $p(\mathbf{x})$ which does not depend on the value of the label $y$. As a result, we only need to worry about comparing the numerator across different values of $y$. Even if calculating the demoninator turned out to be intractable, we could get away with ignoring it, so long as we could evaluate the numerator. Fortunately, however, even if we wanted to recover the normalizing constant, we could, since we know that $\sum_y p(y | \mathbf{x}) = 1$, hence we can always recover the normalization term.
-Now, using the chain rule of probability, we can express the term $p( \mathbf{x} | y)$ as
+分母は正規化項$p(\mathbf{x})$でラベル$y$の値に依存しません。結果として、異なる$y$の値に対して、分子を比較することだけ考えれば良いです。たとえ、分母を計算することが非常に難しいことがわかっても、それを無視することができ、分子を評価するだけで良いです。幸運にも、正規化するための定数を計算したい場合は、$\sum_y p(y | \mathbf{x}) = 1$ということがわかっているので、その項をいつでも計算することができます。確率のチェインルールを利用することで、$p( \mathbf{x} | y)$の項は以下のように表現することができます。
 
 $$p(x_1 |y) \cdot p(x_2 | x_1, y) \cdot ... \cdot p( x_d | x_1, ..., x_{d-1} y)$$
 
-By itself, this expression doesn't get us any further. We still must estimate roughly $2^d$ parameters. However, if we assume that ***the features are conditionally indpendent of each other, given the label***, then suddenly we're in much better shape, as this term simplifies to $\prod_i p(x_i | y)$, giving us the predictor
+この式自体では、まだ何も進んでいません。まだ、大雑把に言って、$2^d$のパラメータを予測しなければならないからです。しかし、*ラベルに対して各特徴が互いに条件付き独立である*仮定を置くことによって、$\prod_i p(x_i | y)$という単純な形式に変換できます。予測式は以下のようになります。
 
 $$ \hat{y} = \text{argmax}_y \> = \prod_i p(x_i | y) p(y)$$
 
-Estimating each term in $\prod_i p(x_i | y)$ amounts to estimating just one parameter. So our assumption of conditional independence has taken the complexity of our model (in terms of the number of parameters) from an exponential dependence on the number of features to a linear dependence. Moreover, we can now make predictions for examples that we've never seen before, because we just need to estimate the terms $p(x_i | y)$, which can be estimated based on a number of different documents.
+$\prod_i p(x_i | y)$ の各項を予測することは、たった1つのパラメータを予測することと同じになりました。条件付き独立の仮定は、特徴の数に応じた指数的な依存関係を線形な関係へと変換し、パラメータ数の観点から複雑さを解消しました。さらに、以前見たことのないデータに対して予測行うこともできます。なぜなら、$p(x_i | y)$を求めればよいだけで、これをたくさんの異なる文書にもとづいて予測することができるからです。
 
-Let's take a closer look at the key assumption that the attributes are all independent of each other, given the labels, i.e., $p(\mathbf{x} | y) = \prod_i p(x_i | y)$. Consider classifying emails into spam and ham. It's fair to say that the occurrence of the words `Nigeria`, `prince`, `money`, `rich` are all likely indicators that the e-mail might be spam, whereas `theorem`, `network`, `Bayes` or `statistics` are good indicators that the exchange is less likely to be part of an orchestrated attempt to wheedle out your bank account numbers. Thus, we could model the probability of occurrence for each of these words, given the respective class and then use it to score the likelihood of a text. In fact, for a long time this *is* preciely how many so-called [Bayesian spam filters](https://en.wikipedia.org/wiki/Naive_Bayes_spam_filtering) worked.
+ラベルが与えられたとき、特徴が互いにすべて独立であるという重要な仮定、つまり$p(\mathbf{x} | y) = \prod_i p(x_i | y)$についてより詳しく見てみましょう。Eメールをスパムかそうでないかに分類することを考えます。`ナイジェリア`、`王子`、`金`、`リッチ`といった単語が現れればは、おそらくスパムの可能性があり、一方`理論`、`ネットワーク`,
+`ベイズ`、`統計学`という単語が現れれば、それは口座番号を聞き出す巧みな試みと関係ないものと考えられるでしょう。そこで、それぞれのクラスに対して各単語の起こりうる確率をモデル化し、文章の尤もらしさをスコア化しましょう。実際のところ、これはいわゆる[ベイズのパムフィルタ](https://en.wikipedia.org/wiki/Naive_Bayes_spam_filtering)として、長い間にわたって機能してきました。
 
+## 光学文字認識 (OCR; Optical Character Recognition)
 
-## Optical Character Recognition
+画像はとても扱いやすいので、MNISTデータセットの数字を分類するナイーブベイズ分類器の動作について説明しましょう。問題は、$p(y)$ and $p(x_i | y)$についてわかっていないことです。そこでまず、学習データから、それを*推定*する必要があります。これをモデルを*学習する*と言います。$p(y)$を推定することはそこまで難しくありません。10クラスだけを扱っているので非常に簡単です。各数字の発生回数$n_y$を計算し、データの総数$n$で割るだけです。例えば、数字8が$n_8 = 5,800$回現れて、全体で$n = 60,000$画像あるとすれば、その確率は$p(y=8) = 0.0967$として推定されます。
 
-Since images are much easier to deal with, we will illustrate the workings of a Naive Bayes classifier for distinguishing digits on the MNIST dataset. The problem is that we don't actually know $p(y)$ and $p(x_i | y)$. So we need to *estimate* it given some training data first. This is what is called *training* the model. Estimating $p(y)$ is not too hard. Since we are only dealing with 10 classes, this is pretty easy - simply count the number of occurrences $n_y$ for each of the digits and divide it by the total amount of data $n$. For instance, if digit 8 occurs $n_8 = 5,800$ times and we have a total of $n = 60,000$ images, the probability estimate is $p(y=8) = 0.0967$.
-
-Now on to slightly more difficult things—$p(x_i | y)$. Since we picked black and white images, $p(x_i | y)$ denotes the probability that pixel $i$ is switched on for class $y$. Just like before we can go and count the number of times $n_{iy}$ such that an event occurs and divide it by the total number of occurrences of y, i.e. $n_y$. But there's something slightly troubling: certain pixels may never be black (e.g. for very well cropped images the corner pixels might always be white). A convenient way for statisticians to deal with this problem is to add pseudo counts to all occurrences. Hence, rather than $n_{iy}$ we use $n_{iy}+1$ and instead of $n_y$ we use $n_{y} + 1$. This is also called [Laplace Smoothing](https://en.wikipedia.org/wiki/Additive_smoothing).
+ここで、少しむずかしいこと、$p(x_i | y)$について考えましょう。白黒の画像を取り出すので、$p(x_i | y)$はピクセル$i$がクラス$y$によって値が1になる確率を表しています。ちょうど上で行ったように、発生した回数$n_{iy}$を数えて、$y$の全発生回数$n_y$で割ることができます。しかし、ちょっとした問題がここで生じます。それは、あるピクセルにおいて黒にならないピクセルがあることです (もしうまく切り取られた画像であれば、画像の隅であっても白になる可能性はありますが)。この問題に対処するための統計学者にとって便利な方法は、擬似的なカウントを全カウントに加えることです。従って、$n_{iy}$ではなく$n_{iy}+1$を利用し、$n_y$の代わりに$n_y+1$を利用します。これは[Laplace Smoothing](https://en.wikipedia.org/wiki/Additive_smoothing)と呼ばれています。
 
 ```{.python .input  n=1}
 %matplotlib inline
@@ -43,13 +42,13 @@ import mxnet as mx
 from mxnet import nd
 import numpy as np
 
-# We go over one observation at a time (speed doesn't matter here)
+# 1回で1つだけ観測しましょう（ここでは時間を気にしません)
 def transform(data, label):
     return (nd.floor(data/128)).astype(np.float32), label.astype(np.float32)
 mnist_train = mx.gluon.data.vision.MNIST(train=True, transform=transform)
 mnist_test  = mx.gluon.data.vision.MNIST(train=False, transform=transform)
 
-# Initialize the counters
+# カウンターを初期化
 xcount = nd.ones((784,10))
 ycount = nd.ones((10))
 
@@ -58,7 +57,7 @@ for data, label in mnist_train:
     ycount[y] += 1
     xcount[:,y] += data.reshape((784))
 
-# using broadcast again for division
+# 割るために Broadcastを使いましょう
 py = ycount / ycount.sum()
 px = (xcount / ycount.reshape(1,10))
 ```
@@ -70,7 +69,7 @@ for data, label in mnist_train:
     xcount[:,y] += data.reshape((784))
 ```
 
-Now that we computed per-pixel counts of occurrence for all pixels, it's time to see how our model behaves. Time to plot it. This is where it is so much more convenient to work with images. Visualizing 28x28x10 probabilities (for each pixel for each class) would typically be an exercise in futility. However, by plotting them as images we get a quick overview. The astute reader probably noticed by now that these are some mean looking digits ...
+ここで、すべてのピクセルに対して、ピクセルごとの発生回数をカウントしたため、モデルがどのように動くのかを確認することができます。プロットしてみましょう。これが画像に対して作業をする上でとても便利なところなのです。28x28x10の確率 (つまり各クラス、各ピクセルごと) を可視化することは、通常無駄な作業でしょう。しかし、それらを画像としてプロットすると、全体像を手早く理解することができます。察しの良い読者の方はおそらく、数字を見ることに意味があることに気づいているかと思いますが…
 
 ```{.python .input  n=2}
 import matplotlib.pyplot as plt
@@ -84,38 +83,38 @@ plt.show()
 print('Class probabilities', py)
 ```
 
-Now we can compute the likelihoods of an image, given the model. This is statistician speak for $p(x | y)$, i.e. how likely it is to see a particular image under certain conditions (such as the label). Our Naive Bayes model which assumed that all pixels are independent tells us that
+ここでモデルに対して、画像の尤もらしさを計算することができます。これは$p(x | y)$について統計学者の言いたいことを代弁しています。つまり、ある条件下 (つまりラベル) が与えられたときに、特定の画像見る可能性を表しています。ナイーブベイズモデルでは、すべてのピクセルは独立であり、以下を想定しています。
 
 $$p(\mathbf{x} | y) = \prod_{i} p(x_i | y)$$
 
-Using Bayes' rule, we can thus compute $p(y | \mathbf{x})$ via
+ベイズの法則を使うことで、$p(y | \mathbf{x})$ を計算できます。
 
 $$p(y | \mathbf{x}) = \frac{p(\mathbf{x} | y) p(y)}{\sum_{y'} p(\mathbf{x} | y')}$$
 
-Let's try this ...
+やってみましょう。
 
 ```{.python .input  n=3}
-# Get the first test item
+# 最初のテストデータを取り出します
 data, label = mnist_test[0]
 data = data.reshape((784,1))
 
-# Compute the per pixel conditional probabilities
+# ピクセルごとの条件付き確率を計算します
 xprob = (px * data + (1-px) * (1-data))
-# Take the product
+# 掛け算
 xprob = xprob.prod(0) * py
 print('Unnormalized Probabilities', xprob)
-# Normalize
+# 正規化
 xprob = xprob / xprob.sum()
 print('Normalized Probabilities', xprob)
 ```
 
-This went horribly wrong! To find out why, let's look at the per pixel probabilities. They're typically numbers between $0.001$ and $1$. We are multiplying $784$ of them. At this point it is worth mentioning that we are calculating these numbers on a computer, hence with a fixed range for the exponent. What happens is that we experience *numerical underflow*, i.e. multiplying all the small numbers leads to something even smaller until it is rounded down to zero. At that point we get division by zero with `nan` as a result.
+これは、ひどく間違っています！なぜか考えてみましょう。ピクセルごとの確率を見てみます。それらは$0.001$から$1$の間の数値をとっています。それらに$784$を掛けてみます。これらの値はコンピュータで計算されているので、指数に対する固定の範囲があります。つまり*数値のアンダーフロー*が発生していたわけです。つまり小さい値をすべて掛け合わせると、さらに小さくなって、ゼロに丸められてしまいます。そして、ゼロによる割り算が発生して`nan`という結果が出てしまいます。
 
-To fix this we use the fact that $\log a b = \log a + \log b$, i.e. we switch to summing logarithms. This will get us unnormalized probabilities in log-space. To normalize terms we use the fact that
+これを修正するために、$\log a b = \log a + \log b$という事実を利用します。つまり対数をとってから足し合わせます。これは対数空間における正規化されていない確率を与えるでしょう。そこで正規化するためには以下を利用します。
 
 $$\frac{\exp(a)}{\exp(a) + \exp(b)} = \frac{\exp(a + c)}{\exp(a + c) + \exp(b + c)}$$
 
-In particular, we can pick $c = -\max(a,b)$, which ensures that at least one of the terms in the denominator is $1$.
+特に$c = -\max(a,b)$を利用することができ、これは分母の項が少なくとも1つは1になることを保証します。
 
 ```{.python .input  n=4}
 logpx = nd.log(px)
@@ -123,21 +122,19 @@ logpxneg = nd.log(1-px)
 logpy = nd.log(py)
 
 def bayespost(data):
-    # We need to incorporate the prior probability p(y) since p(y|x) is
-    # proportional to p(x|y) p(y)
+    # p(y|x)は p(x|y) p(y)似比例するので、
+    # 確率 p(y) の事前分布を計算します
     logpost = logpy.copy()
     logpost += (logpx * data + logpxneg * (1-data)).sum(0)
-    # Normalize to prevent overflow or underflow by subtracting the largest
-    # value
-    logpost -= nd.max(logpost)
-    # Compute the softmax using logpx
+    # 最大値を引くことで、オーバーフロー、アンダーフローを回避  logpost -= nd.max(logpost)
+    # logpx を使って softmaxを計算します
     post = nd.exp(logpost).asnumpy()
     post /= np.sum(post)
     return post
 
 fig, figarr = plt.subplots(2, 10, figsize=(10, 3))
 
-# Show 10 images
+# 画像を10個表示
 ctr = 0
 for data, label in mnist_test:
     x = data.reshape((784,1))
@@ -159,10 +156,10 @@ for data, label in mnist_test:
 plt.show()
 ```
 
-As we can see, this classifier works pretty well in many cases. However, the second last digit shows that it can be both incompetent and overly confident of its incorrect estimates. That is, even if it is horribly wrong, it generates probabilities close to 1 or 0. Not a classifier we should use very much nowadays any longer. To see how well it performs overall, let's compute the overall accuracy of the classifier.
+確認できたように、この分類器は多くの場合において有効です。しかし、2番めの最後の数字からは、分類機はうまく動いておらず、誤った推定に対して大きな確信度を示していることを確認できます。たとえ、ひどく間違っていたとしても、その確率は1や0に近い値を出力します。現在においては、多用すべき分類器とはいえないでしょう。全体に対してどのような性能を示すか、分類器の全体の精度を計算しましょう。
 
 ```{.python .input  n=5}
-# Initialize counter
+# カウンター初期化
 ctr = 0
 err = 0
 
@@ -178,27 +175,25 @@ for data, label in mnist_test:
 print('Naive Bayes has an error rate of', err/ctr)
 ```
 
-Modern deep networks achieve error rates of less than 0.01. While Naive Bayes classifiers used to be popular in the 80s and 90s, e.g. for spam filtering, their heydays are over. The poor performance is due to the incorrect statistical assumptions that we made in our model: we assumed that each and every pixel are *independently* generated, depending only on the label. This is clearly not how humans write digits, and this wrong assumption led to the downfall of our overly naive (Bayes) classifier. Time to start building Deep Networks.
+現代のディープニューラルネットワークでは、誤り率は0.01未満です。ナイーブベイズ分類器は、特にスパムフィルタリングの用途で80年代、90年代に利用されていて、最盛期は終わっています。性能が良くない理由は、誤った統計的仮定をモデルにおいたからです。その仮定とは、ピクセル間は独立であり、ラベルにのみ依存するというものです。これは、人間が数字を書くところを考えれば明らかに誤っていると考えられ、誤った仮定はナイーブベイズ分類器の性能を非常に悪化させます。そこで、ディープニューラルネットワークを構築するときがきました。
 
-## Summary
+## まとめ
 
-* Naive Bayes is an easy to use classifier that uses the assumption
+* ナイーブベイズは以下の仮定を利用した簡単に利用できる分類器です。
   $p(\mathbf{x} | y) = \prod_i p(x_i | y)$.
-* The classifier is easy to train but its estimates can be very wrong.
-* To address overly confident and nonsensical estimates, the
-  probabilities $p(x_i|y)$ are smoothed, e.g. by Laplace
-  smoothing. That is, we add a constant to all counts.
-* Naive Bayes classifiers don't exploit any correlations between
-  observations.
+* 分類器の学習は簡単ですが推定をひどく誤る可能性があります。
+* 過大な信頼度をもっていたり、理にかなわない推定に対しては、 確率 $p(x_i|y)$に対して平滑化、例えば、Laplace
+smoothingを行います。つまり、すべてのカウントに対して定数を加えます。
+* ナイーブベイズ分類器は観測に対する相関を利用しません。
 
-## Exercises
+## 練習
 
-1. Design a Naive Bayes regression estimator where $p(x_i | y)$ is a normal distribution.
-1. Under which situations does Naive Bayes work?
-1. An eyewitness is sure that he could recognize the perpetrator with 90% accuracy, if he were to encounter him again.
-   * Is this a useful statement if there are only 5 suspects?
-   * Is it still useful if there are 50?
+1. $p(x_i | y)$が正規分布となるナイーブベイズ回帰を設計しましょう。
+1. どのような状況であれば、ナイーブベイズは上手く働きますか?
+1. 目撃者は犯人を再度目撃したとき、90%の精度で認識できます。
+   * 被疑者が5人であれば、これはうまくいくでしょうか?
+   * 被疑者が50人でもうまくいきますか?
 
-## Scan the QR Code to [Discuss](https://discuss.mxnet.io/t/2320)
+## [議論](https://discuss.mxnet.io/t/2320)のためのQRコードをスキャン
 
 ![](../img/qr_naive-bayes.svg)

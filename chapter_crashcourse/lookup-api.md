@@ -1,27 +1,29 @@
-# Documentation
+# 関連するドキュメントについて
 
-Due to constraints on the length of this book, we cannot possibly introduce every single MXNet function and class (and you probably would no want us to). The API documentation and additional tutorials and examples provide plenty of documentation beyond the book. In this section we provide you some guidance to exploring the MXNet API.
+この本の長さの制約から、すべてのMXNetの関数とクラスを紹介することはできません (そしてこれを読むみなさんも望んでいないでしょう)。 APIドキュメント、追加のチュートリアルと例は、この本以上に多くのドキュメントを提供します。この節ではMXNet APIを探すための手引を紹介します。
 
-## Finding all the functions and classes in the module
 
-In order to know which functions and classes can be called in a module, we invoke the `dir` function. For instance, we can query all properties in the `nd.random` module as follows:
+## モジュール内のすべての関数とクラスを探す
+
+どの関数とクラスがモジュール内で呼ばれているかを知るために、`dir`という関数を呼び出します。例えば、`nd.random`のモジュールのすべてのプロパティを問い合わせるためには以下を実行します。
+
 
 ```{.python .input  n=1}
 from mxnet import nd
 print(dir(nd.random))
 ```
 
-Generally, we can ignore functions that start and end with `__` (special objects in Python) or functions that start with a single `_`(usually internal functions). Based on the remaining function/attribute names, we might hazard a guess that this module offers various methods for generating random numbers, including sampling from the uniform distribution (`uniform`), normal distribution (`normal`), and Poisson distribution  (`poisson`).
+一般に、`__` (Pythonの特殊なオブジェクト) で始まって終わる関数、または単一の `_`で始まる関数 (通常は内部的に利用されている関数) は無視しても構いません。残りの関数/属性名にもとづいて、このモジュールが、一様分布 (`uniform`)、正規分布 (`normal`)、ポアソン分布 (`poisson`) といった乱数を生成する様々なメソッドをもっていることを推定することができます。
 
-## Finding the usage of specific functions and classes
+## 特定の関数やクラスの利用方法を探す
 
-For more specific instructions on how to use a given function or class, we can invoke the  `help` function. As an example, let's explore the usage instructions for NDArray's `ones_like` function.
+ある関数やクラスの利用方法について知りたい場合は、`help`関数を利用します。以下の例では、NDArrayの`ones_like`の関数の使い方を探しています。
 
 ```{.python .input}
 help(nd.ones_like)
 ```
 
-From the documentation, we can see that the `ones_like` function creates a new array with the same shape as the supplied NDArray and all elements set to `1`. Whenever possible, you should run a quick test to confirm your interpretation:
+ドキュメントから、 `ones_like`の関数は与えられたNDArrayと同じshapeの配列を新しく作成し、すべての要素を`1`にセットすることがわかります。可能な場合はいつでも、そのドキュメントに対する理解を確かめるために、手短にテストすることをおすすめします。
 
 ```{.python .input}
 x = nd.array([[0, 0, 0], [2, 2, 2]])
@@ -29,16 +31,16 @@ y = x.ones_like()
 y
 ```
 
-In the Jupyter notebook, we can use `?` to display the document in another window. For example, `nd.random.uniform?` will create content that is almost identical to `help(nd.random.uniform)`, displaying it in a new browser window. In addition, if we use two question marks, e.g. `nd.random.uniform??`, the code implementing the function will also be displayed.
+Jupyter notebookでは、別のウィンドウでドキュメントを表示するために`?`を利用することができます。例えば、`nd.random.uniform?`とすれば、それは`help(nd.random.uniform)`のコンテンツを、新しいブラウザのウィンドウで表示します。さらに、`nd.random.uniform??`のように2つの疑問符を使えば、その関数を実装するコードを表示することができます。
 
-## API Documentation
+## APIのドキュメント
 
-For further details on the API details check the MXNet website at  [http://mxnet.apache.org/](http://mxnet.apache.org/). You can find the details under the appropriate headings (also for programming languages other than Python).
+APIの詳細について知りたい場合は、MXNetのウェブサイト [http://mxnet.apache.org/](http://mxnet.apache.org/) をチェックしてください。適切な見出しのところに詳細を見つけることができるでしょう (そして、Python以外のプログラミング言語についても詳細を見つけられます)。
 
-## Exercise
+## 練習
 
-Look up `ones_like` and `autograd` in the API documentation.
+`ones_like`と`autograd`をAPIのドキュメントから探してみましょう。
 
-## Scan the QR Code to [Discuss](https://discuss.mxnet.io/t/2322)
+## [議論](https://discuss.mxnet.io/t/2322)のためのQRコードをスキャン
 
 ![](../img/qr_lookup-api.svg)
