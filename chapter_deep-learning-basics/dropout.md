@@ -57,7 +57,7 @@ import sys
 sys.path.insert(0, '..')
 
 import d2l
-from mxnet import autograd, gluon, init, nd
+from mxnet import autograd, gluon, init, np, nd
 from mxnet.gluon import loss as gloss, nn
 
 def dropout(X, drop_prob):
