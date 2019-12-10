@@ -16,3 +16,4 @@ Dive into Deep Learning
 
    chapter_introduction/intro
    chapter_crashcourse/index
+   chapter_deep-learning-basics/index
