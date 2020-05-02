@@ -1,109 +1,114 @@
 # インストール
+:label:`chap_installation`
 
-ハンズオンを始めてもらうために、Pythonの環境、Jupyterの対話的なノートブック、関連するライブラリ、*この書籍を実行するための*コードをセットアップしてもらう必要があります。
-
-
-## コードの入手と実行環境のインストール
-
-この書籍とコードはフリーでダウンロードすることができます。簡単にするために、すべてのライブラリをインストールするためのcondaという人気のPythonのパッケージ管理ツールをおすすめします。WindowsのユーザとLinux/macOSのユーザは、それぞれ以下の説明に従ってください。
+ハンズオンを始めてもらうために、Pythonの環境、Jupyterの対話的なノートブック、関連するライブラリ、この書籍を実行するためのコードをセットアップしてもらう必要があります。
 
 
-### Windowsユーザ
+## Miniconda のインストール
 
-もし、この書籍のコードを最初に動かすのであれば、以下の5つのステップを実行する必要があります。。一度動かしていれば、Step 4やStep 5にスキップすることができます。
+最もシンプルに始めるために
+[Miniconda](https://conda.io/en/latest/miniconda.html)をインストールしましょう。Python 3系が推奨です。もし conda がすでにインストールされていれば以下のステップをスキップすることができます。ウェブサイトから、対応する Miniconda の sh ファイルをダウンロードして、コマンドラインから `sh <FILENAME> -b` を実行してインストールします。macOS のユーザは以下のように行います。
 
-Step 1は、利用するOSに応じて、[Miniconda](https://conda.io/en/master/miniconda.html)をダウンロードしてインストールします。インストールでは、"Add Anaconda to the system PATH environment variable (Anacondaをシステム環境変数PATHに追加する)"のオプションを選ぶ必要があります。
-
-Step 2は、この書籍のコードの圧縮ファイルをダウンロードします。コードは https://www.d2l.ai/d2l-en-1.0.zip からダウンロード可能です。zipファイルをダウンロードしたら、`d2l-en`というフォルダを作成して、zipファイルをフォルダに展開します。カレントフォルダで、コマンドラインのモードに入るため、ファイルのエクスプローラーのアドレスバーに`cmd`と入力します。
-
-Step3は、この書籍で必要になるライブラリをインストールするために、condaを利用した仮想の事項環境を作成します。`environment.yml`というファイルが、ダウンロードしたzipファイルの中に含まれています。ライブラリ (MXNetや`d2lzh`といったパッケージなど)や、この書籍のコードと依存関係にあるライブラリのバージョンを見るために、そのファイルをテキストエディタで開いてみましょう。
-
-```
-conda env create -f environment.yml
-```
-Step 4は、さきほど作成した環境を有効にします。この環境を有効にすることは、この書籍のコードを実行するための前提条件になります。その環境から抜けるためには、`conda deactivate`というコマンドを実行します (もし、condaのバージョンが4.4未満であれば、`deactivate`というコマンドを実行します。)
-
-```
-# If the conda version is lower than 4.4, use the command `activate gluon`
-conda activate gluon
+```bash
+# The file name is subject to changes
+sh Miniconda3-latest-MacOSX-x86_64.sh -b
 ```
 
-Step 5ではJupter notebookを開きます。
-
+そして Linux ユーザは以下のように行います。
+```bash
+# The file name is subject to changes
+sh Miniconda3-latest-Linux-x86_64.sh -b
 ```
+
+次に、`conda`から直接シェルを初期化します。
+
+```bash
+~/miniconda3/bin/conda init
+```
+
+いまのシェルを閉じて再度開いてください。以下のように新しい環境を作ることができるはずです。
+
+```bash
+conda create --name d2l -y
+```
+
+## D2L ノートブックのダウンロード
+
+次にこの書籍のコードをダウンロードしましょう。コードを[link](https://d2l.ai/d2l-en-0.7.1.zip)からダウンロードして解凍します。もし `unzip` がインストール済みであれば (なければ `sudo apt install unzip` でインストールできます)、代わりに以下でも可能です。
+
+```bash
+mkdir d2l-en && cd d2l-en
+curl https://d2l.ai/d2l-en-0.7.1.zip -o d2l-en.zip
+unzip d2l-en.zip && rm d2l-en.zip
+```
+
+ここで `d2l` の環境を activate して、`pip` をインストールします。このコマンドの最後に `y` を入れておきましょう。
+
+```bash
+conda activate d2l
+conda install python=3.7 pip -y
+```
+
+## MXNet と `d2l` パッケージのインストール
+
+MXNet をインストールする前に、まず、利用する計算機に適切なGPU (標準的なノートPCでグラフィックスのために利用されるGPUは対象外です) が利用可能かどうかを確認してください。GPU サーバにインストールしようとしているなら、GPUサポートのMXNet をインストールするための手順 :ref:`subsec_gpu` に従ってください。
+
+もし GPU がなければ、CPUバージョンをインストールしましょう。最初の数章を行う際には十分な性能でしょうが、より規模の大きいモデルを動かす際には GPU を必要とするかもしれません。
+
+
+```bash
+# For Windows users
+pip install mxnet==1.6.0b20190926
+
+# For Linux and macOS users
+pip install mxnet==1.6.0b20191122
+```
+
+この書籍でよく使う関数やクラスをまとめた `d2l` パッケージもインストールしましょう。
+
+```bash
+pip install d2l==0.11.1
+```
+
+インストールできたら、実行のために Jupyter ノートブックを開きます。
+
+```bash
 jupyter notebook
 ```
 
-この時点で http://localhost:8888 をブラウザで開くと（通常、自動的に開かれます）、この書籍の各節のコードを見たり実行したりすることができます。
+この段階で、http://localhost:8888 (通常、自動で開きます) をブラウザで開くことができます。そして、この書籍の各章のコードを実行することができます。この書籍のコードを実行したり、MXNet や `d2l` のパッケージを更新する前には、`conda activate d2l` を必ず実行して実行環境を activate しましょう。環境から出る場合は、`conda deactivate` を実行します。
 
-### Linux/macOSユーザ
+## 最新バージョンへ更新
 
-Step 1は、利用するOSに応じて、[Miniconda](https://conda.io/en/master/miniconda.html)をダウンロードしてインストールします。sh形式のファイルになっています。ターミナルのアプリケーションで開いて、以下のように、shファイルを実行するコマンド入力します
+この書籍と MXNet は絶えず改善を続けています。次々とリリースされる最新バージョンをチェックしましょう。
 
-```
-# The file name is subject to change, always use the one downloaded from the
-# Miniconda website
-sh Miniconda3-latest-Linux-x86_64.sh
-```
+1.  https://d2l.ai/d2l-en.zip の URL は常に最新版を保持しています。
+2. `d2l` パッケージを `pip install d2l --upgrade` を実行して更新しましょう。
+3. CPU バージョンの場合は, `pip install -U --pre mxnet` MXNet を更新できます。
 
-インストール中に、利用条件が表示されるでしょう。"↓"を押して読み進め、"Q"を押して読むのを終了します。その後、以下のような質問に答えます。
-
-```
-Do you accept the license terms? [yes|no]　（ライセンス条件に同意しますか? [はい|いいえ])
-[no] >>> yes
-Do you wish the installer to prepend the Miniconda3 install location
-to PATH in your /home/your_name/your_file ? [yes|no]
-(/home/your_name/your_file のPATHの最初に、Miniconda3のインストール位置を追加して良いですか? [はい|いいえ])
-[no] >>> yes
-```
-
-インストールが完了した後にcondaを有効化します。Linuxユーザは`source ~/.bashrc`を実行するか、コマンドラインのアプリケーションを再起動する必要があります。macOSのユーザは、`source ~/.bash_profile`を実行するか、コマンドラインのアプリケーションを再起動します。
-
-Step 2では、この書籍のコードの圧縮ファイルをダウンロードしてフォルダに展開します。そして次のコマンドを実行します。`unzip`をインストールしていないLinuxユーザは、`sudo apt install unzip`のコマンドを実行することでunzipをインストールすることができます。
-
-```
-mkdir d2l-en && cd d2l-en
-curl https://www.d2l.ai/d2l-en-1.0.zip -o d2l-en.zip
-unzip d2l-en.zip && rm d2l-en.zip
-```
-Step 3からStep 5までは、上述しているWindowsユーザ向けのStepを参照してください。
-もし、condaのバージョンが4.4未満であれば、Step 4のコマンドを`source activate gluon`に置きかえて、`source deactivate`のコマンドを利用して仮想環境から抜けます。
-
-## コードと実行環境の更新
-
-ディープラーニングとMXNetは急速に進化するため、このオープンソースの書籍も定期的に更新されて、リリースされていくでしょう。この書籍のオープンソースのコンテンツ（例えば、コード）を対応する実行環境（例えば、最新版のMXNet)で更新するためには、以下の手順に従ってください。
-
-Step 1は、この書籍のコードを含む最新版の圧縮ファイルをダウンロードします。そのファイルは、https://www.d2l.ai/d2l-en.zip からダウンロードできます。zipファイルを展開したら、そのフォルダ `d2l-en` に入ります。
-
-Step 2は、その実行環境を次のコマンドでアップデートします。
-
-```
-conda env update -f environment.yml
-```
-
-以降の、環境を有効化したり、Jupyterを実行する手順は、すでに説明した手順と同じように行います。
 
 ## GPUのサポート
 
-デフォルトでは、MXNetはあらゆるコンピュータ (ノートパソコンも含む)で実行できるように、GPUを利用しないようにインストールされます。この書籍の一部は、GPUの利用を必要としたり、推薦したりします。もし読者のコンピュータが、NVIDIAのグラフィックカードを備えていて、CUDAがインストールされているのであれば、CUDAを利用可能なビルドをダウンロードするように、conda環境を修正すべきです。
+:label:`subsec_gpu`
 
-Step 1では、GPUをサポートしないMXNetをアンインストールします。もし、この書籍を実行する仮想環境をインストールしていれば、GPUをサポートしないMXNetをアンインストールした環境を有効化する必要があります。
+デフォルトでは、MXNetはあらゆるコンピュータ (ノートパソコンも含む)で実行できるように、GPUを利用しないようにインストールされます。この書籍の一部は、GPUの利用を必要としたり、推薦したりします。もし読者のコンピュータが、NVIDIAのグラフィックカードを備えていて、[CUDA](https://developer.nvidia.com/cuda-downloads)がインストールされているのであれば、GPUを利用可能なMXNet をインストールしましょう。CPU のみをサポートするMXNet をインストールしていた場合は、以下を実行して、まずそれを削除する必要があります。
 
 ```
 pip uninstall mxnet
 ```
 
-そして仮想環境から抜けます。
+次に、インストール済みの CUDA のバージョンを知る必要があります。
+ `nvcc --version` や `cat /usr/local/cuda/version.txt` を実行して知ることができるかもしれません。CUDA 10.1 がインストールされているとすれば、以下のコマンドで MXNet をインストールすることができます。
 
-Step 2では、`environment.yml`の環境に関する記述を更新します。おそらく、`mxnet`を`mxnet-cu90`で書き換えるでしょう。ハイフンのあとの数字 (上記の90)は、読者がインストールしているCUDAのバージョンに対応している必要があります。例えば、CUDA 8.0を利用していれば、`mxnet-cu90`ではなく`mxnet-cu80`を利用する必要があります。これを、conda環境を作成する*前*に実行する必要があります。もし作成前に実行しなければ、あとで再度ビルドする必要があるでしょう。
+```bash
+# For Windows users
+pip install mxnet-cu101==1.6.0b20190926
 
-Step 3では、以下のコマンドで仮想環境を更新します。
-
+# For Linux and macOS users
+pip install mxnet-cu101==1.6.0b20191122
 ```
-conda env update -f environment.yml
-```
 
-以上の手順を終えていれば、仮想環境を有効化することで、GPUがサポートされたMXNetを使用して、この書籍の内容を実行できます。もし、更新されたコードを後でダウンロードした場合は、GPUサポートのMXNetを利用するための3ステップを再度実行する必要があります。
+CPU バージョンと同様に、GPUを利用可能な MXNet は `pip install -U --pre mxnet-cu101` で更新できます。CUDAのバージョンに合わせて、最後の数字を変えることができます。例えば、CUDA 10.0であれば `cu100`、CUDA 9.0であれば `cu90` です。利用可能なMXNetのバージョンをすべて調べるためには、`pip search mxnet` を実行します。
 
 ## 練習
 
