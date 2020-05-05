@@ -12,15 +12,17 @@
 
 この本は深層学習に関する適切な理解を得るために、数学的な内容は最小限にとどめています。だからといって、この本が数学と無関係であるということを言っているわけではありません。この章では、だれもがこの書籍の数学的内容の*ほとんど*を最低限理解できるように、基礎とよく使われる数学について駆け足で紹介します。もし、数学の内容を*すべて*理解したい場合は、 :numref:`chap_appendix_math` をさらに読むと十分でしょう。
 
+```eval_rst
 
-```toc
-:maxdepth: 2
+.. toctree::
+   :maxdepth: 2
 
-ndarray
-pandas
-linear-algebra
-calculus
-autograd
-probability
-lookup-api
+   ndarray
+   pandas
+   linear-algebra
+   calculus
+   autograd
+   probability
+   lookup-api
+   
 ```

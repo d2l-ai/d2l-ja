@@ -16,5 +16,5 @@ Dive into Deep Learning
    :numbered:
 
    chapter_introduction/intro
-   chapter_crashcourse/index
-   chapter_deep-learning-basics/index
+   chapter_preliminaries/index
+   chapter_chapter_linear-networks/index
