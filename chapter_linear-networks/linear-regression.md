@@ -1,24 +1,9 @@
-# Linear Regression
+# 線形回帰
 :label:`sec_linear_regression`
 
-Regression refers to a set of methods for modeling
-the relationship between data points $\mathbf{x}$
-and corresponding real-valued targets $y$.
-In the natural sciences and social sciences,
-the purpose of regression is most often to
-*characterize* the relationship between the inputs and outputs.
-Machine learning, on the other hand,
-is most often concerned with *prediction*.
+回帰 (Regression) とは、データポイント$\mathbf{x}$と対応する実数値のターゲット$y$の間の関係をモデル化する一連の方法を指します。自然科学と社会科学においては、ほとんどの場合、入力と出力の間の関係を*特徴付ける*ことが回帰の目的です。一方、機械学習は、ほとんどの場合*予測*に関係しています。
 
-Regression problems pop up whenever we want to predict a numerical value.
-Common examples include predicting prices (of homes, stocks, etc.),
-predicting length of stay (for patients in the hospital),
-demand forecasting (for retail sales), among countless others.
-Not every prediction problem is a classic *regression* problem.
-In subsequent sections, we will introduce classification problems,
-where the goal is to predict membership among a set of categories.
-
-
+数値を予測したいときはいつでも回帰問題が現れるでしょう。一般的な例としては、数えきれないほどの価格の予測（住宅、株式など）、滞在期間の予測（入院している患者の場合）、需要予測（小売販売の場合）など、たくさん存在しています。すべての予測問題が古典的な*回帰*問題であるとは限りません。以降の節では、分類の問題、つまり、いくつかのカテゴリのうちどれに属するかを予測することを目的とする問題について紹介します。
 
 ## Basic Elements of Linear Regression
 
