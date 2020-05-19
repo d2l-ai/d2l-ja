@@ -1,47 +1,17 @@
 # 線形回帰
 :label:`sec_linear_regression`
 
-回帰 (Regression) とは、データポイント$\mathbf{x}$と対応する実数値のターゲット$y$の間の関係をモデル化する一連の方法を指します。自然科学と社会科学においては、ほとんどの場合、入力と出力の間の関係を*特徴付ける*ことが回帰の目的です。一方、機械学習は、ほとんどの場合*予測*に関係しています。
+回帰 (Regression) とは、データポイント$\mathbf{x}$と対応する実数値の目的変数$y$の間の関係をモデル化する一連の方法を指します。自然科学と社会科学においては、ほとんどの場合、入力と出力の間の関係を*特徴付ける*ことが回帰の目的です。一方、機械学習は、ほとんどの場合*予測*に関係しています。
 
 数値を予測したいときはいつでも回帰問題が現れるでしょう。一般的な例としては、数えきれないほどの価格の予測（住宅、株式など）、滞在期間の予測（入院している患者の場合）、需要予測（小売販売の場合）など、たくさん存在しています。すべての予測問題が古典的な*回帰*問題であるとは限りません。以降の節では、分類の問題、つまり、いくつかのカテゴリのうちどれに属するかを予測することを目的とする問題について紹介します。
 
-## Basic Elements of Linear Regression
+## 線形回帰の基本的な要素
 
-*Linear regression* may be both the simplest
-and most popular among the standard tools to regression.
-Dating back to the dawn of the 19th century,
-linear regression flows from a few simple assumptions.
-First, we assume that the relationship between
-the *features* $\mathbf{x}$ and targets $y$ is linear,
-i.e., that $y$ can be expressed as a weighted sum
-of the inputs $\textbf{x}$,
-give or take some noise on the observations.
-Second, we assume that any noise is well-behaved
-(following a Gaussian distribution).
-To motivate the approach, let us start with a running example.
-Suppose that we wish to estimate the prices of houses (in dollars)
-based on their area (in square feet) and age (in years).
+*線形回帰*は、回帰をのための標準的なツールの中で、最もシンプルでよく利用されているものかもしれません。 19世紀の初めまでさかのぼると、線形回帰はいくつかのシンプルな仮定から生まれています。最初に、*特徴量* $\mathbf{x}$目的変数$y$の関係が線形であると仮定します。つまり、$y$は入力の重み付き和$\textbf{x}$として表すことができます。そして、その入力は観測値に対するノイズを表すこともあります。第2に、ノイズが扱いやすい振る舞いをしている（ガウス分布に従っている）ことを仮定します。この方針に対して理解を向けるために、よく実行される例から始めましょう。住宅の価格 (ドル) を、面積 (平方フィート) と築年数 (年) にもとづいて推定するとします。
 
-To actually fit a model for predicting house prices,
-we would need to get our hands on a dataset
-consisting of sales for which we know
-the sale price, area and age for each home.
-In the terminology of machine learning,
-the dataset is called a *training data set* or *training set*,
-and each row (here the data corresponding to one sale)
-is called an *example* (or *data instance*, "data point", *sample*).
-The thing we are trying to predict (here, the price)
-is called a *label* (or *target*).
-The variables (here *age* and *area*)
-upon which the predictions are based
-are called *features* or *covariates*.
+実際に住宅価格を予測できるようにモデルを適合させるには、各住宅の販売価格、面積、および年齢がわかっている販売データから構成されるデータセットを手に入れる必要があります。機械学習の用語では、そのようなデータセットは*学習データセット*または*学習セット*と呼ばれ、各行 (ここでは1つの販売に対応するデータ) は*例*（または*データ例*, "データポイント", *サンプル*）。予測しようとしているもの（ここでは、価格）は*ラベル*（または*目的変数*）と呼ばれます。予測のもとになる変数（ここでは*年齢*と*面積*）は*特徴量*または*共変量*と呼ばれます。
 
-Typically, we will use $n$ to denote
-the number of examples in our dataset.
-We index the data instances by $i$, denoting each input
-as $x^{(i)} = [x_1^{(i)}, x_2^{(i)}]$
-and the corresponding label as $y^{(i)}$.
-
+通常、データセット内のデータ数を示すために$n$を使用します。データインスタンスにインデックス$i$を付与し、各入力を$x^{(i)} =[x_1^{(i)}, x_2^{(i)}]$、対応するラベルを$y^{(i)}$として表します。
 
 ### Linear Model
 
