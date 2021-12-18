@@ -8,7 +8,6 @@
 
 最もシンプルに始める方法は[Miniconda](https://conda.io/en/latest/miniconda.html)をインストールすることです。。Python 3.X のバージョンが推奨です。もし conda がすでにインストールされていれば以下のステップをスキップすることができます。
 
-Visit the Miniconda website and determine the appropriate version for your system based on your Python 3.x version and machine architecture. For example, if you are using macOS and Python 3.x you would download the bash script whose name contains the strings "Miniconda3" and "MacOSX", navigate to the download location, and execute the installation as follows:
 
 Miniconda のウェブサイトに移動し、Python 3.x のバージョンや、お使いの計算機のアーキテクチャに応じて、適切なバージョンを決定してください。例えば、macOS で Python 3.x を利用している場合は、Miniconda3やMacOSXといった文字列を含む bash スクリプトをダウンロードします。ダウンロードしたフォルダに移動し、以下の通りインストールを実行します。
 
@@ -37,7 +36,6 @@ conda create --name d2l python=3.8 -y
 ```
 
 ## D2L ノートブックのダウンロード
-You can click the "All Notebooks" tab on the top of any HTML page to download and unzip the code. Alternatively, if you have unzip (otherwise run sudo apt install unzip) available:
 
 次にこの書籍のコードをダウンロードしましょう。いずれかの HTML のページの上部から All Notebooks タブをクリックして、コードをダウンロードして、zip を回答します。もしくは、unzip をインストール済み (`run sudo apt install unzip`でインストール可能) であれば、以下で行うことも可能です。
 
