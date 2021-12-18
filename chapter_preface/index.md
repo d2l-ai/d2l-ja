@@ -179,20 +179,26 @@ topecongiro, tpdi, vermicelli, Vishaal Kapoor, vishwesh5, YaYaB, Yuhong Chen, Ev
 * 深層学習は、パターン認識を革新し、コンピュータビジョン、自然言語処理、自動音声認識などの幅広い分野に力を与える技術を導入しました。
 * うまく深層学習を適用するためには、問題を明らかにする方法、数学的なモデリング、モデルをデータに当てはめるためのアルゴリズム、それらすべてを実装する工学的な技術が必要です。
 * この書籍は、文章、図表、数学、コード、これらすべてを1箇所にまとめた、包括的なリソースを提供します。
-* この書籍に関する質問に回答するために、https://discuss.mxnet.io/ のフォーラムに参加してください。
-* Apache MXNetは深層学習モデルのコードを実装し、複数のGPUコアで並列に実行するための強力なライブラリです。
-* Gluonという高レベルなライブラリを利用することで、Apache MXNetを利用した深層学習モデルの実装を簡単に行うことができます。
-* Condaは、すべてのソフトウェアの依存関係が満たされることを保証するPythonのパッケージ管理ツールです。
-* すべてのノートブックはGithub上でダウンロードすることが可能で、この書籍のコードを実行するために必要なcondaの設定ファイルは`environment.yml`のファイルの中に記述されています。
-* もしここでのコードをGPU上で実行しようと考えているのであれば、必要なドライバをインストールして、構成を更新することを忘れないようにしましょう。
 
-## 練習
+* To answer questions related to this book, visit our forum at https://discuss.d2l.ai/.
+* All notebooks are available for download on GitHub.
 
-1. この書籍のフォーラム[discuss.mxnet.io](https://discuss.mxnet.io/)でアカウントを登録しましょう。
+
+## 実践
+
+1. この書籍のフォーラム[discuss.d2l.ai](https://discuss.d2l.ai/)でアカウントを登録しましょう。
 1. コンピュータにPythonをインストールしましょう。
-1. 各セクションの最後にあるフォーラムへのリンクをたどりましょう。フォーラムでは、著者や広いコミュニティに関わることで、助けを求めたり、書籍の内容を議論したり、疑問に対する答えを探すことができるでしょう。
-1. フォーラムのアカウントを作成して自己紹介をしましょう。
+1. 各セクションの最後にあるフォーラムへのリンクをたどりましょう。フォーラムでは、助けを求めたり、書籍について議論したり、著者や幅広いコミュニティによって、質問に対する答えを探すことができるでしょう。
 
-## [議論](https://discuss.mxnet.io/t/2311)のためのQRコードをスキャン
 
-![](../img/qr_preface.svg)
+:begin_tab:`mxnet`
+[フォーラム](https://discuss.d2l.ai/t/18)
+:end_tab:
+
+:begin_tab:`pytorch`
+[フォーラム](https://discuss.d2l.ai/t/20)
+:end_tab:
+
+:begin_tab:`tensorflow`
+[フォーラム](https://discuss.d2l.ai/t/186)
+:end_tab:
