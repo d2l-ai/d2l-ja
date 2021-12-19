@@ -179,10 +179,8 @@ topecongiro, tpdi, vermicelli, Vishaal Kapoor, vishwesh5, YaYaB, Yuhong Chen, Ev
 * 深層学習は、パターン認識を革新し、コンピュータビジョン、自然言語処理、自動音声認識などの幅広い分野に力を与える技術を導入しました。
 * うまく深層学習を適用するためには、問題を明らかにする方法、数学的なモデリング、モデルをデータに当てはめるためのアルゴリズム、それらすべてを実装する工学的な技術が必要です。
 * この書籍は、文章、図表、数学、コード、これらすべてを1箇所にまとめた、包括的なリソースを提供します。
-
-* To answer questions related to this book, visit our forum at https://discuss.d2l.ai/.
-* All notebooks are available for download on GitHub.
-
+* この書籍に関する質問に答えるには、フォーラム https://discuss.d2l.ai/ を訪問してください。
+* すべてのノートブックは Github からダウンロードすることができます。
 
 ## 実践
 
