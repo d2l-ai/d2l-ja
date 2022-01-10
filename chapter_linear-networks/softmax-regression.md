@@ -1,82 +1,33 @@
-# Softmax Regression
+# ソフトマックス回帰
 :label:`sec_softmax`
 
-In :numref:`sec_linear_regression`, we introduced linear regression,
-working through implementations from scratch in :numref:`sec_linear_scratch`
-and again using Gluon in :numref:`sec_linear_gluon` to do the heavy lifting.
+:numref:`sec_linear_regression` では線形回帰を導入し、:numref:`sec_linear_scratch` では実装をゼロから実行し、:numref:`sec_linear_concise` ではディープラーニングフレームワークの高レベル API を使用して手間のかかる作業を行いました。 
 
-Regression is the hammer we reach for when 
-we want to answer *how much?* or *how many?* questions. 
-If you want to predict the number of dollars (the *price*) 
-at which a house will be sold, 
-or the number of wins a baseball team might have, 
-or the number of days that a patient will remain hospitalized before being discharged, 
-then you are probably looking for a regression model.
+回帰は、私たちが答えたいときに手を伸ばすハンマーです。*いくら？* または *いくつですか？* 質問。家を売る際のドル (価格)、野球チームの勝利数、患者が退院するまでの入院日数を予測したい場合は、おそらく回帰モデルを探しているでしょう。 
 
-In practice, we are more often interested in classification: 
-asking not *how much?* but *which one?*
+実際には、私たちはより頻繁に*分類*に関心があります。「どれだけ」ではなく「どれだけ」を尋ねるかです。 
 
-* Does this email belong in the spam folder or the inbox?
-* Is this customer more likely *to sign up* or *not to sign up* for a subscription service?
-* Does this image depict a donkey, a dog, a cat, or a rooster?
-* Which movie is Aston most likely to watch next?
+* このメールは迷惑メールフォルダと受信トレイのどちらにありますか？
+* この顧客は、サブスクリプションサービスに「サインアップする」可能性が高い、または「サインアップしない」可能性が高いですか？
+* この画像はロバ、犬、猫、または雄鶏を描いていますか？
+* アストンが次に観る可能性が最も高い映画はどれですか？
 
-Colloquially, machine learning practitioners 
-overload the word *classification* 
-to describe two subtly different problems: 
-(i) those where we are interested only in 
-*hard* assignments of examples to categories; 
-and (ii) those where we wish to make *soft assignments*, 
-i.e., to assess the *probability* that each category applies. 
-The distinction tends to get blurred, in part, 
-because often, even when we only care about hard assignments, 
-we still use models that make soft assignments.
+口語的に言うと、機械学習の実践者は、2つの微妙に異なる問題を説明するために、*classification* という単語をオーバーロードします。(i) カテゴリ (クラス) への例のハードアサインメントのみに関心がある問題、および (ii) ソフトアサインメントを行いたい問題、つまり、以下の確率を評価する問題各カテゴリーが適用されます。ハードな割り当てだけを考えている場合でも、ソフト割り当てを行うモデルを使用することが多いため、区別が曖昧になりがちです。 
 
+## 分類問題
+:label:`subsec_classification-problem`
 
-## Classification Problems
+足を濡らすために、簡単な画像分類問題から始めましょう。ここで、各入力は $2\times2$ グレースケールイメージで構成されています。各ピクセル値を 1 つのスカラーで表すことができ、4 つの特徴 $x_1, x_2, x_3, x_4$ が得られます。さらに、それぞれの画像が「猫」、「鶏」、「犬」のいずれかのカテゴリに属すると仮定します。 
 
-To get our feet wet, let us start off with 
-a simple image classification problem. 
-Here, each input consists of a $2\times2$ grayscale image. 
-We can represent each pixel value with a single scalar, 
-giving us four features $x_1, x_2, x_3, x_4$. 
-Further, let us assume that each image belongs to one 
-among the categories "cat", "chicken" and "dog".
+次に、ラベルの表現方法を選択する必要があります。明らかな選択肢が2つあります。おそらく最も自然な衝動は $y \in \{1, 2, 3\}$ を選択することでしょう。ここで、整数はそれぞれ $\{\text{dog}, \text{cat}, \text{chicken}\}$ を表します。これは、そのような情報をコンピューターに「保存」する優れた方法です。カテゴリに自然順序付けがある場合、たとえば $\{\text{baby}, \text{toddler}, \text{adolescent}, \text{young adult}, \text{adult}, \text{geriatric}\}$ を予測しようとした場合、この問題を回帰としてキャストし、ラベルをこの形式で保持するのが理にかなっているかもしれません。 
 
-Next, we have to choose how to represent the labels. 
-We have two obvious choices. 
-Perhaps the most natural impulse would be to choose $y \in \{1, 2, 3\}$, 
-where the integers represent {dog, cat, chicken} respectively. 
-This is a great way of *storing* such information on a computer.
-If the categories had some natural ordering among them, 
-say if we were trying to predict {baby, toddler, adolescent, young adult, adult, geriatric}, 
-then it might even make sense to cast this problem as regression 
-and keep the labels in this format.
-
-But general classification problems do not come with natural orderings among the classes. 
-Fortunately, statisticians long ago invented a simple way 
-to represent categorical data: the *one hot encoding*. 
-A one-hot encoding is a vector with as many components as we have categories.
-The component corresponding to particular instance's category is set to 1
-and all other components are set to 0.
+しかし、一般的な分類問題には、クラス間の自然な順序付けは伴いません。幸いなことに、統計学者ははるか昔にカテゴリカルデータを表現する簡単な方法、*ワンホットエンコーディング*を発明しました。ワンホットエンコーディングは、カテゴリと同じ数の成分をもつベクトルです。特定のインスタンスのカテゴリに対応するコンポーネントは 1 に設定され、その他すべてのコンポーネントは 0 に設定されます。この例では、ラベル $y$ は 3 次元ベクトルで、$(1, 0, 0)$ は「cat」、$(0, 1, 0)$ は「鶏」、$(0, 0, 1)$ は「犬」に対応します。 
 
 $$y \in \{(1, 0, 0), (0, 1, 0), (0, 0, 1)\}.$$
 
-In our case, $y$ would be a three-dimensional vector, 
-with $(1, 0, 0)$ corresponding to "cat", $(0, 1, 0)$ to "chicken" and $(0, 0, 1)$ to "dog". 
+## ネットワークアーキテクチャ
 
-
-### Network Architecture
-
-In order to estimate the conditional probabilities associated with each class, 
-we need a model with multiple outputs, one per class. 
-To address classification with linear models, 
-we will need as many linear functions as we have outputs.
-Each output will correspond to its own linear function. 
-In our case, since we have 4 features and 3 possible output categories, 
-we will need 12 scalars to represent the weights, 
-($w$ with subscripts) and 3 scalars to represent the biases ($b$ with subscripts). 
-We compute these three *logits*, $o_1, o_2$, and $o_3$, for each input:
+考えられるすべてのクラスに関連する条件付き確率を推定するには、クラスごとに 1 つずつ、複数の出力をもつモデルが必要です。線形モデルによる分類に対処するには、出力の数だけアフィン関数が必要になります。各出力は独自のアフィン関数に対応します。この例では、4 つの特徴量と 3 つの可能な出力カテゴリがあるため、重みを表すには 12 個のスカラー (添字付き $w$)、バイアスを表すには 3 つのスカラー (添字付き $b$) が必要です。入力ごとに、次の 3 つの*logit*、$o_1, o_2$、$o_3$ を計算します。 
 
 $$
 \begin{aligned}
@@ -86,344 +37,153 @@ o_3 &= x_1 w_{31} + x_2 w_{32} + x_3 w_{33} + x_4 w_{34} + b_3.
 \end{aligned}
 $$
 
-We can depict this calculation with the neural network diagram shown in :numref:`fig_softmaxreg`.
-Just as in linear regression, softmax regression is also a single-layer neural network. 
-And since the calculation of each output, $o_1, o_2$, and $o_3$, 
-depends on all inputs, $x_1$, $x_2$, $x_3$, and $x_4$, 
-the output layer of softmax regression can also be described as fully-connected layer.
+この計算は :numref:`fig_softmaxreg` に示すニューラルネットワークダイアグラムで表すことができます。線形回帰と同様に、ソフトマックス回帰も単層ニューラルネットワークです。また、各出力 $o_1, o_2$ および $o_3$ の計算は $x_1$、$x_2$、$x_3$、$x_4$ のすべての入力に依存するため、ソフトマックス回帰の出力層は全結合層としても記述できます。 
 
-![Softmax regression is a single-layer neural network.  ](../img/softmaxreg.svg)
+![Softmax regression is a single-layer neural network.](../img/softmaxreg.svg)
 :label:`fig_softmaxreg`
 
-To express the model more compactly, we can use linear algebra notation. 
-In vector form, we arrive at $\mathbf{o} = \mathbf{W} \mathbf{x} + \mathbf{b}$,
-a form better suited both for mathematics, and for writing code. 
-Note that we have gathered all of our weights into a $3\times4$ matrix 
-and that for a given example $\mathbf{x}$,
-our outputs are given by a matrix-vector product of our weights by our inputs 
-plus our biases $\mathbf{b}$.
+モデルをよりコンパクトに表現するために、線形代数表記法を使うことができます。ベクトル形式では $\mathbf{o} = \mathbf{W} \mathbf{x} + \mathbf{b}$ に到達しました。これは、数学とコードの記述の両方により適した形式です。すべての重みを $3 \times 4$ 行列に集め、与えられたデータ例 $\mathbf{x}$ の特徴量に対して、出力は、重みと入力特徴量にバイアス $\mathbf{b}$ を加えた行列-ベクトル積で与えられることに注意してください。 
 
+## 全結合層のパラメータ化コスト
+:label:`subsec_parameterization-cost-fc-layers`
 
-### Softmax Operation
+以降の章で説明するように、完全結合層はディープラーニングのいたるところに存在しています。ただし、その名前が示すように、全結合層は潜在的に多くの学習可能なパラメーターと「完全に」接続されています。具体的には、入力が $d$、出力が $q$ の完全接続レイヤでは、パラメータ化のコストは $\mathcal{O}(dq)$ となり、実際には非常に高くなる可能性があります。幸いなことに、$d$ の入力を $q$ 出力に変換するコストは $\mathcal{O}(\frac{dq}{n})$ にまで削減できます。この場合は、ハイパーパラメータ $n$ を柔軟に指定して、実際のアプリケーション :cite:`Zhang.Tay.Zhang.ea.2021` でパラメーターの節約とモデルの有効性のバランスをとることができます。 
 
-The main approach that we are going to take here
-is to interpret the outputs of our model as probabilities. 
-We will optimize our parameters to produce probabilities 
-that maximize the likelihood of the observed data.
-Then, to generate predictions, we will set a threshold,
-for example, choosing the *argmax* of the predicted probabilities. 
+## ソフトマックスオペレーション
+:label:`subsec_softmax_operation`
 
-Put formally, we would like outputs $\hat{y}_k$ 
-that we can interpret as the probability 
-that a given item belongs to class $k$. 
-Then we can choose the class with the largest output value 
-as our prediction $\operatorname*{argmax}_k y_k$. 
-For example, if $\hat{y}_1$, $\hat{y}_2$, and $\hat{y}_3$ 
-are $0.1$, $0.8$, and $0.1$, respectively,
-then we predict category $2$, which (in our example) represents "chicken".
+ここで取り上げる主なアプローチは、モデルの出力を確率として解釈することです。観測されたデータの尤度を最大化する確率を生成するために、パラメーターを最適化します。次に、予測を生成するために、予測確率が最大であるラベルを選択するなど、しきい値を設定します。 
 
-You might be tempted to suggest that we interpret 
-the logits $o$ directly as our outputs of interest. 
-However, there are some problems with directly
-interpreting the output of the linear layer as a probability.
-Nothing constrains these numbers to sum to 1. 
-Moreover, depending on the inputs, they can take negative values. 
-These violate basic axioms of probability presented in :numref:`sec_prob`
+正式には、任意の出力 $\hat{y}_j$ を、与えられた項目がクラス $j$ に属する確率として解釈するようにします。次に、予測値 $\operatorname*{argmax}_j y_j$ として出力値が最も大きいクラスを選択できます。たとえば、$\hat{y}_1$、$\hat{y}_2$、$\hat{y}_3$ がそれぞれ 0.1、0.8、0.1 である場合、カテゴリ 2 が予測されます。このカテゴリは (この例では)「ニワトリ」を表します。 
 
-To interpret our outputs as probabilities, 
-we must guarantee that (even on new data),
-they will be nonnegative and sum up to 1. 
-Moreover, we need a training objective that encourages 
-the model to estimate faithfully *probabilities*.
-Of all instances when a classifier outputs $0.5$,
-we hope that half of those examples 
-will *actually* belong to the predicted class.
-This is a property called *calibration*.
+ロジット $o$ を目的の出力として直接解釈するように提案したくなるかもしれません。ただし、線形層の出力を確率として直接解釈することには、いくつかの問題があります。一方では、これらの数値の合計を1に制限するものは何もありません。一方、入力によっては、負の値を取ることもあります。これらは :numref:`sec_prob` で示された確率の基本公理に違反します 
 
-The *softmax function*, invented in 1959 by the social scientist
-R Duncan Luce in the context of *choice models* does precisely this. 
-To transform our logits such that they become nonnegative and sum to $1$,
-while requiring that the model remains differentiable,
-we first exponentiate each logit (ensuring non-negativity)
-and then divide by their sum (ensuring that they sum to $1$). 
+出力を確率として解釈するには、(新しいデータであっても) 非負で合計が 1 になることを保証しなければなりません。さらに、モデルが確率を忠実に推定するように促すトレーニング目標も必要です。分類器が 0.5 を出力するすべてのインスタンスのうち、これらの例の半分が実際に予測されるクラスに属することを期待しています。これは*Calibration* と呼ばれるプロパティです。 
+
+1959年に社会科学者のR. Duncan Luceが*選択モデル*の文脈で考案した*softmax関数*は、まさにこれを行います。モデルが微分可能であることを要求しながら、ロジットを非負にして合計が 1 になるようにロジットを変換するには、まず各ロジットをべき乗し (非負性を保証して)、その合計で除算します (合計が 1 になるようにします)。 
+
+$$\hat{\mathbf{y}} = \mathrm{softmax}(\mathbf{o})\quad \text{where}\quad \hat{y}_j = \frac{\exp(o_j)}{\sum_k \exp(o_k)}. $$
+:eqlabel:`eq_softmax_y_and_o`
+
+$j$は$0 \leq \hat{y}_j \leq 1$で$\hat{y}_1 + \hat{y}_2 + \hat{y}_3 = 1$を見るのは簡単です。したがって、$\hat{\mathbf{y}}$ は適切な確率分布であり、要素値をそれに応じて解釈できます。softmax 演算は、各クラスに割り当てられる確率を決定するソフトマックス前の値であるロジット $\mathbf{o}$ の順序を変更しないことに注意してください。したがって、予測中に、最も可能性の高いクラスを次の方法で選択できます。 
 
 $$
-\hat{\mathbf{y}} = \mathrm{softmax}(\mathbf{o})\quad \text{where}\quad
-\hat{y}_i = \frac{\exp(o_i)}{\sum_j \exp(o_j)}.
+\operatorname*{argmax}_j \hat y_j = \operatorname*{argmax}_j o_j.
 $$
 
-It is easy to see $\hat{y}_1 + \hat{y}_2 + \hat{y}_3 = 1$ 
-with $0 \leq \hat{y}_i \leq 1$ for all $i$.
-Thus, $\hat{y}$ is a proper probability distribution 
-and the values of $\hat{\mathbf{y}}$ can be interpreted accordingly.
-Note that the softmax operation does not change the ordering among the logits,
-and thus we can still pick out the most likely class by:
+softmax は非線形関数ですが、ソフトマックス回帰の出力は入力特徴量のアフィン変換によって *決定* されます。したがって、ソフトマックス回帰は線形モデルです。 
+
+## ミニバッチのベクトル化
+:label:`subsec_softmax_vectorization`
+
+計算効率を向上し、GPU を活用するために、通常、データのミニバッチに対してベクトル計算を実行します。特徴次元 (入力数) $d$、バッチサイズが $n$ の例のミニバッチ $\mathbf{X}$ が与えられていると仮定します。さらに、出力に $q$ のカテゴリがあると仮定します。この場合、ミニバッチフィーチャー $\mathbf{X}$ は $\mathbb{R}^{n \times d}$ になり、重みは $\mathbf{W} \in \mathbb{R}^{d \times q}$ になり、バイアスは $\mathbf{b} \in \mathbb{R}^{1\times q}$ を満たします。 
+
+$$ \begin{aligned} \mathbf{O} &= \mathbf{X} \mathbf{W} + \mathbf{b}, \\ \hat{\mathbf{Y}} & = \mathrm{softmax}(\mathbf{O}). \end{aligned} $$
+:eqlabel:`eq_minibatch_softmax_reg`
+
+これにより、一回に 1 つの例を処理した場合に実行する行列とベクトルの積に対して、行列-行列の積 $\mathbf{X} \mathbf{W}$ に対する支配的な演算が高速化されます。$\mathbf{X}$ の各行はデータ例を表すため、softmax 演算自体は *rowwise* で計算できます。$\mathbf{O}$ の各行に対して、すべてのエントリをべき乗し、合計で正規化します。:eqref:`eq_minibatch_softmax_reg` の合計 $\mathbf{X} \mathbf{W} + \mathbf{b}$ の間にブロードキャストをトリガーすると、ミニバッチロジット $\mathbf{O}$ と出力確率 $\hat{\mathbf{Y}}$ はどちらも $n \times q$ 行列になります。 
+
+## 損失関数
+
+次に、予測される確率の質を測定する損失関数が必要です。最尤推定に頼ります。これは、線形回帰で平均二乗誤差の目的の確率的正当化を提供するときに遭遇したのとまったく同じ概念です (:numref:`subsec_normal_distribution_and_squared_loss`)。 
+
+### 対数尤度
+
+softmax 関数からベクトル $\hat{\mathbf{y}}$ が得られ、任意の入力 $\mathbf{x}$ が与えられた場合、各クラスの推定条件付き確率として解釈できます (例:$\hat{y}_1$ = $P(y=\text{cat} \mid \mathbf{x})$)。データセット $\{\mathbf{X}, \mathbf{Y}\}$ 全体に $n$ の例があり、$i$ によってインデックス付けされた例は、特徴ベクトル $\mathbf{x}^{(i)}$ とワンホットラベルベクトル $\mathbf{y}^{(i)}$ で構成されているとします。次の特徴を考慮して、モデルに従って実際のクラスがどの程度確率が高いかを確認することで、推定値を現実と比較できます。 
 
 $$
-\hat{\imath}(\mathbf{o}) = \operatorname*{argmax}_i o_i = \operatorname*{argmax}_i \hat y_i.
+P(\mathbf{Y} \mid \mathbf{X}) = \prod_{i=1}^n P(\mathbf{y}^{(i)} \mid \mathbf{x}^{(i)}).
 $$
 
-The logits $\mathbf{o}$ then are simply the pre-softmax values 
-that determining the probabilities assigned to each category. 
-Summarizing it all in vector notation we get 
-${\mathbf{o}}^{(i)} = \mathbf{W} {\mathbf{x}}^{(i)} + {\mathbf{b}}$,
-where ${\hat{\mathbf{y}}}^{(i)} = \mathrm{softmax}({\mathbf{o}}^{(i)})$.
+最尤推定によると、$P(\mathbf{Y} \mid \mathbf{X})$ は最大化されます。これは、負の対数尤度を最小化することに相当します。 
 
+$$
+-\log P(\mathbf{Y} \mid \mathbf{X}) = \sum_{i=1}^n -\log P(\mathbf{y}^{(i)} \mid \mathbf{x}^{(i)})
+= \sum_{i=1}^n l(\mathbf{y}^{(i)}, \hat{\mathbf{y}}^{(i)}),
+$$
 
-### Vectorization for Minibatches
+ここで、$q$ クラスに対するラベル $\mathbf{y}$ とモデル予測 $\hat{\mathbf{y}}$ のペアについて、損失関数 $l$ は次のようになります。 
 
-To improve computational efficiency and take advantage of GPUs, 
-we typically carry out vector calculations for minibatches of data. 
-Assume that we are given a minibatch $\mathbf{X}$ of examples 
-with dimensionality $d$ and batch size $n$. 
-Moreover, assume that we have $q$ categories (outputs). 
-Then the minibatch features $\mathbf{X}$ are in $\mathbb{R}^{n \times d}$,
-weights $\mathbf{W} \in \mathbb{R}^{d \times q}$,
-and the bias satisfies $\mathbf{b} \in \mathbb{R}^q$.
+$$ l(\mathbf{y}, \hat{\mathbf{y}}) = - \sum_{j=1}^q y_j \log \hat{y}_j. $$
+:eqlabel:`eq_l_cross_entropy`
+
+後述する理由から、:eqref:`eq_l_cross_entropy` の損失関数は一般に*クロスエントロピー損失* と呼ばれます。$\mathbf{y}$ は長さ $q$ の 1 ホットベクトルなので、1 つの項を除くすべての座標 $j$ の合計は消失します。$\hat{y}_j$ はすべて予測確率であるため、その対数は $0$ より大きくなることはありません。したがって、実際のラベルを*確実性*で正しく予測した場合、つまり実際のラベル $\mathbf{y}$ の予測確率 $P(\mathbf{y} \mid \mathbf{x}) = 1$ であれば、損失関数をこれ以上最小化することはできません。これは不可能な場合が多いことに注意してください。たとえば、データセットにラベルノイズがある可能性があります (一部の例では誤ったラベルが付けられている可能性があります)。また、入力フィーチャの情報量が十分でないため、すべての例を完全に分類できない場合もあります。 
+
+### ソフトマックスとデリバティブ
+:label:`subsec_softmax_and_derivatives`
+
+ソフトマックスとそれに対応する損失は非常に一般的であるため、計算方法をもう少しよく理解する価値があります。:eqref:`eq_softmax_y_and_o` を :eqref:`eq_l_cross_entropy` の損失の定義に差し込み、得られたソフトマックスの定義を使用します。 
 
 $$
 \begin{aligned}
-\mathbf{O} &= \mathbf{X} \mathbf{W} + \mathbf{b}, \\
-\hat{\mathbf{Y}} & = \mathrm{softmax}(\mathbf{O}).
+l(\mathbf{y}, \hat{\mathbf{y}}) &=  - \sum_{j=1}^q y_j \log \frac{\exp(o_j)}{\sum_{k=1}^q \exp(o_k)} \\
+&= \sum_{j=1}^q y_j \log \sum_{k=1}^q \exp(o_k) - \sum_{j=1}^q y_j o_j\\
+&= \log \sum_{k=1}^q \exp(o_k) - \sum_{j=1}^q y_j o_j.
 \end{aligned}
 $$
 
-This accelerates the dominant operation into 
-a matrix-matrix product $\mathbf{W} \mathbf{X}$ 
-vs the matrix-vector products we would be executing 
-if we processed one example at a time. 
-The softmax itself can be computed 
-by exponentiating all entries in $\mathbf{O}$ 
-and then normalizing them by the sum.
-
-
-## Loss Function
-:label:`section_cross_entropy`
-
-Next, we need a *loss function* to measure 
-the quality of our predicted probabilities.
-We will rely on *likelihood maximization*,
-the very same concept that we encountered
-when providing a probabilistic justification 
-for the least squares objective in linear regression 
-(:numref:`sec_linear_regression`).
-
-### Log-Likelihood
-
-The softmax function gives us a vector $\hat{\mathbf{y}}$, 
-which we can interpret as estimated conditional probabilities
-of each class given the input $x$, e.g.,
-$\hat{y}_1$ = $\hat{P}(y=\mathrm{cat} \mid \mathbf{x})$. 
-We can compare the estimates with reality
-by checking how probable the *actual* classes are
-according to our model, given the features.
+何が起こっているのかをもう少しよく理解するために、ロジット $o_j$ に関する微分を考えてみましょう。我々が得る 
 
 $$
-P(Y \mid X) = \prod_{i=1}^n P(y^{(i)} \mid x^{(i)})
-\text{ and thus }
--\log P(Y \mid X) = \sum_{i=1}^n -\log P(y^{(i)} \mid x^{(i)}).
+\partial_{o_j} l(\mathbf{y}, \hat{\mathbf{y}}) = \frac{\exp(o_j)}{\sum_{k=1}^q \exp(o_k)} - y_j = \mathrm{softmax}(\mathbf{o})_j - y_j.
 $$
 
+言い換えると、微分とは、ソフトマックス演算で表されるモデルによって割り当てられた確率と、ワンホットラベルベクトルの要素によって表される実際の発生との差です。この意味で、これは回帰で見られたものと非常に似ています。勾配は観測値 $y$ と推定 $\hat{y}$ の差でした。これは偶然ではない。指数族 ([online appendix on distributions](https://d2l.ai/chapter_appendix-mathematics-for-deep-learning/distributions.html) を参照) モデルでは、対数尤度の勾配は正確にこの項によって与えられます。この事実により、実際には勾配の計算が容易になります。 
 
-Maximizing $P(Y \mid X)$ (and thus equivalently minimizing $-\log P(Y \mid X)$)
-corresponds to predicting the label well.
-This yields the loss function 
-(we dropped the superscript $(i)$ to avoid notation clutter):
+### クロスエントロピー損失
 
-$$
-l = -\log P(y \mid x) = - \sum_j y_j \log \hat{y}_j.
-$$
+ここで、単一の結果だけでなく、結果全体の分布を観察する場合を考えてみましょう。ラベル $\mathbf{y}$ には、以前と同じ表現を使用できます。唯一の違いは、$(0, 0, 1)$ などのバイナリエントリのみを含むベクトルではなく、$(0.1, 0.2, 0.7)$ などの一般的な確率ベクトルがあることです。:eqref:`eq_l_cross_entropy` で損失 $l$ を定義するために以前に使用した計算は、解釈が少し一般的であるというだけで、まだうまく機能します。これは、ラベル上の分布に対する損失の期待値です。この損失は*クロスエントロピー損失* と呼ばれ、分類問題で最も一般的に使用される損失の 1 つです。情報理論の基礎を紹介するだけで、名前の謎を解き明かすことができます。情報理論の詳細について理解したい場合は、[online appendix on information theory](https://d2l.ai/chapter_appendix-mathematics-for-deep-learning/information-theory.html) を参照してください。 
 
-For reasons explained later on, this loss function 
-is commonly called the *cross-entropy* loss.
-Here, we used that by construction $\hat{y}$ 
-is a discrete probability distribution
-and that the vector $\mathbf{y}$ is a one-hot vector.
-Hence the sum over all coordinates $j$ vanishes for all but one term.
-Since all $\hat{y}_j$ are probabilities, 
-their logarithm is never larger than $0$.
-Consequently, the loss function cannot be minimized any further
-if we correctly predict $y$ with *certainty*, 
-i.e., if $P(y \mid x) = 1$ for the correct label.
-Note that this is often not possible. 
-For example, there might be label noise in the dataset
-(some examples may be mislabeled).
-It may also not be possible when the input features 
-are not sufficiently informative
-to classify every example perfectly.
+## 情報理論の基礎
+:label:`subsec_info_theory_basics`
 
-### Softmax and Derivatives
+*情報理論*は、符号化、復号化、送信、
+また、情報 (データとも呼ばれる) をできるだけ簡潔な形で操作します。 
 
-Since the softmax and the corresponding loss are so common, 
-it is worth while understanding a bit better how it is computed. 
-Plugging $o$ into the definition of the loss $l$ 
-and using the definition of the softmax we obtain:
+### エントロピー
 
-$$
-l = -\sum_j y_j \log \hat{y}_j = \sum_j y_j \log \sum_k \exp(o_k) - \sum_j y_j o_j
-= \log \sum_k \exp(o_k) - \sum_j y_j o_j.
-$$
+情報理論の中心的な考え方は、データに含まれる情報量を定量化することです。この量は、データの圧縮能力に厳しい制限を課します。情報理論では、この量は分布 $P$ の*エントロピー* と呼ばれ、次の方程式で捉えられます。 
 
-To understand a bit better what is going on, 
-consider the derivative with respect to $o$. We get
+$$H[P] = \sum_j - P(j) \log P(j).$$
+:eqlabel:`eq_softmax_reg_entropy`
 
-$$
-\partial_{o_j} l = \frac{\exp(o_j)}{\sum_k \exp(o_k)} - y_j = \mathrm{softmax}(\mathbf{o})_j - y_j = P(y = j \mid x) - y_j.
-$$
+情報理論の基本定理の一つに、分布 $P$ から無作為に抽出されたデータをエンコードするには、少なくとも $H[P]$「nats」が必要であるとされています。「nat」が何であるか疑問に思うなら、それはビットと同等ですが、基数2のコードではなく基数$e$のコードを使用する場合です。したがって、1 つの NAT は $\frac{1}{\log(2)} \approx 1.44$ ビットになります。 
 
-In other words, the gradient is the difference 
-between the probability assigned to the true class by our model, 
-as expressed by the probability $P(y \mid x)$, 
-and what actually happened, as expressed by $y$. 
-In this sense, it is very similar to what we saw in regression, 
-where the gradient was the difference 
-between the observation $y$ and estimate $\hat{y}$. This is not coincidence. 
-In any [exponential family](https://en.wikipedia.org/wiki/Exponential_family) model, 
-the gradients of the log-likelihood are given by precisely this term. 
-This fact makes computing gradients easy in practice.
+### サプライザル
 
-### Cross-Entropy Loss
+圧縮が予測とどのような関係があるのか疑問に思われるかもしれません。圧縮したいデータのストリームがあるとします。次のトークンを予測することが常に容易であれば、このデータは簡単に圧縮できます。ストリーム内のすべてのトークンが常に同じ値を取るという極端な例を考えてみましょう。それは非常に退屈なデータストリームです！退屈なだけでなく、予測も簡単です。それらは常に同じなので、ストリームの内容を伝えるために情報を送信する必要はありません。予測しやすく、圧縮も簡単です。 
 
-Now consider the case where we observe not just a single outcome 
-but an entire distribution over outcomes. 
-We can use the same representation as before for $y$. 
-The only difference is that rather than a vector containing only binary entries, 
-say $(0, 0, 1)$, we now have a generic probability vector, say $(0.1, 0.2, 0.7)$.
-The math that we used previously to define the loss $l$ still works out fine, 
-just that the interpretation is slightly more general. 
-It is the expected value of the loss for a distribution over labels.
+しかし、すべての出来事を完全に予測できなければ、驚くこともあります。イベントに低い確率を割り当てると、驚きはより大きくなります。クロード・シャノンは、事象$j$を (主観的な) 確率$P(j)$に割り当てた事象を観測したときの*驚き*を定量化するために、$\log \frac{1}{P(j)} = -\log P(j)$に落ち着いた。:eqref:`eq_softmax_reg_entropy` で定義されているエントロピーは、データ生成プロセスに真に合致する正しい確率を割り当てたときの「予想される驚き」になります。 
 
-$$
-l(\mathbf{y}, \hat{\mathbf{y}}) = - \sum_j y_j \log \hat{y}_j.
-$$
+### クロスエントロピー再考
 
-This loss is called the cross-entropy loss and it is 
-one of the most commonly used losses for multiclass classification. 
-We can demystify the name by introducing the basics of information theory. 
+したがって、エントロピーが真の確率を知っている人が経験する驚きのレベルであれば、クロスエントロピーとは何か疑問に思うかもしれません。$H(P, Q)$ と表記される* $P$ *から* $Q$ へのクロスエントロピーは、主観的確率 $Q$ をもつ観測者が、確率 $P$ に従って実際に生成されたデータを見たときに予想される驚きです。$P=Q$ のときには、可能な限り低いクロスエントロピーが達成されます。この場合、$P$ から $Q$ までのクロスエントロピーは $H(P, P)= H(P)$ になります。 
 
-## Information Theory Basics
+要するに、クロスエントロピー分類の目的は、(i) 観測されるデータの尤度を最大化すること、(ii) ラベルを伝達するのに必要な驚き (したがってビット数) を最小化することの 2 つの方法で考えることができます。 
 
-Information theory deals with the problem of encoding, decoding, transmitting 
-and manipulating information (also known as data) in as concise form as possible.
+## モデル予測と評価
 
-### Entropy
+ソフトマックス回帰モデルに学習をさせた後、特徴の例があれば、各出力クラスの確率を予測できます。通常、予測される確率が最も高いクラスを出力クラスとして使用します。実際のクラス (ラベル) と一致していれば、予測は正しいです。実験の次のパートでは、*accuracy* を使用してモデルの性能を評価します。これは、正しい予測の数と予測の総数の比率に等しくなります。 
 
-The central idea in information theory is to quantify the information content in data.
-This quantity places a hard limit on our ability to compress the data.
-In information theory, this quantity is called the [entropy](https://en.wikipedia.org/wiki/Entropy) of a distribution $p$,
-and it is captured by the following equation:
+## [概要
 
-$$
-H[p] = \sum_j - p(j) \log p(j).
-$$
+* softmax 演算はベクトルを受け取り、確率にマップします。
+* Softmax 回帰は分類問題に適用されます。softmax 演算で出力クラスの確率分布を使用します。
+* クロスエントロピーは、2 つの確率分布の差の優れた尺度です。モデルで与えられたデータをエンコードするのに必要なビット数を測定します。
 
-One of the fundamental theorems of information theory states 
-that in order to encode data drawn randomly from the distribution $p$,
-we need at least $H[p]$ "nats" to encode it. 
-If you wonder what a "nat" is, it is the equivalent of bit 
-but when using a code with base $e$ rather than one with base 2. 
-One nat is $\frac{1}{\log(2)} \approx 1.44$ bit. 
-$H[p] / 2$ is often also called the binary entropy.
+## 演習
 
+1. 指数群とソフトマックスの関係をもう少し詳しく調べることができます。
+    1. ソフトマックスに対するクロスエントロピー損失 $l(\mathbf{y},\hat{\mathbf{y}})$ の 2 次導関数を計算します。
+    1. $\mathrm{softmax}(\mathbf{o})$ で与えられる分布の分散を計算し、上記で計算した 2 次導関数と一致することを示します。
+1. 等しい確率で発生するクラスが 3 つあると仮定します。つまり、確率ベクトルは $(\frac{1}{3}, \frac{1}{3}, \frac{1}{3})$ です。
+    1. バイナリコードを設計しようとすると何が問題になりますか？
+    1. もっと良いコードをデザインできますか？ヒント:2つの独立したオブザベーションをエンコードしようとするとどうなりますか？$n$ 個の観測値を一緒にエンコードするとどうなるでしょうか。
+1. Softmax は、上で紹介したマッピングの誤称です (ただし、ディープラーニングでは誰もがこれを使用しています)。実際のソフトマックスは $\mathrm{RealSoftMax}(a, b) = \log (\exp(a) + \exp(b))$ と定義されています。
+    1. $\mathrm{RealSoftMax}(a, b) > \mathrm{max}(a, b)$であることを証明しろ
+    1. $\lambda > 0$という条件で、これが$\lambda^{-1} \mathrm{RealSoftMax}(\lambda a, \lambda b)$に当てはまることを証明してください。
+    1. $\lambda \to \infty$には$\lambda^{-1} \mathrm{RealSoftMax}(\lambda a, \lambda b) \to \mathrm{max}(a, b)$があることを示してください。
+    1. ソフトミンはどんな感じですか？
+    1. これを 3 つ以上の数値に拡張します。
 
-### Surprisal
-
-You might be wondering what compression has to do with prediction. 
-Imagine that we have a stream of data that we want to compress. 
-If it is always easy for us to predict the next token,
-then this data is easy to compress! 
-Take the extreme example where every token in the stream always takes the same value.
-That is a very boring data stream! 
-And not only it is boring, but it is easy to predict. 
-Because they are always the same, we do not have to transmit any information 
-to communicate the contents of the stream.
-Easy to predict, easy to compress.
-
-However if we cannot perfectly predict every event,
-then we might some times be surprised. 
-Our surprise is greater when we assigned an event lower probability.
-For reasons that we will elaborate in the appendix,
-Claude Shannon settled on $\log(1/p(j)) = -\log p(j)$ 
-to quantify one's *surprisal* at observing an event $j$
-having assigned it a (subjective) probability $p(j)$.
-The entropy is then the *expected surprisal* 
-when one assigned the correct probabilities 
-(that truly match the data-generating process).
-The entropy of the data is then the least surprised 
-that one can ever be (in expectation). 
-
-
-### Cross-Entropy Revisited
-
-So if entropy is level of surprise experienced 
-by someone who knows the true probability, 
-then you might be wondering, *what is cross-entropy?* 
-The cross-entropy *from* $p$ *to* $q$, denoted $H(p, q)$,
-is the expected surprisal of an observer with subjective probabilities $q$
-upon seeing data that was actually generated according to probabilities $p$.
-The lowest possible cross-entropy is achieved when $p=q$. 
-In this case, the cross-entropy from $p$ to $q$ is $H(p, p)= H(p)$.
-Relating this back to our classification objective,
-even if we get the best possible predictions, we will never be perfect. 
-Our loss is lower-bounded by the entropy given by the 
-actual conditional distributions $P(\mathbf{y} \mid \mathbf{x})$.
-
-
-### Kullback Leibler Divergence
-
-Perhaps the most common way to measure the distance between two distributions
-is to calculate the *Kullback Leibler divergence* $D(p\|q)$. 
-This is simply the difference between the cross-entropy and the entropy,
-i.e., the additional cross-entropy incurred over the irreducible minimum value it could take:
-
-$$
-D(p\|q) = H(p, q) - H[p] = \sum_j p(j) \log \frac{p(j)}{q(j)}.
-$$
-
-Note that in classification, we do not know the true $p$,
-so we cannot compute the entropy directly. 
-However, because the entropy is out of our control, 
-minimizing $D(p\|q)$ with respect to $q$ 
-is equivalent to minimizing the cross-entropy loss.
-
-In short, we can think of the cross-entropy classification objective 
-in two ways: (i) as maximizing the likelihood of the observed data;
-and (ii) as minimizing our surprise (and thus the number of bits)
-required to communicate the labels. 
-
-
-## Model Prediction and Evaluation
-
-After training the softmax regression model, given any example features, 
-we can predict the probability of each output category. 
-Normally, we use the category with the highest predicted probability as the output category. The prediction is correct if it is consistent with the actual category (label). 
-In the next part of the experiment,
-we will use accuracy to evaluate the model’s performance. 
-This is equal to the ratio between the number of correct predictions and the total number of predictions.
-
-## Summary
-
-* We introduced the softmax operation which takes a vector and maps it into probabilities.
-* Softmax regression applies to classification problems. It uses the probability distribution of the output category in the softmax operation.
-* Cross-entropy is a good measure of the difference between two probability distributions. It measures the number of bits needed to encode the data given our model.
-
-## Exercises
-
-1. Show that the Kullback-Leibler divergence $D(p\|q)$ is nonnegative for all distributions $p$ and $q$. Hint: use Jensen's inequality, i.e., use the fact that $-\log x$ is a convex function.
-1. Show that $\log \sum_j \exp(o_j)$ is a convex function in $o$.
-1. We can explore the connection between exponential families and the softmax in some more depth
-    * Compute the second derivative of the cross-entropy loss $l(y,\hat{y})$ for the softmax.
-    * Compute the variance of the distribution given by $\mathrm{softmax}(o)$ and show that it matches the second derivative computed above.
-1. Assume that we three classes which occur with equal probability, i.e., the probability vector is $(\frac{1}{3}, \frac{1}{3}, \frac{1}{3})$.
-    * What is the problem if we try to design a binary code for it? Can we match the entropy lower bound on the number of bits?
-    * Can you design a better code. Hint: what happens if we try to encode two independent observations? What if we encode $n$ observations jointly?
-1. Softmax is a misnomer for the mapping introduced above (but everyone in deep learning uses it). The real softmax is defined as $\mathrm{RealSoftMax}(a, b) = \log (\exp(a) + \exp(b))$.
-    * Prove that $\mathrm{RealSoftMax}(a, b) > \mathrm{max}(a, b)$.
-    * Prove that this holds for $\lambda^{-1} \mathrm{RealSoftMax}(\lambda a, \lambda b)$, provided that $\lambda > 0$.
-    * Show that for $\lambda \to \infty$ we have $\lambda^{-1} \mathrm{RealSoftMax}(\lambda a, \lambda b) \to \mathrm{max}(a, b)$.
-    * What does the soft-min look like?
-    * Extend this to more than two numbers.
-
-## [Discussions](https://discuss.mxnet.io/t/2334)
-
-![](../img/qr_softmax-regression.svg)
+[Discussions](https://discuss.d2l.ai/t/46)

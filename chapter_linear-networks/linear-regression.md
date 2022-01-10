@@ -1,570 +1,334 @@
 # 線形回帰
 :label:`sec_linear_regression`
 
-回帰 (Regression) とは、データポイント$\mathbf{x}$と対応する実数値の目的変数$y$の間の関係をモデル化する一連の方法を指します。自然科学と社会科学においては、ほとんどの場合、入力と出力の間の関係を*特徴付ける*ことが回帰の目的です。一方、機械学習は、ほとんどの場合*予測*に関係しています。
+*回帰* とは、モデリングのための一連の手法のことです。
+1 つまたは複数の独立変数と従属変数の関係。自然科学と社会科学では、回帰の目的は最も頻繁に
+*入力と出力の関係をキャラクタライズ* します。
+一方、機械学習は*予測*に関係することが最も多いです。 
 
-数値を予測したいときはいつでも回帰問題が現れるでしょう。一般的な例としては、数えきれないほどの価格の予測（住宅、株式など）、滞在期間の予測（入院している患者の場合）、需要予測（小売販売の場合）など、たくさん存在しています。すべての予測問題が古典的な*回帰*問題であるとは限りません。以降の節では、分類の問題、つまり、いくつかのカテゴリのうちどれに属するかを予測することを目的とする問題について紹介します。
+数値を予測したいときはいつでも回帰問題が現れます。一般的な例としては、（住宅、株などの）価格の予測、滞在期間の予測（入院患者の場合）、需要予測（小売売上高）などがあります。すべての予測問題が古典的な回帰問題というわけではありません。以降のセクションでは、分類問題を紹介します。分類問題は、一連のカテゴリ間のメンバシップを予測することを目的としています。 
 
-## 線形回帰の基本的な要素
+## 線形回帰の基本要素
 
-*線形回帰*は、回帰をのための標準的なツールの中で、最もシンプルでよく利用されているものかもしれません。 19世紀の初めまでさかのぼると、線形回帰はいくつかのシンプルな仮定から生まれています。最初に、*特徴量*$\mathbf{x}$と目的変数$y$の関係が線形であると仮定します。つまり、$y$は入力の重み付き和$\textbf{x}$として表すことができます。そして、その入力は観測値に対するノイズを表すこともあります。第2に、ノイズが扱いやすい振る舞いをしている（ガウス分布に従っている）ことを仮定します。この方針に対して理解を向けるために、よく実行される例から始めましょう。住宅の価格 (ドル) を、面積 (平方フィート) と築年数 (年) にもとづいて推定するとします。
+*線形回帰*はどちらも最も単純な場合があります
+回帰の標準的なツールの中で最も人気があります。デート 19世紀の夜明けに戻る, 線形回帰はいくつかの単純な仮定から流れます.まず、独立変数 $\mathbf{x}$ と従属変数 $y$ の関係は線形であると仮定します。つまり、$y$ は $\mathbf{x}$ の要素の加重和として表すことができます。次に、ノイズはすべて (ガウス分布に従って) 適切に動作すると仮定します。 
 
-実際に住宅価格を予測できるようにモデルを適合させるには、各住宅の販売価格、面積、および年齢がわかっている販売データから構成されるデータセットを手に入れる必要があります。機械学習の用語では、そのようなデータセットは*学習データセット*または*学習セット*と呼ばれ、各行 (ここでは1つの販売に対応するデータ) は*例*（または*データ例*, "データポイント", *サンプル*）。予測しようとしているもの（ここでは、価格）は*ラベル*（または*目的変数*）と呼ばれます。予測のもとになる変数（ここでは*年齢*と*面積*）は*特徴量*または*共変量*と呼ばれます。
+アプローチのモチベーションを高めるために、実行例から始めましょう。面積 (平方フィート) と年齢 (年数) に基づいて住宅価格 (ドル) を見積もるとします。住宅価格を予測するモデルを実際に開発するには、各住宅の販売価格、面積、年齢がわかっている売上高で構成されるデータセットを手に入れる必要があります。機械学習の用語では、データセットは*トレーニングデータセット* または*トレーニングセット* と呼ばれ、各行（ここでは 1 つの売上に対応するデータ）は*example*（または*データポイント*、*data instance*、*sample*）と呼ばれます。私たちが予測しようとしているもの（価格）を*ラベル*（または*ターゲット*）と呼びます。予測の基になる独立変数 (年齢と面積) は、*特徴* (または*共変量*) と呼ばれます。 
 
-通常、データセット内のデータ数を示すために$n$を使用します。データインスタンスにインデックス$i$を付与し、各入力を$x^{(i)} =[x_1^{(i)}, x_2^{(i)}]$、対応するラベルを$y^{(i)}$として表します。
+通常、$n$ を使用して、データセット内のサンプル数を示します。データ例を $i$ で索引付けし、各入力を $\mathbf{x}^{(i)} = [x_1^{(i)}, x_2^{(i)}]^\top$、対応するラベルを $y^{(i)}$ と示します。 
 
-### Linear Model
+### 線形モデル
+:label:`subsec_linear_model`
 
-The linearity assumption just says that the target (price)
-can be expressed as a weighted sum of the features (area and age):
+直線性の仮定では、ターゲット（価格）はフィーチャ（面積と年齢）の加重和として表すことができるとだけ言っています。 
 
 $$\mathrm{price} = w_{\mathrm{area}} \cdot \mathrm{area} + w_{\mathrm{age}} \cdot \mathrm{age} + b.$$
+:eqlabel:`eq_price-area`
 
-Here, $w_{\mathrm{area}}$ and $w_{\mathrm{age}}$
-are called *weights*, and $b$ is called a *bias*
-(also called an *offset* or *intercept*).
-The weights determine the influence of each feature
-on our prediction and the bias just says
-what value the predicted price should take
-when all of the features take value $0$.
-Even if we will never see any homes with zero area,
-or that are precisely zero years old,
-we still need the intercept or else we will
-limit the expressivity of our linear model.
+:eqref:`eq_price-area` では $w_{\mathrm{area}}$ と $w_{\mathrm{age}}$ は*ウェイト* と呼ばれ、$b$ は*バイアス* (*オフセット* または*インターセプト* とも呼ばれる) と呼ばれています。重みは各特徴が予測に及ぼす影響を決定し、バイアスはすべての特徴が値0になったときに予測価格が取るべき価値を示すだけです。面積がゼロの家、または正確に0年前の家を見ることは決してない場合でも、偏見が必要です。そうしないと、モデルの表現力が制限されます。厳密に言うと、:eqref:`eq_price-area` は入力特徴量の*アフィン変換* であり、加重和による特徴の*線形変換* と、追加されたバイアスによる*平行移動*の組み合わせによって特徴付けられます。 
 
-Given a dataset, our goal is to choose
-the weights $w$ and bias $b$ such that on average,
-the predictions made according to our model
-best fit the true prices observed in the data.
+データセットが与えられた場合、私たちの目標は、モデルに従って行われた予測がデータで観測された真の価格に最もよく適合するように、重み $\mathbf{w}$ とバイアス $b$ を選択することです。入力フィーチャのアフィン変換によって出力予測が決定されるモデルは*線形モデル* で、アフィン変換は選択した重みとバイアスによって指定されます。 
 
-In disciplines where it is common to focus
-on datasets with just a few features,
-explicitly expressing models long-form like this is common.
-In ML, we usually work with high-dimensional datasets,
-so it is more convenient to employ linear algebra notation.
-When our inputs consist of $d$ features,
-we express our prediction $\hat{y}$ as
+特徴量が少ないデータセットに注目するのが一般的な分野では、このように長い形式のモデルを明示的に表現するのが一般的です。機械学習では通常、高次元のデータセットを扱うため、線形代数表記法を採用した方が便利です。入力が $d$ の特徴量で構成されている場合、予測 $\hat{y}$ (一般に「帽子」記号は推定値を表します) を次のように表します。 
 
-$$\hat{y} = w_1 \cdot x_1 + ... + w_d \cdot x_d + b.$$
+$$\hat{y} = w_1  x_1 + ... + w_d  x_d + b.$$
 
-Collecting all features into a vector $\mathbf{x}$
-and all weights into a vector $\mathbf{w}$,
-we can express our model compactly using a dot product:
+すべての特徴をベクトル $\mathbf{x} \in \mathbb{R}^d$ に、すべての重みをベクトル $\mathbf{w} \in \mathbb{R}^d$ にまとめると、ドット積を使用してモデルをコンパクトに表現できます。 
 
 $$\hat{y} = \mathbf{w}^\top \mathbf{x} + b.$$
+:eqlabel:`eq_linreg-y`
 
-Here, the vector $\mathbf{x}$ corresponds to a single data point.
-We will often find it convenient
-to refer to our entire dataset via the *design matrix* $\mathbf{X}$.
-Here, $\mathbf{X}$ contains one row for every example
-and one column for every feature.
+:eqref:`eq_linreg-y` では、ベクトル $\mathbf{x}$ は 1 つのデータ例の特徴量に対応しています。$n$ の例のデータセット全体の特徴を、*設計行列* $\mathbf{X} \in \mathbb{R}^{n \times d}$ で参照すると便利なことがよくあります。ここで $\mathbf{X}$ には、例ごとに 1 つの行、フィーチャごとに 1 つの列が含まれています。 
 
-For a collection of data points $\mathbf{X}$,
-the predictions $\hat{\mathbf{y}}$
-can be expressed via the matrix-vector product:
+特徴の集合 $\mathbf{X}$ の場合、予測値 $\hat{\mathbf{y}} \in \mathbb{R}^n$ は行列とベクトルの積で表すことができます。 
 
-$${\hat{\mathbf{y}}} = \mathbf{X} \mathbf{w} + b.$$
+$${\hat{\mathbf{y}}} = \mathbf{X} \mathbf{w} + b,$$
 
-Given a training dataset $\mathbf{X}$
-and corresponding (known) targets $\mathbf{y}$,
-the goal of linear regression is to find
-the *weight* vector $w$ and bias term $b$
-that given a new data point $\mathbf{x}_i$,
-sampled from the same distribution as the training data
-will (in expectation) predict the target $y_i$ with the lowest error.
+ここで、加算中にブロードキャスト (:numref:`subsec_broadcasting` を参照) が適用されます。トレーニングデータセット $\mathbf{X}$ と対応する (既知の) ラベル $\mathbf{y}$ の特性を考えると、線形回帰の目標は、$\mathbf{X}$ と同じ分布からサンプリングされた新しいデータ例の特性に基づいて、重みベクトル $\mathbf{w}$ とバイアス項 $b$ を求めることです。新しい例のラベルは (expectation) は、最小の誤差で予測されます。 
 
-Even if we believe that the best model for
-predicting $y$ given $\mathbf{x}$ is linear,
-we would not expect to find real-world data where
-$y_i$ exactly equals $\mathbf{w}^\top \mathbf{x}+b$
-for all points ($\mathbf{x}, y)$.
-For example, whatever instruments we use to observe
-the features $\mathbf{X}$ and labels $\mathbf{y}$
-might suffer small amount of measurement error.
-Thus, even when we are confident
-that the underlying relationship is linear,
-we will incorporate a noise term to account for such errors.
+$\mathbf{x}$ が与えられた $y$ を予測するための最良のモデルが線形であると信じたとしても、$1 \leq i \leq n$ すべてについて $y^{(i)}$ が $\mathbf{w}^\top \mathbf{x}^{(i)}+b$ と正確に等しい $n$ の実世界のデータセットを見つけることは期待できません。たとえば、フィーチャ $\mathbf{X}$ および $\mathbf{y}$ の観測に使用する計測器には、わずかな測定誤差が生じる可能性があります。したがって、根底にある関係が線形であると確信している場合でも、そのような誤差を説明するためにノイズ項を取り入れます。 
 
-Before we can go about searching for the best parameters $\mathbf{w}$ and $b$,
-we will need two more things:
-(i) a quality measure for some given model;
-and (ii) a procedure for updating the model to improve its quality.
+最適な*パラメータ* (または*モデルパラメータ*) $\mathbf{w}$ と $b$ を検索する前に、(i) 特定のモデルの品質測定と、(ii) 品質を向上させるためにモデルを更新する手順の 2 つが必要です。 
 
-### Loss Function
+### 損失関数
 
-Before we start thinking about how *to fit* our model,
-we need to determine a measure of *fitness*.
-The *loss function* quantifies the distance
-between the *real* and *predicted* value of the target.
-The loss will usually be a non-negative number
-where smaller values are better
-and perfect predictions incur a loss of $0$.
-The most popular loss function in regression problems
-is the sum of squared errors.
-When our prediction for an example $i$ is $\hat{y}^{(i)}$
-and the corresponding true label is $y^{(i)}$,
-the squared error is given by:
+データをモデルに「あてはめる」方法を考える前に、*適合性*の尺度を決定する必要があります。*loss 関数* は、ターゲットの*実数*と*予測*値の間の距離を定量化します。通常、損失は負ではない数値で、値が小さいほど良好で、完全な予測では損失が0になります。回帰問題で最も一般的な損失関数は二乗誤差です。例 $i$ の予測が $\hat{y}^{(i)}$ で、対応する真のラベルが $y^{(i)}$ の場合、二乗誤差は次の式で求められます。 
 
 $$l^{(i)}(\mathbf{w}, b) = \frac{1}{2} \left(\hat{y}^{(i)} - y^{(i)}\right)^2.$$
+:eqlabel:`eq_mse`
 
-The constant $1/2$ makes no real difference
-but will prove notationally convenient,
-cancelling out when we take the derivative of the loss.
-Since the training dataset is given to us, and thus out of our control,
-the empirical error is only a function of the model parameters.
-To make things more concrete, consider the example below
-where we plot a regression problem for a one-dimensional case
-as shown in :numref:`fig_fit_linreg`.
+定数 $\frac{1}{2}$ は実質的な違いはありませんが、表記上は便利で、損失の導関数を取ると相殺されます。トレーニングデータセットは私たちに与えられ、制御不能であるため、経験的誤差はモデルパラメータの関数にすぎません。より具体的にするために、:numref:`fig_fit_linreg` に示すように、1 次元のケースに対する回帰問題をプロットする以下の例を考えてみましょう。 
 
-![Fit data with a linear model.](../img/fit_linreg.svg)
+![Fit data with a linear model.](../img/fit-linreg.svg)
 :label:`fig_fit_linreg`
 
-Note that large differences between
-estimates $\hat{y}^{(i)}$ and observations $y^{(i)}$
-lead to even larger contributions to the loss,
-due to the quadratic dependence.
-To measure the quality of a model on the entire dataset,
-we simply average (or equivalently, sum)
-the losses on the training set.
+推定値 $\hat{y}^{(i)}$ と観測値 $y^{(i)}$ の間に大きな差があると、二次依存性のため、損失への寄与がさらに大きくなることに注意してください。$n$ の例のデータセット全体でモデルの品質を測定するには、トレーニングセットの損失を単純に平均 (または同等に合計) します。 
 
 $$L(\mathbf{w}, b) =\frac{1}{n}\sum_{i=1}^n l^{(i)}(\mathbf{w}, b) =\frac{1}{n} \sum_{i=1}^n \frac{1}{2}\left(\mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)}\right)^2.$$
 
-When training the model, we want to find parameters ($\mathbf{w}^*, b^*$)
-that minimize the total loss across all training examples:
+モデルに学習をさせる場合、すべての学習例で総損失を最小化するパラメーター ($\mathbf{w}^*, b^*$) を求めます。 
 
 $$\mathbf{w}^*, b^* = \operatorname*{argmin}_{\mathbf{w}, b}\  L(\mathbf{w}, b).$$
 
+### 分析的ソリューション
 
-### Analytic Solution
-
-Linear regression happens to be an unusually simple optimization problem.
-Unlike most other models that we will encounter in this book,
-linear regression can be solved analytically by applying a simple formula,
-yielding a global optimum.
-To start, we can subsume the bias $b$ into the parameter $\mathbf{w}$
-by appending a column to the design matrix consisting of all $1s$.
-Then our prediction problem is to minimize $||\mathbf{y} - \mathbf{X}\mathbf{w}||$.
-Because this expression has a quadratic form, it is convex,
-and so long as the problem is not degenerate
-(our features are linearly independent), it is strictly convex.
-
-Thus there is just one critical point on the loss surface
-and it corresponds to the global minimum.
-Taking the derivative of the loss with respect to $\mathbf{w}$
-and setting it equal to $0$ yields the analytic solution:
+線形回帰はたまたま非常に単純な最適化問題です。本書で取り上げている他のほとんどのモデルとは異なり、線形回帰は簡単な公式を適用することで解析的に解くことができます。まず、すべて 1 で構成される計画行列に列を追加することで、バイアス $b$ をパラメーター $\mathbf{w}$ に含めることができます。次に、予測問題は $\|\mathbf{y} - \mathbf{X}\mathbf{w}\|^2$ を最小化することです。損失曲面には1つの臨界点しかなく、ドメイン全体の損失の最小値に相当します。$\mathbf{w}$ に対する損失の導関数をゼロに設定すると、解析的 (閉形式) 解が得られます。 
 
 $$\mathbf{w}^* = (\mathbf X^\top \mathbf X)^{-1}\mathbf X^\top \mathbf{y}.$$
 
-While simple problems like linear regression
-may admit analytic solutions,
-you should not get used to such good fortune.
-Although analytic solutions allow for nice mathematical analysis,
-the requirement of an analytic solution is so restrictive
-that it would exclude all of deep learning.
+線形回帰のような単純な問題は解析的な解を認めるかもしれないが、そのような幸運に慣れるべきではない。解析的解では優れた数学的解析が可能ですが、解析解の要件は非常に厳しく、ディープラーニングのすべてが除外されます。 
 
-### Gradient descent
+### ミニバッチ確率的勾配降下法
 
-Even in cases where we cannot solve the models analytically,
-and even when the loss surfaces are high-dimensional and nonconvex,
-it turns out that we can still train models effectively in practice.
-Moreover, for many tasks, these difficult-to-optimize models
-turn out to be so much better that figuring out how to train them
-ends up being well worth the trouble.
+モデルを解析的に解くことができない場合でも、実際にモデルを効果的にトレーニングできることが分かります。さらに、多くのタスクでは、最適化が難しいモデルの方がはるかに優れているため、それらをトレーニングする方法を理解することは、トラブルに見合うだけの価値があります。 
 
-The key technique for optimizing nearly any deep learning model,
-and which we will call upon throughout this book,
-consists of iteratively reducing the error
-by updating the parameters in the direction
-that incrementally lowers the loss function.
-This algorithm is called *gradient descent*.
-On convex loss surfaces, it will eventually converge to a global minimum,
-and while the same cannot be said for nonconvex surfaces,
-it will at least lead towards a (hopefully good) local minimum.
+ほぼすべてのディープラーニングモデルを最適化するための重要な手法は、損失関数を徐々に低下させる方向にパラメーターを更新することで、エラーを繰り返し減らすことです。このアルゴリズムを*勾配降下* と呼びます。 
 
-The most naive application of gradient descent
-consists of taking the derivative of the true loss,
-which is an average of the losses computed
-on every single example in the dataset.
-In practice, this can be extremely slow.
-We must pass over the entire dataset before making a single update.
-Thus, we will often settle for sampling a random minibatch of examples
-every time we need to compute the update,
-a variant called *stochastic gradient descent*.
+勾配降下法を最も単純に適用するには、損失関数の導関数を使用します。損失関数は、データセット内の各例で計算された損失の平均値です。実際には、この処理は非常に遅くなる可能性があります。1 回の更新を行う前に、データセット全体を渡す必要があります。したがって、更新を計算する必要があるたびに、サンプルのランダムなミニバッチをサンプリングすることに決まることがよくあります。これは、*minibatch 確率的勾配降下* と呼ばれるバリアントです。 
 
-In each iteration, we first randomly sample a minibatch $\mathcal{B}$
-consisting of a fixed number of training examples.
-We then compute the derivative (gradient) of the average loss
-on the mini batch with regard to the model parameters.
-Finally, we multiply the gradient by a predetermined step size $\eta > 0$
-and subtract the resulting term from the current parameter values.
+各反復で、まず、一定数の学習例で構成されるミニバッチ $\mathcal{B}$ をランダムにサンプリングします。次に、モデルパラメーターに関して、ミニバッチの平均損失の微分 (勾配) を計算します。最後に、勾配に所定の正の値 $\eta$ を掛け、その結果の項を現在のパラメーター値から減算します。 
 
-We can express the update mathematically as follows
-($\partial$ denotes the partial derivative) :
+更新は次のように数学的に表現できます ($\partial$ は偏微分を表します)。 
 
 $$(\mathbf{w},b) \leftarrow (\mathbf{w},b) - \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \partial_{(\mathbf{w},b)} l^{(i)}(\mathbf{w},b).$$
 
+要約すると、アルゴリズムのステップは次のとおりです。(i) 通常はランダムにモデルパラメーターの値を初期化します。(ii) データからランダムなミニバッチを繰り返しサンプリングし、負の勾配の方向にパラメーターを更新します。二次損失とアフィン変換の場合、これを次のように明示的に記述できます。 
 
-To summarize, steps of the algorithm are the following:
-(i) we initialize the values of the model parameters, typically at random;
-(ii) we iteratively sample random batches from the data (many times),
-updating the parameters in the direction of the negative gradient.
+$$\begin{aligned} \mathbf{w} &\leftarrow \mathbf{w} -   \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \partial_{\mathbf{w}} l^{(i)}(\mathbf{w}, b) = \mathbf{w} - \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \mathbf{x}^{(i)} \left(\mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)}\right),\\ b &\leftarrow b -  \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \partial_b l^{(i)}(\mathbf{w}, b)  = b - \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \left(\mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)}\right). \end{aligned}$$
+:eqlabel:`eq_linreg_batch_update`
 
-For quadratic losses and linear functions,
-we can write this out explicitly as follows:
-Note that $\mathbf{w}$ and $\mathbf{x}$ are vectors.
-Here, the more elegant vector notation makes the math
-much more readable than expressing things in terms of coefficients,
-say $w_1, w_2, \ldots, w_d$.
+$\mathbf{w}$ と $\mathbf{x}$ は :eqref:`eq_linreg_batch_update` のベクトルであることに注意してください。ここでは、より洗練されたベクトル表記法により、係数 ($w_1, w_2, \ldots, w_d$) で物事を表現するよりも数学がはるかに読みやすくなります。設定されたカーディナリティ $|\mathcal{B}|$ は各ミニバッチの例数 (*バッチサイズ*) を表し、$\eta$ は*学習率* を表します。バッチサイズと学習率の値は手作業であらかじめ指定されており、通常はモデルトレーニングでは学習されないことを強調します。調整可能だが学習ループでは更新されないこれらのパラメーターは、*hyperparameters* と呼ばれます。
+*ハイパーパラメータチューニング* は、ハイパーパラメータを選択するプロセスです。
+通常、個別の*validationデータセット* (または*validationset*) で評価されたトレーニングループの結果に基づいて調整する必要があります。 
 
-$$
-\begin{aligned}
-\mathbf{w} &\leftarrow \mathbf{w} -   \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \partial_{\mathbf{w}} l^{(i)}(\mathbf{w}, b) && =
-\mathbf{w} - \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \mathbf{x}^{(i)} \left(\mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)}\right),\\
-b &\leftarrow b -  \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \partial_b l^{(i)}(\mathbf{w}, b)  && =
-b - \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} \left(\mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)}\right).
-\end{aligned}
-$$
+あらかじめ決められた反復回数のトレーニングの後 (または他の停止基準が満たされるまで)、推定されたモデルパラメーター ($\hat{\mathbf{w}}, \hat{b}$) を記録します。関数が真に線形でノイズがない場合でも、これらのパラメーターは損失の正確な最小化にはならないことに注意してください。アルゴリズムは最小化器に向かってゆっくりと収束しますが、有限ステップ数では正確に収束できないためです。 
 
-In the above equation, $|\mathcal{B}|$ represents
-the number of examples in each minibatch (the *batch size*)
-and $\eta$ denotes the *learning rate*.
-We emphasize that the values of the batch size and learning rate
-are manually pre-specified and not typically learned through model training.
-These parameters that are tunable but not updated
-in the training loop are called *hyper-parameters*.
-*Hyperparameter tuning* is the process by which these are chosen,
-and typically requires that we adjust the hyperparameters
-based on the results of the inner (training) loop
-as assessed on a separate *validation* split of the data.
+線形回帰は、ドメイン全体で最小値が1つしかない学習問題です。ただし、ディープネットワークのようなより複雑なモデルでは、損失曲面には多くの最小値が含まれます。幸いなことに、まだ完全には理解されていない理由から、ディープラーニングの実践者は、*トレーニングセット*の損失を最小限に抑えるパラメーターを見つけるのに苦労することはほとんどありません。より手ごわい作業は、これまでに見たことのないデータの損失を低く抑えるパラメータを見つけることです。これは*一般化*と呼ばれる課題です。本全体を通して、これらのトピックに戻ります。 
 
-After training for some predetermined number of iterations
-(or until some other stopping criteria is met),
-we record the estimated model parameters,
-denoted $\hat{\mathbf{w}}, \hat{b}$
-(in general the "hat" symbol denotes estimates).
-Note that even if our function is truly linear and noiseless,
-these parameters will not be the exact minimizers of the loss
-because, although the algorithm converges slowly towards a local minimum
-it cannot achieve it exactly in a finite number of steps.
+### 学習したモデルで予測を行う
 
-Linear regression happens to be a convex learning problem,
-and thus there is only one (global) minimum.
-However, for more complicated models, like deep networks,
-the loss surfaces contain many minima.
-Fortunately, for reasons that are not yet fully understood,
-deep learning practitioners seldom struggle to find parameters
-that minimize the loss *on training data*.
-The more formidable task is to find parameters
-that will achieve low loss on data
-that we have not seen before,
-a challenge called *generalization*.
-We return to these topics throughout the book.
+学習済みの線形回帰モデル $\hat{\mathbf{w}}^\top \mathbf{x} + \hat{b}$ を考えると、面積 $x_1$、年齢 $x_2$ から新しい家 (トレーニングデータに含まれていない) の価格を見積もることができます。特徴量からターゲットを推定することは、一般に*予測* または*推論* と呼ばれます。 
 
+ディープラーニングでは標準的な専門用語として浮上しているにもかかわらず、このステップを「推論」と呼ぶのはやや誤称なので、私たちは*予測*に固執しようとします。統計学では、*推論* はデータセットに基づくパラメーターの推定を意味することが多いです。このような用語の誤用は、ディープラーニングの実践者が統計学者と話をするときによくある混乱の原因となります。 
 
+## 高速化のためのベクタ変換
 
-### Making Predictions with the Learned Model
-
-
-Given the learned linear regression model
-$\hat{\mathbf{w}}^\top \mathbf{x} + \hat{b}$,
-we can now estimate the price of a new house
-(not contained in the training data)
-given its area $x_1$ and age (year) $x_2$.
-Estimating targets given features is
-commonly called *prediction* and *inference*.
-
-We will try to stick with *prediction* because
-calling this step *inference*,
-despite emerging as standard jargon in deep learning,
-is somewhat of a misnomer.
-In statistics, *inference* more often denotes
-estimating parameters based on a dataset.
-This misuse of terminology is a common source of confusion
-when deep learning practitioners talk to statisticians.
-
-
-### Vectorization for Speed
-
-When training our models, we typically want to process
-whole minibatches of examples simultaneously.
-Doing this efficiently requires that we vectorize the calculations
-and leverage fast linear algebra libraries
-rather than writing costly for-loops in Python.
-
-To illustrate why this matters so much,
-we can consider two methods for adding vectors.
-To start we instantiate two $10000$-dimensional vectors
-containing all ones.
-In one method we will loop over the vectors with a Python `for` loop.
-In the other method we will rely on a single call to `np`.
+モデルをトレーニングする場合、通常、サンプルのミニバッチ全体を同時に処理します。これを効率的に行うには (**we**) (~~should~~) (**計算をベクトル化し、Pythonでコストがかかる for ループを書くのではなく、高速な線形代数ライブラリを活用する**) が必要です。
 
 ```{.python .input}
 %matplotlib inline
-import d2l
+from d2l import mxnet as d2l
 import math
 from mxnet import np
 import time
-
-n = 10000
-a = np.ones(n)
-b = np.ones(n)
 ```
 
-Since we will benchmark the running time frequently in this book,
-let us define a timer (hereafter accessed via the `d2l` package
-to track the running time.
+```{.python .input}
+#@tab pytorch
+%matplotlib inline
+from d2l import torch as d2l
+import math
+import torch
+import numpy as np
+import time
+```
 
-```{.python .input  n=1}
-# Saved in the d2l package for later use
-class Timer:
+```{.python .input}
+#@tab tensorflow
+%matplotlib inline
+from d2l import tensorflow as d2l
+import math
+import tensorflow as tf
+import numpy as np
+import time
+```
+
+なぜこれが重要なのかを説明するために、(**ベクトルを加えるための2つの方法を考えてみる**) ことができます。まず、すべて 1 を含む 10000 次元のベクトルを 2 つインスタンス化します。ある方法では、Python の for ループでベクトルをループします。もう 1 つの方法では、`+` を 1 回呼び出すだけで済みます。
+
+```{.python .input}
+#@tab all
+n = 10000
+a = d2l.ones(n)
+b = d2l.ones(n)
+```
+
+本書では頻繁に実行時間のベンチマークを行いますので、[**タイマーを定義しましょう**]。
+
+```{.python .input}
+#@tab all
+class Timer:  #@save
     """Record multiple running times."""
     def __init__(self):
         self.times = []
         self.start()
 
     def start(self):
-        # Start the timer
+        """Start the timer."""
         self.tik = time.time()
 
     def stop(self):
-        # Stop the timer and record the time in a list
+        """Stop the timer and record the time in a list."""
         self.times.append(time.time() - self.tik)
         return self.times[-1]
 
     def avg(self):
-        # Return the average time
+        """Return the average time."""
         return sum(self.times) / len(self.times)
 
     def sum(self):
-        # Return the sum of time
+        """Return the sum of time."""
         return sum(self.times)
 
     def cumsum(self):
-        # Return the accumulated times
+        """Return the accumulated time."""
         return np.array(self.times).cumsum().tolist()
 ```
 
-Now we can benchmark the workloads.
-First, we add them, one coordinate at a time,
-using a `for` loop.
+これで、ワークロードのベンチマークが可能になりました。まず、[**for-loopを使って座標を1つずつ加算します**]
 
-```{.python .input  n=2}
-c = np.zeros(n)
+```{.python .input}
+#@tab mxnet, pytorch
+c = d2l.zeros(n)
 timer = Timer()
 for i in range(n):
     c[i] = a[i] + b[i]
-'%.5f sec' % timer.stop()
+f'{timer.stop():.5f} sec'
 ```
-
-Alternatively, we rely on `np` to compute the elementwise sum:
-
-```{.python .input  n=3}
-timer.start()
-d = a + b
-'%.5f sec' % timer.stop()
-```
-
-You probably noticed that the second method
-is dramatically faster than the first.
-Vectorizing code often yields order-of-magnitude speedups.
-Moreover, we push more of the math to the library
-and need not write as many calculations ourselves,
-reducing the potential for errors.
-
-## The Normal Distribution and Squared Loss
-
-While you can already get your hands dirty using only the information above,
-in the following section we can more formally motivate the square loss objective
-via assumptions about the distribution of noise.
-
-Recall from the above that the squared loss
-$l(y, \hat{y}) = \frac{1}{2} (y - \hat{y})^2$
-has many convenient properties.
-These include a simple derivative
-$\partial_{\hat{y}} l(y, \hat{y}) = (\hat{y} - y)$.
-
-As we mentioned earlier, linear regression was invented by Gauss in 1795,
-who also discovered the normal distribution (also called the *Gaussian*).
-It turns out that the connection between
-the normal distribution and linear regression
-runs deeper than common parentage.
-To refresh your memory, the probability density
-of a normal distribution with mean $\mu$ and variance $\sigma^2$
-is given as follows:
-
-$$p(z) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp\left(-\frac{1}{2 \sigma^2} (z - \mu)^2\right).$$
-
-Below we define a Python function to compute the normal distribution.
 
 ```{.python .input}
-def normal(z, mu, sigma):
-    p = 1 / math.sqrt(2 * math.pi * sigma**2)
-    return p * np.exp(- 0.5 / sigma**2 * (z - mu)**2)
+#@tab tensorflow
+c = tf.Variable(d2l.zeros(n))
+timer = Timer()
+for i in range(n):
+    c[i].assign(a[i] + b[i])
+f'{timer.stop():.5f} sec'
 ```
 
-We can now visualize the normal distributions.
+(**または、再ロードされた `+` 演算子を使用して要素単位の合計を計算します。**)
 
-```{.python .input  n=2}
+```{.python .input}
+#@tab all
+timer.start()
+d = a + b
+f'{timer.stop():.5f} sec'
+```
+
+2番目の方法は最初の方法よりも劇的に高速であることに気付いたでしょう。コードをベクトル化すると、多くの場合、桁違いに高速化されます。さらに、数学をより多くライブラリにプッシュし、自分で計算を記述する必要がないため、エラーの可能性を減らすことができます。 
+
+## 正規分布と二乗損失
+:label:`subsec_normal_distribution_and_squared_loss`
+
+上記の情報だけを使ってもすでに手を汚すことはできますが、以下ではノイズの分布に関する仮定を通して、二乗損失目標をより正式に動機づけることができます。 
+
+線形回帰は1795年にGaussによって発明され、Gaussも正規分布（*Gaussian*とも呼ばれる）を発見しました。正規分布と線形回帰の関係は、一般的な親子関係よりも深いことが分かります。記憶を更新するために、平均 $\mu$、分散 $\sigma^2$ (標準偏差 $\sigma$) をもつ正規分布の確率密度は次のように与えられます。 
+
+$$p(x) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp\left(-\frac{1}{2 \sigma^2} (x - \mu)^2\right).$$
+
+以下 [**正規分布を計算するPython関数を定義します**]。
+
+```{.python .input}
+#@tab all
+def normal(x, mu, sigma):
+    p = 1 / math.sqrt(2 * math.pi * sigma**2)
+    return p * np.exp(-0.5 / sigma**2 * (x - mu)**2)
+```
+
+これで (**正規分布を可視化**) できます。
+
+```{.python .input}
+#@tab all
+# Use numpy again for visualization
 x = np.arange(-7, 7, 0.01)
 
-# Mean and variance pairs
-parameters = [(0, 1), (0, 2), (3, 1)]
-d2l.plot(x, [normal(x, mu, sigma) for mu, sigma in parameters], xlabel='z',
-         ylabel='p(z)', figsize=(4.5, 2.5),
-         legend=['mean %d, var %d' % (mu, sigma) for mu, sigma in parameters])
+# Mean and standard deviation pairs
+params = [(0, 1), (0, 2), (3, 1)]
+d2l.plot(x, [normal(x, mu, sigma) for mu, sigma in params], xlabel='x',
+         ylabel='p(x)', figsize=(4.5, 2.5),
+         legend=[f'mean {mu}, std {sigma}' for mu, sigma in params])
 ```
 
-As you can see, changing the mean corresponds to a shift along the *x axis*,
-and increasing the variance spreads the distribution out, lowering its peak.
+ご覧のとおり、平均値を変更すると $x$ 軸に沿ったシフトに相当し、分散を大きくすると分布が広がり、ピークが小さくなります。 
 
-One way to motivate linear regression with the mean squared error loss function
-is to formally assume that observations arise from noisy observations,
-where the noise is normally distributed as follows
+平均二乗誤差損失関数 (または単に二乗損失) を使用して線形回帰を動機付ける方法の 1 つは、観測値がノイズの多い観測値から発生すると公式に仮定することです。この場合、ノイズは次のように正規分布します。 
 
 $$y = \mathbf{w}^\top \mathbf{x} + b + \epsilon \text{ where } \epsilon \sim \mathcal{N}(0, \sigma^2).$$
 
-Thus, we can now write out the *likelihood*
-of seeing a particular $y$ for a given $\mathbf{x}$ via
+したがって、指定された $\mathbf{x}$ の特定の $y$ が見られる*可能性*を 
 
-$$p(y|\mathbf{x}) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp\left(-\frac{1}{2 \sigma^2} (y - \mathbf{w}^\top \mathbf{x} - b)^2\right).$$
+$$P(y \mid \mathbf{x}) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp\left(-\frac{1}{2 \sigma^2} (y - \mathbf{w}^\top \mathbf{x} - b)^2\right).$$
 
-Now, according to the *maximum likelihood principle*,
-the best values of $b$ and $\mathbf{w}$ are those
-that maximize the *likelihood* of the entire dataset:
+最尤法の原則によると、パラメーター $\mathbf{w}$ と $b$ の最良値は、データセット全体の「尤度」を最大化する値です。 
 
-$$P(Y\mid X) = \prod_{i=1}^{n} p(y^{(i)}|\mathbf{x}^{(i)}).$$
+$$P(\mathbf y \mid \mathbf X) = \prod_{i=1}^{n} p(y^{(i)}|\mathbf{x}^{(i)}).$$
 
-Estimators chosen according to the *maximum likelihood principle*
-are called *Maximum Likelihood Estimators* (MLE).
-While, maximizing the product of many exponential functions,
-might look difficult,
-we can simplify things significantly, without changing the objective,
-by maximizing the log of the likelihood instead.
-For historical reasons, optimizations are more often expressed
-as minimization rather than maximization.
-So, without changing anything we can minimize the *Negative Log-Likelihood (NLL)*
-$-\log p(\mathbf y|\mathbf X)$.
-Working out the math gives us:
+最尤法の原理に従って選択された推定量は、*最尤推定量* と呼ばれます。多くの指数関数の積を最大化するのは難しいように思えるかもしれませんが、その代わりに尤度の対数を最大化することで、目的を変えずに物事を大幅に単純化することができます。歴史的な理由から、最適化は最大化ではなく最小化として表現されることが多いです。したがって、何も変更せずに、*負の対数尤度* $-\log P(\mathbf y \mid \mathbf X)$を最小化できます。数学を考えると次のことが得られます。 
 
-$$-\log p(\mathbf y|\mathbf X) = \sum_{i=1}^n \frac{1}{2} \log(2 \pi \sigma^2) + \frac{1}{2 \sigma^2} \left(y^{(i)} - \mathbf{w}^\top \mathbf{x}^{(i)} - b\right)^2.$$
+$$-\log P(\mathbf y \mid \mathbf X) = \sum_{i=1}^n \frac{1}{2} \log(2 \pi \sigma^2) + \frac{1}{2 \sigma^2} \left(y^{(i)} - \mathbf{w}^\top \mathbf{x}^{(i)} - b\right)^2.$$
 
-Now we just need one more assumption: that $\sigma$ is some fixed constant.
-Thus we can ignore the first term because
-it does not depend on $\mathbf{w}$ or $b$.
-Now the second term is identical to the squared error objective introduced earlier,
-but for the multiplicative constant $\frac{1}{\sigma^2}$.
-Fortunately, the solution does not depend on $\sigma$.
-It follows that minimizing squared error
-is equivalent to maximum likelihood estimation
-of a linear model under the assumption of additive Gaussian noise.
+ここで、$\sigma$が固定定数であるという仮定をもう1つだけ必要とします。したがって、最初の項は $\mathbf{w}$ または $b$ に依存しないため、無視できます。これで、第 2 項は、乗法定数 $\frac{1}{\sigma^2}$ を除き、前に紹介した二乗誤差損失と同じです。幸いなことに、このソリューションは$\sigma$には依存しません。したがって、平均二乗誤差を最小化することは、加法性ガウスノイズを仮定した場合の線形モデルの最尤推定と同等です。 
 
-## From Linear Regression to Deep Networks
+## 線形回帰からディープネットワークへ
 
-So far we only talked about linear functions.
-While neural networks cover a much richer family of models,
-we can begin thinking of the linear model
-as a neural network by expressing it in the language of neural networks.
-To begin, let us start by rewriting things in a 'layer' notation.
+ここまでは、線形モデルについてのみ説明しました。ニューラルネットワークはより豊富なモデルファミリーをカバーしていますが、線形モデルをニューラルネットワークの言語で表現することで、ニューラルネットワークと考えることができます。まず、「レイヤー」表記で書き直すところから始めましょう。 
 
-### Neural Network Diagram
+### ニューラルネットワークダイアグラム
 
-Deep learning practitioners like to draw diagrams
-to visualize what is happening in their models.
-In :numref:`fig_single_neuron`,
-we depict our linear model as a neural network.
-Note that these diagrams indicate the connectivity pattern
-(here, each input is connected to the output)
-but not the values taken by the weights or biases.
+ディープラーニングの実践者は、モデルで起きていることを視覚化するために図を描くのが好きです。:numref:`fig_single_neuron` では、線形回帰モデルをニューラルネットワークとして表現しています。これらのダイアグラムは、各入力が出力にどのように接続されているかなどの接続性パターンを強調していますが、重みやバイアスがとる値は強調していないことに注意してください。 
 
-![Linear regression is a single-layer neural network. ](../img/singleneuron.svg)
+![Linear regression is a single-layer neural network.](../img/singleneuron.svg)
 :label:`fig_single_neuron`
 
-Because there is just a single computed neuron (node) in the graph
-(the input values are not computed but given),
-we can think of linear models as neural networks
-consisting of just a single artificial neuron.
-Since for this model, every input is connected
-to every output (in this case there is only one output!),
-we can regard this transformation as a *fully-connected layer*,
-also commonly called a *dense layer*.
-We will talk a lot more about networks composed of such layers
-in the next chapter on multilayer perceptrons.
+:numref:`fig_single_neuron` に示すニューラルネットワークでは、入力は $x_1, \ldots, x_d$ なので、入力層の*入力数* (または*特徴次元*) は $d$ です。:numref:`fig_single_neuron` のネットワークの出力は $o_1$ なので、出力層の*出力数* は 1 です。入力値はすべて*与えられる* で、*computed* ニューロンは 1 つだけであることに注意してください。計算が行われる場所に注目して、従来、レイヤーを数えるときに入力レイヤーは考慮しません。つまり、:numref:`fig_single_neuron` のニューラルネットワークの *層数* は 1 です。線形回帰モデルは、単一の人工ニューロンだけで構成されるニューラルネットワーク、または単層ニューラルネットワークと考えることができます。 
 
-### Biology
+線形回帰では、すべての入力がすべての出力 (この場合は出力が 1 つだけ) に接続されるため、この変換 (:numref:`fig_single_neuron` の出力層) は*完全結合層* または*高密度層* と見なすことができます。次の章では、このような層で構成されるネットワークについてさらに詳しく説明します。 
 
-Although linear regression (invented in 1795)
-predates computational neuroscience,
-so it might seem anachronistic to describe
-linear regression as a neural network.
-To see why linear models were a natural place to begin
-when the cyberneticists/neurophysiologists
-Warren McCulloch and Walter Pitts
-looked when they began to develop
-models of artificial neurons,
-consider the cartoonish picture
-of a biological neuron in :numref:`fig_Neuron`, consisting of
-*dendrites* (input terminals),
-the *nucleus* (CPU), the *axon* (output wire),
-and the *axon terminals* (output terminals),
-enabling connections to other neurons via *synapses*.
+### 生物学
 
-![The real neuron](../img/Neuron.svg)
+1795年に考案された線形回帰は計算神経科学よりも前から存在するため、線形回帰をニューラルネットワークと表現するのは時代錯誤のように思えるかもしれません。サイバネティスト/神経生理学者のウォーレン・マカロックとウォルター・ピッツが人工ニューロンのモデルを開発し始めたとき、線形モデルが自然に始まった理由を理解するために、:numref:`fig_Neuron`の生物学的ニューロンの漫画的な図を考えてみましょう。
+*樹状突起* (入力端子)
+*nucleus* (CPU)、*axon* (出力線)、*axon端子* (出力端子) により、*シナプス*を介して他のニューロンに接続できます。 
+
+![The real neuron.](../img/neuron.svg)
 :label:`fig_Neuron`
 
-Information $x_i$ arriving from other neurons
-(or environmental sensors such as the retina)
-is received in the dendrites.
-In particular, that information is weighted by *synaptic weights* $w_i$
-determining the effect of the inputs
-(e.g., activation or inhibition via the product $x_i w_i$).
-The weighted inputs arriving from multiple sources
-are aggregated in the nucleus as a weighted sum $y = \sum_i x_i w_i + b$,
-and this information is then sent for further processing in the axon $y$,
-typically after some nonlinear processing via $\sigma(y)$.
-From there it either reaches its destination (e.g., a muscle)
-or is fed into another neuron via its dendrites.
+他のニューロン（または網膜などの環境センサー）から届く情報$x_i$は、樹状突起で受信されます。特に、その情報は、入力の効果（例えば、製品 $x_i w_i$ による活性化または阻害）を決定する*シナプス重み* $w_i$によって重み付けされる。複数のソースから到着する重み付けされた入力は、重み付き合計 $y = \sum_i x_i w_i + b$ として核に集約され、この情報は軸索 $y$ でさらに処理するために送信されます。通常、$\sigma(y)$ を介した非線形処理が実施されます。そこから目的地（筋肉など）に到達するか、樹状突起を介して別のニューロンに供給されます。 
 
-Certainly, the high-level idea that many such units
-could be cobbled together with the right connectivity
-and right learning algorithm,
-to produce far more interesting and complex behavior
-than any one neuron alone could express
-owes to our study of real biological neural systems.
+確かに、そのような多くのユニットを適切な接続性と適切な学習アルゴリズムと組み合わせて、1つのニューロンだけで表現できるよりもはるかに面白くて複雑な動作を生み出すことができるという高レベルのアイデアは、実際の生物学的ニューラルシステムの研究によるものです。 
 
-At the same time, most research in deep learning today
-draws little direct inspiration in neuroscience.
-We invoke Stuart Russell and Peter Norvig who,
-in their classic AI text book
-*Artificial Intelligence: A Modern Approach* :cite:`Russell.Norvig.2016`,
-pointed out that although airplanes might have been *inspired* by birds,
-ornithology has not been the primary driver
-of aeronautics innovation for some centuries.
-Likewise, inspiration in deep learning these days
-comes in equal or greater measure from mathematics,
-statistics, and computer science.
+同時に、今日のディープラーニングの研究のほとんどは、神経科学に直接的なインスピレーションを与えることはほとんどありません。私たちはスチュアート・ラッセルとピーター・ノーヴィグを呼びます。彼らは古典的なAIの教科書で
+*人工知能: A Modern Approach* :cite:`Russell.Norvig.2016`
+飛行機は鳥に触発されたかもしれないが、鳥類学は何世紀にもわたって航空学の革新の主要な推進力ではなかったと指摘した。同様に、最近のディープラーニングのインスピレーションは、数学、統計、コンピューターサイエンスから同等かそれ以上得られています。 
 
-## Summary
+## [概要
 
-* Key ingredients in a machine learning model are training data, a loss function, an optimization algorithm, and quite obviously, the model itself.
-* Vectorizing makes everything better (mostly math) and faster (mostly code).
-* Minimizing an objective function and performing maximum likelihood can mean the same thing.
-* Linear models are neural networks, too.
+* 機械学習モデルの重要な要素は、トレーニングデータ、損失関数、最適化アルゴリズム、そして明らかにモデルそのものです。
+* ベクトル化すると、すべてがより良くなり（ほとんどが数学）、より速くなります（主にコード）。
+* 目的関数を最小化することと最尤推定を実行することも、同じ意味を持つことがあります。
+* 線形回帰モデルもニューラルネットワークです。
 
-## Exercises
+## 演習
 
-1. Assume that we have some data $x_1, \ldots, x_n \in \mathbb{R}$. Our goal is to find a constant $b$ such that $\sum_i (x_i - b)^2$ is minimized.
-    * Find a closed-form solution for the optimal value of $b$.
-    * How does this problem and its solution relate to the normal distribution?
-1. Derive the closed-form solution to the optimization problem for linear regression with squared error. To keep things simple, you can omit the bias $b$ from the problem (we can do this in principled fashion by adding one column to $X$ consisting of all ones).
-    * Write out the optimization problem in matrix and vector notation (treat all the data as a single matrix, all the target values as a single vector).
-    * Compute the gradient of the loss with respect to $w$.
-    * Find the closed form solution by setting the gradient equal to zero and solving the matrix equation.
-    * When might this be better than using stochastic gradient descent? When might this method break?
-1. Assume that the noise model governing the additive noise $\epsilon$ is the exponential distribution. That is, $p(\epsilon) = \frac{1}{2} \exp(-|\epsilon|)$.
-    * Write out the negative log-likelihood of the data under the model $-\log P(Y \mid X)$.
-    * Can you find a closed form solution?
-    * Suggest a stochastic gradient descent algorithm to solve this problem. What could possibly go wrong (hint - what happens near the stationary point as we keep on updating the parameters). Can you fix this?
+1. $x_1, \ldots, x_n \in \mathbb{R}$ というデータがあると仮定します。私たちの目標は、$\sum_i (x_i - b)^2$ が最小化されるような定数 $b$ を見つけることです。
+    1. $b$ の最適値に対する解析解を求めます。
+    1. この問題とその解は正規分布とどのように関係していますか。
+1. 二乗誤差をもつ線形回帰の最適化問題に対する解析解を導き出します。単純化するために、バイアス $b$ を問題から省略できます (すべてが 1 で構成される $\mathbf X$ に 1 つの列を追加することで、原則的にこれを行うことができます)。
+    1. 最適化問題を行列とベクトル表記で書き出します (すべてのデータを 1 つの行列として扱い、すべてのターゲット値を 1 つのベクトルとして扱います)。
+    1. $w$ に対する損失の勾配を計算します。
+    1. 勾配をゼロに設定し、行列方程式を解くことで解析解を求めます。
+    1. 確率的勾配降下法を使用するよりもこれが良いのはいつですか？この方法が壊れるのはいつですか？
+1. 加法性ノイズ $\epsilon$ を支配するノイズモデルが指数分布であると仮定します。つまり、$p(\epsilon) = \frac{1}{2} \exp(-|\epsilon|)$ です。
+    1. モデル $-\log P(\mathbf y \mid \mathbf X)$ のデータの負の対数尤度を書き出します。
+    1. クローズドフォームのソリューションを見つけられますか？
+    1. この問題を解決するために、確率的勾配降下法アルゴリズムを提案する。何がうまくいかない可能性がありますか（ヒント：パラメータを更新し続けると、静止点の近くで何が起こりますか）。これを直せる？
 
-## [Discussions](https://discuss.mxnet.io/t/2331)
+:begin_tab:`mxnet`
+[Discussions](https://discuss.d2l.ai/t/40)
+:end_tab:
 
-![](../img/qr_linear-regression.svg)
+:begin_tab:`pytorch`
+[Discussions](https://discuss.d2l.ai/t/258)
+:end_tab:
+
+:begin_tab:`tensorflow`
+[Discussions](https://discuss.d2l.ai/t/259)
+:end_tab:
