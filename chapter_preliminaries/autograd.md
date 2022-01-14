@@ -1,154 +1,187 @@
 # 自動微分
 :label:`sec_autograd`
 
-:numref:`sec_calculus` で説明したように、ほぼすべての深層学習アルゴリズムに置いて非常に重要なステップです。これらの微分の計算は単純で基本的な計算しか必要ありませんが、複雑なモデルにおいては、手作業で更新していくことは苦痛を伴います（そして、誤りに繋がりやすいです）。
+:numref:`sec_calculus` で説明したように、微分化はほぼすべてのディープラーニング最適化アルゴリズムにおいて重要なステップです。これらの微分を求める計算は簡単で、必要なのは基本的な微積分だけですが、複雑なモデルの場合、更新を手作業で行うのは面倒です (多くの場合、エラーが起こりやすい)。 
 
-`autograd` というパッケージは、自動で微分を計算する、つまり*自動微分*によって、この作業を加速させました。多くの他のライブラリが、自動微分を行うためにシンボリックなグラフのコンパイルを必要とするのに対し、`autograd`は通常のコードを書くだけで微分をすることができます。モデルにデータを渡すときはいつでも、グラフが`autograd`によってその都度作成され、どのデータにどの演算が実行されて出力を得られるのかが追跡されます。このグラフによって、`autograd`は実行命令を受けると、勾配を逆伝播します。
-*逆伝播*は単純に*計算グラフ*を追跡して、各パラメータに関する偏微分を計算することを意味します。
+ディープラーニングフレームワークは、微分 (*自動微分) を自動的に計算することで、この作業を迅速化します。実際には、設計したモデルに基づいて、システムは*計算グラフ*を構築し、どのデータをどの操作で組み合わせて出力を生成するかを追跡します。自動微分により、システムは後から勾配を逆伝播できます。ここで、*backpropagate* は単に、計算グラフをトレースし、各パラメーターに関する偏微分を埋めることを意味します。 
 
-```{.python .input  n=1}
+## 簡単な例
+
+おもちゃの例として、(**列ベクトル $\mathbf{x}$.に関して関数 $y = 2\mathbf{x}^{\top}\mathbf{x}$ を微分する**) に興味があるとしましょう。まず、変数 `x` を作成して初期値を代入します。
+
+```{.python .input}
 from mxnet import autograd, np, npx
 npx.set_np()
-```
 
-## シンプルな例
-
-単純な例として、$y = 2\mathbf{x}^{\top}\mathbf{x}$を列ベクトル $\mathbf{x}$に関して微分してみましょう。まず、変数`x`を作成して、初期値を与えます。
-
-
-```{.python .input  n=2}
-x = np.arange(4)
+x = np.arange(4.0)
 x
 ```
 
- $\mathbf{x}$ に関する $y の勾配を計算したら、それを保存するための場所を用意しましょう。パラメータに関する微分を計算するときはいつでも、新しいメモリを割り当てないことが重要です。なぜなら、同じパラメータを数千回、数百万回と頻繁に更新するので、メモリを使い尽くしてしまうからです。
+```{.python .input}
+#@tab pytorch
+import torch
 
-ベクトル$\mathbf{x}$に関するスカラー値の関数において、その勾配はベクトル値になり$\mathbf{x}$と同じshapeをとります。従って、コードにおいて、`x`に関する勾配にアクセスすることは直感的に理解できるでしょう。`attach_grad` のメソッドを使って、`ndarray`の勾配のためのメモリを確保します。
-
-```{.python .input  n=3}
-x.attach_grad()
+x = torch.arange(4.0)
+x
 ```
 
-After we calculate a gradient taken with respect to `x`,
-we will be able to access it via the `grad` attribute.
-As a safe default, `x.grad` is initialized as an array containing all zeros.
-That is sensible because our most common use case
-for taking gradient in deep learning is to subsequently
-update parameters by adding (or subtracting) the gradient
-to maximize (or minimize) the differentiated function.
-By initializing the gradient to an array of zeros,
-we ensure that any update accidentally executed
-before a gradient has actually been calculated
-will not alter the parameters' value.
+```{.python .input}
+#@tab tensorflow
+import tensorflow as tf
 
-```{.python .input  n=4}
+x = tf.range(4, dtype=tf.float32)
+x
+```
+
+[**$\mathbf{x}$ に対する $y$ の勾配を計算する前に、それを格納する場所が必要です。**] 同じパラメータを何千回または何百万回も更新することが多いので、パラメータに対して微分をとるたびに新しいメモリを割り当てないことが重要です。すぐにメモリが足りなくなる可能性があります。ベクトル $\mathbf{x}$ に対するスカラー値関数の勾配は、それ自体がベクトル値であり、$\mathbf{x}$ と同じ形状であることに注意してください。
+
+```{.python .input}
+# We allocate memory for a tensor's gradient by invoking `attach_grad`
+x.attach_grad()
+# After we calculate a gradient taken with respect to `x`, we will be able to
+# access it via the `grad` attribute, whose values are initialized with 0s
 x.grad
 ```
 
-ここで$y$を計算しましょう。次に勾配を計算したいので、MXNetに対して計算グラフを必要なときに (on-the-flyで)作成させます。MXNet は、各変数を生成するパスを確実に捉えるために、記憶装置の電源を入れるような状態を想像してみてください。
+```{.python .input}
+#@tab pytorch
+x.requires_grad_(True)  # Same as `x = torch.arange(4.0, requires_grad=True)`
+x.grad  # The default value is None
+```
 
-計算グラフの作成にはそれなりの計算を必要とします。そこで、陽に計算グラフを作成するよう指示したときだけ、MXNetは計算グラフを作成します。``autograd.record``のスコープの中にコードを記述することによって、この挙動を実装することができます。
+```{.python .input}
+#@tab tensorflow
+x = tf.Variable(x)
+```
 
+(**さあ $y$ を計算してみましょう**)
 
-```{.python .input  n=5}
+```{.python .input}
+# Place our code inside an `autograd.record` scope to build the computational
+# graph
 with autograd.record():
-    y = 2 * np.dot(x.T, x)
+    y = 2 * np.dot(x, x)
 y
 ```
 
-`x` は長さ4の  `ndarray` なので、`np.dot` は `x` と `y` の内積を実行し、`y` に割り当てられるスカラーを出力します。次に、`y`の`backward`の関数を呼ぶことで、`x`の各要素に関する `y` の勾配を自動で計算することができます。
-
-```{.python .input  n=6}
-y.backward()
+```{.python .input}
+#@tab pytorch
+y = 2 * torch.dot(x, x)
+y
 ```
 
+```{.python .input}
+#@tab tensorflow
+# Record all computations onto a tape
+with tf.GradientTape() as t:
+    y = 2 * tf.tensordot(x, x, axes=1)
+y
+```
 
-If we recheck the value of `x.grad`, we will find its contents overwritten by the newly calculated gradient.
+`x` は長さ 4 のベクトルなので、`x` と `x` のドット積が実行され、`y` に代入するスカラー出力が得られます。次に、[**`x` の各成分に対する `y` の勾配を自動的に計算できます**] バックプロパゲーション用の関数を呼び出して勾配を出力します。
 
-```{.python .input  n=7}
+```{.python .input}
+y.backward()
 x.grad
 ```
 
-関数$y = 2\mathbf{x}^{\top}\mathbf{x}$の$\mathbf{x}$に関する勾配は$4\mathbf{x}$です。求める勾配が正しく計算されていることを手短に確かめてみましょう。If the two `ndarray`s are indeed the same, then the equality between them holds at every position.
+```{.python .input}
+#@tab pytorch
+y.backward()
+x.grad
+```
 
-```{.python .input  n=8}
+```{.python .input}
+#@tab tensorflow
+x_grad = t.gradient(y, x)
+x_grad
+```
+
+(** $\mathbf{x}$ に対する関数 $y = 2\mathbf{x}^{\top}\mathbf{x}$ の勾配は $4\mathbf{x}$.**) 目的の勾配が正しく計算されたことをすぐに確認してみましょう。
+
+```{.python .input}
 x.grad == 4 * x
 ```
 
-If we subsequently compute the gradient of another variable
-whose value was calculated as a function of `x`,
-the contents of `x.grad` will be overwritten.
+```{.python .input}
+#@tab pytorch
+x.grad == 4 * x
+```
 
-```{.python .input  n=9}
+```{.python .input}
+#@tab tensorflow
+x_grad == 4 * x
+```
+
+[**ここで `x` の別の関数を計算してみましょう**]
+
+```{.python .input}
 with autograd.record():
     y = x.sum()
+y.backward()
+x.grad  # Overwritten by the newly calculated gradient
+```
+
+```{.python .input}
+#@tab pytorch
+# PyTorch accumulates the gradient in default, we need to clear the previous
+# values
+x.grad.zero_()
+y = x.sum()
 y.backward()
 x.grad
 ```
 
-
-## Backward for Non-Scalar Variables
-
-Technically, when `y` is not a scalar,
-the most natural interpretation of the gradient of `y` (a vector of length $m$)
-with respect to `x` (a vector of length $n$) is the *Jacobian* (an $m\times n$ matrix).
-For higher-order and higher-dimensional `y` and `x`,
-the Jacobian could be a gnarly high-order tensor.
-
-However, while these more exotic objects do show up
-in advanced machine learning (including in deep learning),
-more often when we are calling backward on a vector,
-we are trying to calculate the derivatives of the loss functions
-for each constituent of a *batch* of training examples.
-Here, our intent is not to calculate the Jacobian
-but rather the sum of the partial derivatives
-computed individually for each example in the batch.
-
-Thus when we invoke `backward` on a vector-valued variable `y`,
-which is a function of `x`,
-MXNet assumes that we want the sum of the gradients.
-In short, MXNet will create a new scalar variable
-by summing the elements in `y`,
-and compute the gradient of that scalar variable with respect to `x`.
-
-```{.python .input  n=10}
-with autograd.record():
-    y = x * x  # y is a vector
-y.backward()
-
-u = x.copy()
-u.attach_grad()
-with autograd.record():
-    v = (u * u).sum()  # v is a scalar
-v.backward()
-
-x.grad == u.grad
+```{.python .input}
+#@tab tensorflow
+with tf.GradientTape() as t:
+    y = tf.reduce_sum(x)
+t.gradient(y, x)  # Overwritten by the newly calculated gradient
 ```
 
-## Detaching Computation
+## 非スカラー変数の場合は逆方向
 
-Sometimes, we wish to move some calculations
-outside of the recorded computational graph.
-For example, say that `y` was calculated as a function of `x`,
-and that subsequently `z` was calculated as a function of both `y` and `x`.
-Now, imagine that we wanted to calculate
-the gradient of `z` with respect to `x`,
-but wanted for some reason to treat `y` as a constant,
-and only take into account the role
-that `x` played after `y` was calculated.
+技術的には、`y` がスカラーでない場合、ベクトル `x` に対するベクトル `y` の微分の最も自然な解釈は行列です。高次の高次元の `y` と `x` では、微分結果が高次のテンソルになる可能性があります。 
 
-Here, we can call `u = y.detach()` to return a new variable `u`
-that has the same value as `y` but discards any information
-about how `y` was computed in the computational graph.
-In other words, the gradient will not flow backwards through `u` to `x`.
-This will provide the same functionality as if we had
-calculated `u` as a function of `x` outside of the `autograd.record` scope,
-yielding a `u` that will be treated as a constant in any `backward` call.
-Thus, the following `backward` function computes
-the partial derivative of `z = u * x` with respect to `x` while treating `u` as a constant,
-instead of the partial derivative of `z = x * x * x` with respect to `x`.
+しかし、これらのよりエキゾチックなオブジェクトは高度な機械学習 ([**ディープラーニング**] を含む) に現れますが、より頻繁に (**ベクトルを逆方向に呼び出す場合**)、トレーニング例の*バッチ*の各構成要素について、損失関数の導関数を計算しようとしています。ここで、(**私たちの意図は**) 微分行列を計算するのではなく、バッチ内で (**例ごとに個別に計算された偏導関数の和**)。
 
-```{.python .input  n=11}
+```{.python .input}
+# When we invoke `backward` on a vector-valued variable `y` (function of `x`),
+# a new scalar variable is created by summing the elements in `y`. Then the
+# gradient of that scalar variable with respect to `x` is computed
+with autograd.record():
+    y = x * x  # `y` is a vector
+y.backward()
+x.grad  # Equals to y = sum(x * x)
+```
+
+```{.python .input}
+#@tab pytorch
+# Invoking `backward` on a non-scalar requires passing in a `gradient` argument
+# which specifies the gradient of the differentiated function w.r.t `self`.
+# In our case, we simply want to sum the partial derivatives, so passing
+# in a gradient of ones is appropriate
+x.grad.zero_()
+y = x * x
+# y.backward(torch.ones(len(x))) equivalent to the below
+y.sum().backward()
+x.grad
+```
+
+```{.python .input}
+#@tab tensorflow
+with tf.GradientTape() as t:
+    y = x * x
+t.gradient(y, x)  # Same as `y = tf.reduce_sum(x * x)`
+```
+
+## 計算のデタッチ
+
+[**一部の計算を記録された計算グラフの外に移動させたい場合があります。**] たとえば、`y` が `x` の関数として計算され、その後 `z` が `y` と `x` の両方の関数として計算されたとします。ここで、`x` に対する `z` の勾配を計算したいが、何らかの理由で `y` を定数として扱い、`y` が計算された後に `x` が果たした役割のみを考慮に入れたいと想像してください。 
+
+ここで `y` をデタッチすると、`y` と同じ値を持つ新しい変数 `u` が返されますが、`y` が計算グラフでどのように計算されたかに関する情報はすべて破棄されます。つまり、勾配は `u` から `x` まで逆方向に流れません。したがって、次のバックプロパゲーション関数は `x` に対する `z = x * x * x` の偏微分ではなく `u` を定数として扱い、`x` に対する `z = u * x` の偏微分を計算します。
+
+```{.python .input}
 with autograd.record():
     y = x * x
     u = y.detach()
@@ -157,35 +190,53 @@ z.backward()
 x.grad == u
 ```
 
-Since the computation of `y` was recorded,
-we can subsequently call `y.backward()` to get the derivative of `y = x * x` with respect to `x`, which is `2 * x`.
+```{.python .input}
+#@tab pytorch
+x.grad.zero_()
+y = x * x
+u = y.detach()
+z = u * x
 
-```{.python .input  n=12}
+z.sum().backward()
+x.grad == u
+```
+
+```{.python .input}
+#@tab tensorflow
+# Set `persistent=True` to run `t.gradient` more than once
+with tf.GradientTape(persistent=True) as t:
+    y = x * x
+    u = tf.stop_gradient(y)
+    z = u * x
+
+x_grad = t.gradient(z, x)
+x_grad == u
+```
+
+`y` の計算が記録されたので、その後 `y` でバックプロパゲーションを呼び出して `x` に対する `y = x * x` の微分 (`2 * x`) を得ることができます。
+
+```{.python .input}
 y.backward()
 x.grad == 2 * x
 ```
 
-Note that attaching gradients to a variable `x` implicitly calls `x = x.detach()`.
-If `x` is computed based on other variables,
-this part of computation will not be used in the `backward` function.
-
-```{.python .input  n=13}
-y = np.ones(4) * 2
-y.attach_grad()
-with autograd.record():
-    u = x * y
-    u.attach_grad()  # Implicitly run u = u.detach()
-    z = 5 * u - x
-z.backward()
-x.grad, u.grad, y.grad
+```{.python .input}
+#@tab pytorch
+x.grad.zero_()
+y.sum().backward()
+x.grad == 2 * x
 ```
 
-## Pythonの制御フローに対する勾配を計算する
+```{.python .input}
+#@tab tensorflow
+t.gradient(y, x) == 2 * x
+```
 
-自動微分のメリットとして、たとえ計算グラフが複雑なPythonの制御フロー（条件分岐、ループ、任意の関数呼び出し）を含んでいたとしても、その変数の微分を得られる点があります。次のスニペットでは、`while` ループのイテレーション数や `if` 文の評価回数がが、入力 `a` に依存しています。
+## Python 制御フローの勾配を計算する
 
+自動微分を使用する利点の 1 つは、(**迷路の Python 制御フローを通過する必要がある関数**) (条件式、ループ、任意の関数呼び出しなど) の計算グラフを [**たとえ**] 構築して、(**結果の変数の勾配を計算できる**)次のスニペットでは、`while` ループの反復回数と `if` ステートメントの評価はどちらも入力 `a` の値に依存することに注意してください。
 
-```{.python .input  n=16}
+```{.python .input}
 def f(a):
     b = a * 2
     while np.linalg.norm(b) < 1000:
@@ -197,9 +248,35 @@ def f(a):
     return c
 ```
 
-再度、勾配を計算するために、その計算を`record`(保存)する必要があり、また`backward`呼び出す必要があります。
+```{.python .input}
+#@tab pytorch
+def f(a):
+    b = a * 2
+    while b.norm() < 1000:
+        b = b * 2
+    if b.sum() > 0:
+        c = b
+    else:
+        c = 100 * b
+    return c
+```
 
-```{.python .input  n=17}
+```{.python .input}
+#@tab tensorflow
+def f(a):
+    b = a * 2
+    while tf.norm(b) < 1000:
+        b = b * 2
+    if tf.reduce_sum(b) > 0:
+        c = b
+    else:
+        c = 100 * b
+    return c
+```
+
+勾配を計算してみましょう。
+
+```{.python .input}
 a = np.random.normal()
 a.attach_grad()
 with autograd.record():
@@ -207,42 +284,58 @@ with autograd.record():
 d.backward()
 ```
 
-上で定義された関数`f`を解析してみましょう。関数`f`は入力`a`に対する区分線形関数であることは確認できると思います。言い換えれば、どのような`a`に対しても、`k`の値が入力`a`に依存して、`f(a) = k * a`を満たす定数スカラー`k`が存在します。従って、`d / a`という計算を行うことで、その勾配が正しいかどうかを検証することができます。
-
-```{.python .input  n=10}
-print(a.grad == (d / a))
+```{.python .input}
+#@tab pytorch
+a = torch.randn(size=(), requires_grad=True)
+d = f(a)
+d.backward()
 ```
 
-
-## 学習モードと推論モード
-
-上記で確認したように、`autograd.record`の関数を呼ぶと、MXNetは以降のブロックの演算を記録します。また、
-`autograd.record`は*推論モード*から*学習モード*へと実行モードを切り替えます。このことは、`is_training`関数を実行すると確認することができます。
-
-
-```{.python .input  n=19}
-print(autograd.is_training())
-with autograd.record():
-    print(autograd.is_training())
+```{.python .input}
+#@tab tensorflow
+a = tf.Variable(tf.random.normal(shape=()))
+with tf.GradientTape() as t:
+    d = f(a)
+d_grad = t.gradient(d, a)
+d_grad
 ```
-複雑な深層学習モデルを扱うときは、学習するときと、それを使って推論を行うときで、違った挙動をするモデルのアルゴリズムに直面することもあるでしょう。以降の章では、これらの違いの詳細について説明をします。
 
-## まとめ
+これで、上で定義した `f` 関数を解析できます。入力 `a` では区分的線形であることに注意してください。つまり、`a` には `f(a) = k * a` のような定数スカラー `k` が存在し、`k` の値は入力 `a` に依存します。したがって `d / a` では、勾配が正しいことを検証できます。
 
-* MXNetでは微分の処理を自動化する`autograd`パッケージを提供してます。これを利用するためには、偏微分を計算したい変数に関して勾配をまずアタッチします。そして、対象となる値の計算を記録し、その`backward`関数を実行し、変数の `grad` 属性から最終的な勾配を知ることができます。
-* `backward`関数で利用される計算の一部を制御するために、勾配をデタッチすることができます。
-* MXNetの実行モードには学習モードと推論モードがあります。`autograd.is_training`を呼ぶと、実行モードを知ることができます。
+```{.python .input}
+a.grad == d / a
+```
 
-## 練習
+```{.python .input}
+#@tab pytorch
+a.grad == d / a
+```
 
-1. なぜ2階微分は、1階微分よりもずっと多くの計算を必要とするのでしょうか。
-1. After running `y.backward()`, immediately run it again and see what happens.
-1. `a`に関する`d`の微分を計算する制御フローを例としてとりあげましたが、`a`をランダムなベクトルや行列に変更するとどうなるでしょうか。このとき、`f(a)`の計算結果はスカラーではなくなってしまいます。どういった結果になるでしょうか。どのように解析すれば良いでしょうか。
-1. その制御フローの勾配を計算する例を変えてみましょう。実行して結果を解析してみましょう。
-1. $f(x) = \sin(x)$を考えます。そして、$f(x)$と$\frac{df(x)}{dx}$をグラフ化してください。ただし、$\frac{df(x)}{dx}$については、数式の計算を使わない、つまり $f'(x) = \cos(x)$を使わずにグラフ化しましょう。
-1. eBayやComputational advertisingのようなセカンド・プライスオークションにおいては、せりに買った人は二番目に高い入札金額を支払います。`autograd`を使って、せりに買った人の入札金額に関する最終的な価格の勾配を計算してみましょう。その結果から、セカンド・プライスオークションのメカニズムについてわかることがありますか? もしセカンド・プライスオークションについてより深く知りたいと思うのであれば、Edelmanの論文  :cite:`Edelman.Ostrovsky.Schwarz.2007` を参照してください。
+```{.python .input}
+#@tab tensorflow
+d_grad == d / a
+```
 
+## [概要
 
-## [議論](https://discuss.mxnet.io/t/2318)
+* ディープラーニングフレームワークでは、微分の計算を自動化できます。これを使用するには、まず偏微分を求める変数に勾配を付けます。次に、目標値の計算を記録し、その関数を逆伝播のために実行し、結果の勾配にアクセスします。
 
-![](../img/qr_autograd.svg)
+## 演習
+
+1. 二次導関数が一次導関数より計算コストがかかるのはなぜですか？
+1. バックプロパゲーション用に関数を実行したら、ただちにその関数をもう一度実行して、何が起こるかを確認してください。
+1. `a` に対する `d` の微分を計算する制御フローの例では、変数 `a` をランダムなベクトルまたは行列に変更するとどうなるでしょうか。この時点では、`f(a)` の計算結果はスカラーではなくなります。結果はどうなりますか？これをどのように分析するのですか？
+1. 制御フローの勾配を求める例を再設計します。結果を実行して解析します。
+1. $f(x) = \sin(x)$ にしましょう。$f(x)$ と $\frac{df(x)}{dx}$ をプロットします。後者は $f'(x) = \cos(x)$ を利用せずに計算されます。
+
+:begin_tab:`mxnet`
+[Discussions](https://discuss.d2l.ai/t/34)
+:end_tab:
+
+:begin_tab:`pytorch`
+[Discussions](https://discuss.d2l.ai/t/35)
+:end_tab:
+
+:begin_tab:`tensorflow`
+[Discussions](https://discuss.d2l.ai/t/200)
+:end_tab:

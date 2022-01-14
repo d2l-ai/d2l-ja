@@ -1,19 +1,17 @@
 # 線形代数
+:label:`sec_linear-algebra`
 
-データを格納・操作できるようになったので、ほとんどのモデルを理解するために必要となる、基本的な線形代数の一部を簡単に見てみましょう。基本的な数学的対象、算術、線形代数の演算を紹介し、それらの数学的な表記とコードで実装する方法を示します。
-
+データの保存と操作ができるようになったところで、本書で説明するほとんどのモデルを理解して実装するために必要な、基本的な線形代数のサブセットについて簡単に説明します。以下では、線形代数における基本的な数学オブジェクト、算術、演算を紹介します。それぞれを数学的表記法と対応するコード実装で表現します。 
 
 ## スカラー
 
-これまで線形代数や機械学習を勉強したことがなかったとしたら、おそらく一度に1つの数だけを扱ってきたかもしれません。そして、小切手帳の帳尻を合わしたり、レストランでの支払いをしたことがあれば、数のペアを足したり、掛けたりするといった基本的な方法はご存知でしょう。パロアルトの気温が華氏52度というのを例にあげましょう。正式には、これらの値を*スカラー*と呼びます。この値を摂氏に変換したい場合 (温度測定する単位としてメートル法が採用するより賢明な方法)、$f$を$52$として、式$c=(f-32)*5/9$を評価します。この式において、$32$、$5$、および$9$の各項はスカラー値です。何らかの値を代入するためのプレースホルダー$c$と$f$は変数と呼ばれ、それらは未知のスカラー値を表します。
+線形代数や機械学習を学んだことがないなら、数学に関する過去の経験は、おそらく一度に一つの数字について考えることだったでしょう。また、小切手帳のバランスを取ったり、レストランで夕食代を支払ったりしたことがある場合は、数字のペアの加算や乗算などの基本的なことを行う方法をすでに知っています。たとえば、パロアルトの気温は華氏$52$度です。正式には、1 つの数値量だけで構成される値を「スカラー」と呼びます。この値を摂氏 (メートル法のより適切な温度スケール) に変換する場合は、$c = \frac{5}{9}(f - 32)$ という式を評価し、$f$ を $52$ に設定します。この方程式では、$5$、$9$、$32$ の各項はスカラー値です。プレースホルダー $c$ と $f$ は*変数* と呼ばれ、不明なスカラー値を表します。 
 
-この書籍では、スカラーを通常の小文字 ($x$、$y$、$z$) とする数学的表記を利用します。また、すべての (連続の) 実数値スカラーがとりうる空間を$\mathcal{R}$と表します。便宜上、*空間*の厳密な説明は後で行いますが、今のところ、$x \in \mathcal{R}$ という表現は $x$ が実数値スカラーであることを示す公式な方法であることを覚えておいてください。同様に、$x, y \in {0, 1}$ は $x$ と $y$ が $0$ または $1$ をとることを表しています。
+本書では、スカラー変数を通常の小文字で表す数学表記法を採用しています (例:$x$、$y$、$z$)。すべての (連続) *実数値* スカラーの空間を $\mathbb{R}$ で表します。便宜上、*space* が正確に何であるかを厳密に定義しますが、$x \in \mathbb{R}$ という式は $x$ が実数値のスカラーであると言う正式な言い方であることを覚えておいてください。記号$\in$は「in」と発音でき、単に集合のメンバーであることを示します。同様に、$x$ と $y$ は値が $0$ または $1$ にしかならない数値であることを示すために $x, y \in \{0, 1\}$ と書くことができます。 
 
+(**スカラーは、要素が 1 つだけのテンソルで表されます。**) 次のスニペットでは、2 つのスカラーをインスタンス化し、加算、乗算、除算、べき乗という使い慣れた算術演算を行います。
 
-MXNetでは、1つの要素だけをもつ `ndarray` を作成することでスカラーを表します。以下のスニペットでは、2つのスカラーをインスタンス化し、加算、乗算、除算、べき乗など、見慣れた算術演算を実行します。
-
-
-```{.python .input  n=1}
+```{.python .input}
 from mxnet import np, npx
 npx.set_np()
 
@@ -23,105 +21,141 @@ y = np.array(2.0)
 x + y, x * y, x / y, x ** y
 ```
 
+```{.python .input}
+#@tab pytorch
+import torch
 
-## ベクトル
+x = torch.tensor(3.0)
+y = torch.tensor(2.0)
 
-ベクトルは単にスカラー値のリストとして考えることができます。ベクトル内の各数値は、単一のスカラー値で構成されています。これらの値をベクトルの*要素*や*成分* (英語では *entries* や *components*) と呼びます。ベクトルがデータセットに含まれるデータ例を表す場合、ベクトルの値は実世界の意味をもっているといえます。たとえば、ローンの債務不履行のリスクを調査している場合、収入、雇用期間、過去の債務不履行の数などに対応する要素を持つベクトルに、各申請者を関連付けることができるでしょう。もし、病院の患者の心臓発作のリスクを調べる場合は、最新のバイタルサイン、コレステロール値、1日当たりの運動時間などからなるベクトルで、患者の状態を表すかもしれません。数学表記では、通常、太字の小文字でベクトル (例えば、$\mathbf{x}$、$\mathbf{y}$、$\mathbf{z}$)を表します。
+x + y, x * y, x / y, x**y
+```
 
+```{.python .input}
+#@tab tensorflow
+import tensorflow as tf
 
-In MXNet, we work with vectors via $1$-dimensional `ndarray`s. In general `ndarray`s can have arbitrary lengths, subject to the memory limits of your machine.
+x = tf.constant(3.0)
+y = tf.constant(2.0)
 
+x + y, x * y, x / y, x**y
+```
+
+## ベクター
+
+[**ベクトルは単にスカラー値のリストと考えることができます**] これらの値をベクトルの*要素* (*entries* または*components*) と呼びます。ベクトルがデータセットの例を表す場合、その値には実世界での意味があります。たとえば、ローン債務不履行のリスクを予測するモデルをトレーニングする場合、各申請者を、収入、雇用期間、以前の債務不履行回数、その他の要因に対応する要素をもつベクトルに関連付けることができます。入院患者が直面する可能性のある心臓発作のリスクを研究している場合、各患者を最新のバイタルサイン、コレステロール値、1日あたりの運動時間などを捉えたベクターで表すことができます。数学表記では、通常、ベクトルを太字の小文字で表します。英字 ($\mathbf{x}$、$\mathbf{y}$、$\mathbf{z})$ など) 
+
+一次元テンソルを介してベクトルを扱います。一般に、テンソルはマシンのメモリ制限に応じて任意の長さを持つことができます。
 
 ```{.python .input}
 x = np.arange(4)
 x
 ```
 
+```{.python .input}
+#@tab pytorch
+x = torch.arange(4)
+x
+```
 
-We can refer to any element of a vector by using a subscript. For example, we can refer to the $i^\mathrm{th}$ element of $\mathbf{x}$ by $x_i$. Note that the element $x_i$ is a scalar, so we do not bold-face the font when referring to it. Extensive literature considers column vectors to be the default orientation of vectors, so does this book. In math, a vector $\mathbf{x}$ can be written as
+```{.python .input}
+#@tab tensorflow
+x = tf.range(4)
+x
+```
+
+添字を使うと、ベクトルのどの要素でも参照できます。たとえば、$x_i$ によって $\mathbf{x}$ の $i^\mathrm{th}$ エレメントを参照できます。要素 $x_i$ はスカラーなので、参照するときにフォントを太字にしないことに注意してください。広範な文献では、列ベクトルがベクトルの既定の方向であると見なされています。この本も同様です。数学では、ベクトル $\mathbf{x}$ は次のように記述できます。 
 
 $$\mathbf{x} =\begin{bmatrix}x_{1}  \\x_{2}  \\ \vdots  \\x_{n}\end{bmatrix},$$
 :eqlabel:`eq_vec_def`
 
-ここで $x_1, \ldots, x_n$ はベクトルの要素です。
-コードでは、`ndarray` にインデックスを付けることで任意の要素$i$にアクセスします。
+$x_1, \ldots, x_n$ はベクトルの要素です。コードでは、(**テンソルにインデックスを付けて任意の要素にアクセスする**)
 
 ```{.python .input}
 x[3]
 ```
 
-## 長さ、次元、shape
+```{.python .input}
+#@tab pytorch
+x[3]
+```
 
-:numref:`sec_ndarray` からいくつかの概念を見直してみましょう。ベクトルは単に数値の配列です。そして、すべての配列が長さをもつのと同じように、すべてのベクトルも長さをもっています。ベクトル$\mathbf{x}$が$n$個の実数値スカラーで構成されているとき、数学的な表記を用いて、これを$\mathbf{x} \in \mathcal{R}^n$のように表現することができます。ベクトルの長さは通常、*次元*と呼ばれます。
+```{.python .input}
+#@tab tensorflow
+x[3]
+```
 
-通常のPython配列と同様に、Pythonの組み込み関数``len()``を呼び出すことで `ndarray` の長さにアクセスできます。
+### 長さ、次元、形状
 
-```{.python .input  n=4}
+:numref:`sec_ndarray` のいくつかの概念をもう一度見てみましょう。ベクトルは単なる数値の配列です。そして、すべての配列が長さを持つように、すべてのベクトルもそうです。数学表記法では、ベクトル $\mathbf{x}$ が $n$ の実数値のスカラーで構成されているとすると、$\mathbf{x} \in \mathbb{R}^n$ と表現できます。ベクトルの長さは、一般にベクトルの*次元* と呼ばれます。 
+
+通常の Python 配列と同様に、Python に組み込まれている `len()` 関数を呼び出すことで [**テンソルの長さにアクセスできます**]。
+
+```{.python .input}
 len(x)
 ```
 
-`ndarray` が (1軸で構成される) ベクトルを表すとき、
-`.shape`属性を利用することで、ベクトルの長さにアクセスすることもできます。shapeは、`ndarray` の各軸に沿った長さ (次元) をリスト形式で表現するタプルです。1つの軸だけをもつ `ndarray` において、shapeはたった1つの要素をもちます。
+```{.python .input}
+#@tab pytorch
+len(x)
+```
+
+```{.python .input}
+#@tab tensorflow
+len(x)
+```
+
+テンソルが (正確に 1 つの軸をもつ) ベクトルを表す場合、`.shape` 属性を介してその長さにアクセスすることもできます。形状は、テンソルの各軸に沿った長さ (次元) を列挙したタプルです。(**軸が 1 つだけのテンソルの場合、形状には要素が 1 つしかありません。**)
 
 ```{.python .input}
 x.shape
 ```
 
+```{.python .input}
+#@tab pytorch
+x.shape
+```
 
-英語では次元をdimensionといいますが、これが様々な意味をもつがゆえに、人々を混乱させる傾向にあります。そこで、*dimensionality*という単語を使って、ベクトルまたは軸の*dimensionality*で長さ(つまりは要素数)を指すことがあります。しかし、`ndarray の`*dimensionality*は、`ndarray`がもつ軸の数を指すこともあります。この意味においては、`ndarray` の軸の *dimensionality* が軸の長さに相当するでしょう。
+```{.python .input}
+#@tab tensorflow
+x.shape
+```
 
+これらの文脈では「次元」という言葉が過負荷になりがちで、人々を混乱させる傾向があることに注意してください。明確にするために、*vector* または*axis* の次元を使用して、その長さ、つまりベクトルまたは軸の要素数を参照します。ただし、テンソルの次元性は、テンソルが持つ軸の数を参照するために使用します。この意味で、テンソルのある軸の次元は、その軸の長さになります。 
 
 ## 行列
 
-ベクトルがスカラーを0次から1次に一般化したもののように、行列はベクトルを$1$次元から$2$次元に一般化したものになります。通常、大文字 の太字 (例えば、$X$、$Y$、$Z$) で表す行列は、コードのなかでは2つの軸をもつ`ndarray`として表されます。
+ベクトルがスカラーを 0 次から 1 次まで一般化するように、行列はベクトルを次数 1 から次 2 に一般化します。通常、太字の大文字で表される行列 ($\mathbf{X}$、$\mathbf{Y}$、$\mathbf{Z}$ など) は、2 つの軸をもつテンソルとしてコードで表されます。 
 
+数学表記法では $\mathbf{A} \in \mathbb{R}^{m \times n}$ を使用して、行列 $\mathbf{A}$ が $m$ 行と $n$ 列の実数スカラーで構成されることを表します。任意の行列 $\mathbf{A} \in \mathbb{R}^{m \times n}$ をテーブルとして説明できます。各要素 $a_{ij}$ は $i^{\mathrm{th}}$ 行と $j^{\mathrm{th}}$ 列に属します。 
 
-In math notation, we use $\mathbf{A} \in \mathbb{R}^{m \times n}$
-to express that the matrix $\mathbf{A}$ consists of $m$ rows and $n$ columns of real-valued scalars.
-Visually, we can illustrate any matrix $\mathbf{A} \in \mathbb{R}^{m \times n}$ as a table,
-where each element $a_{ij}$ belongs to the $i^{\mathrm{th}}$ row and $j^{\mathrm{th}}$ column:
-
-
-$$A=\begin{pmatrix}
- a_{11} & a_{12} & \cdots & a_{1m} \\
- a_{21} & a_{22} & \cdots & a_{2m} \\
-\vdots & \vdots & \ddots & \vdots \\
- a_{n1} & a_{n2} & \cdots & a_{nm} \\
-\end{pmatrix}$$
+$$\mathbf{A}=\begin{bmatrix} a_{11} & a_{12} & \cdots & a_{1n} \\ a_{21} & a_{22} & \cdots & a_{2n} \\ \vdots & \vdots & \ddots & \vdots \\ a_{m1} & a_{m2} & \cdots & a_{mn} \\ \end{bmatrix}.$$
 :eqlabel:`eq_matrix_def`
 
+$\mathbf{A} \in \mathbb{R}^{m \times n}$ の場合、$\mathbf{A}$ の形状は ($m$、$n$) または $m \times n$ になります。具体的には、行列の行数と列数が同じ場合、その形状は正方形になるため、「*正方行列*」と呼ばれます。 
 
-For any $\mathbf{A} \in \mathbb{R}^{m \times n}$, the shape of $\mathbf{A}$
-is ($m$, $n$) or $m \times n$.
-Specifically, when a matrix has the same number of rows and columns,
-its shape becomes a square; thus, it is called a *square matrix*.
-
-We can create an $m \times n$ matrix in MXNet
-by specifying a shape with two components $m$ and $n$
-when calling any of our favorite functions for instantiating an `ndarray`
+テンソルをインスタンス化するためにお気に入りの関数を呼び出すときに $m$ と $n$ の 2 つの成分をもつ形状を指定することで [**$m \times n$ 行列を作成**] できます。
 
 ```{.python .input}
-A = np.arange(20).reshape(5,4)
+A = np.arange(20).reshape(5, 4)
 A
 ```
 
+```{.python .input}
+#@tab pytorch
+A = torch.arange(20).reshape(5, 4)
+A
+```
 
-行 ($i$) と列 ($j$) のインデックスを指定することで、行列$A$のスカラー要素$a_{ij}$にアクセスすることができます。 `:`を利用してインデックスを指定しなければ、それぞれの次元に沿ってすべての要素をとることができます (前の節で説明しました)。
+```{.python .input}
+#@tab tensorflow
+A = tf.reshape(tf.range(20), (5, 4))
+A
+```
 
-When the scalar elements of a matrix $\mathbf{A}$, such as in :eqref:`eq_matrix_def`, are not given,
-we may simply use the lower-case letter of the matrix $\mathbf{A}$ with the index subscript, $a_{ij}$,
-to refer to $[\mathbf{A}]_{ij}$.
-To keep notation simple, commas are inserted to separate indices only when necessary,
-such as $a_{2, 3j}$ and $[\mathbf{A}]_{2i-1, 3}$.
+:eqref:`eq_matrix_def` の行列 $\mathbf{A}$ のスカラー要素 $a_{ij}$ にアクセスするには、$[\mathbf{A}]_{ij}$ のように行 ($i$) と列 ($j$) のインデックスを指定します。行列 $\mathbf{A}$ のスカラー要素 (:eqref:`eq_matrix_def` など) が指定されない場合、行列 $\mathbf{A}$ の小文字をインデックス添字 $a_{ij}$ とともに使用して $[\mathbf{A}]_{ij}$ を参照することができます。表記を単純にするために、$a_{2, 3j}$ や $[\mathbf{A}]_{2i-1, 3}$ のように、必要な場合にのみカンマを別々のインデックスに挿入します。 
 
-
-Sometimes, we want to flip the axes.
-When we exchange a matrix's rows and columns,
-the result is called the *transpose* of the matrix.
-Formally, we signify a matrix $\mathbf{A}$'s transpose by $\mathbf{A}^\top$
-and if $\mathbf{B} = \mathbf{A}^\top$, then $b_{ij} = a_{ji}$ for any $i$ and $j$.
-Thus, the transpose of $\mathbf{A}$ in :eqref:`eq_matrix_def` is
-a $n \times m$ matrix:
+時々、軸を反転させたいことがあります。行列の行と列を交換すると、その結果は行列の*転置*と呼ばれます。正式には、行列 $\mathbf{A}$ の $\mathbf{A}^\top$ による転置を意味し、$\mathbf{B} = \mathbf{A}^\top$ の場合は $i$ と $j$ に対して $b_{ij} = a_{ji}$ を転置することを表します。したがって、:eqref:`eq_matrix_def` における $\mathbf{A}$ の転置は $n \times m$ 行列になります。 
 
 $$
 \mathbf{A}^\top =
@@ -133,15 +167,23 @@ $$
 \end{bmatrix}.
 $$
 
-In code, we access a matrix's transpose via the `T` attribute.
+ここで、コード内で a (**行列の転置**) にアクセスします。
 
-```{.python .input  n=7}
+```{.python .input}
 A.T
 ```
 
-As a special type of the square matrix,
-a *symmetric matrix* $\mathbf{A}$ is equal to its transpose:
-$\mathbf{A} = \mathbf{A}^\top$.
+```{.python .input}
+#@tab pytorch
+A.T
+```
+
+```{.python .input}
+#@tab tensorflow
+tf.transpose(A)
+```
+
+正方行列の特殊な型として、[**a*対称行列* $\mathbf{A}$ はその転置と等しい:$\mathbf{A} = \mathbf{A}^\top$.**] ここでは対称行列 `B` を定義します。
 
 ```{.python .input}
 B = np.array([[1, 2, 3], [2, 0, 4], [3, 4, 5]])
@@ -149,53 +191,83 @@ B
 ```
 
 ```{.python .input}
+#@tab pytorch
+B = torch.tensor([[1, 2, 3], [2, 0, 4], [3, 4, 5]])
+B
+```
+
+```{.python .input}
+#@tab tensorflow
+B = tf.constant([[1, 2, 3], [2, 0, 4], [3, 4, 5]])
+B
+```
+
+ここで `B` をその転置と比較します。
+
+```{.python .input}
 B == B.T
 ```
 
+```{.python .input}
+#@tab pytorch
+B == B.T
+```
 
+```{.python .input}
+#@tab tensorflow
+B == tf.transpose(B)
+```
 
-行列は便利なデータ構造です。行列を使用することで、異なる様々なデータを1つのデータとして構成することができます。たとえば、行列の行が各異なる家 (データ点) に対応し、列が異なる属性に対応します。This should sound familiar if you have ever used spreadsheet software or
-have read :numref:`sec_pandas`.
-Thus, although the default orientation of a single vector is a column vector,
-in a matrix that represents a tabular dataset,
-it is more conventional to treat each data point as a row vector in the matrix.
-And, as we will see in later chapters,
-this convention will enable common deep learning practices.
-For example, along the outermost axis of an `ndarray`,
-we can access or enumerate minibatches of data points,
-or just data points if no minibatch exists.
+行列は有用なデータ構造です。行列を使用すると、さまざまな変動様式を持つデータを整理できます。たとえば、マトリックスの行は異なる住宅 (データ例) に対応し、列は異なる属性に対応することがあります。スプレッドシートソフトウェアを使用したことがある人や :numref:`sec_pandas` を読んだことがある人なら、これはおなじみのように思えます。したがって、単一のベクトルの既定の方向は列ベクトルですが、表形式のデータセットを表す行列では、各データ例を行列の行ベクトルとして扱うのがより一般的です。また、後の章で説明するように、この規則により、一般的なディープラーニングの実践が可能になります。たとえば、テンソルの最も外側の軸に沿って、データ例のミニバッチ、またはミニバッチが存在しない場合はデータ例のみにアクセスまたは列挙できます。 
 
 ## テンソル
 
-ベクトルがスカラーの一般化であるように、また、行列がベクトルの一般化であるように、さらに多くの軸をもつデータ構造を作成することができます。テンソルは、任意の数の軸を持つ`ndarray`を記述する汎用的な方法を提供しています。たとえば、ベクトルは1次テンソル、行列は2次テンソルです。Tensors are denoted with capital letters of a special font face
-(e.g., $\mathsf{X}$, $\mathsf{Y}$, and $\mathsf{Z}$)
-and their indexing mechanism (e.g., $x_{ijk}$ and $[\mathsf{X}]_{1, 2i-1, 3}$) is similar to that of matrices.
+ベクトルがスカラーを一般化し、行列がベクトルを一般化するように、さらに多くの軸をもつデータ構造を構築できます。[**Tensors**](本項の「テンソル」は代数的オブジェクトを指す) (**$n$ 次元の配列を任意の軸数で記述する一般的な方法を挙げてください。**) ベクトルは一次テンソル、行列は二次テンソルです。テンソルは特殊なフォントフェース ($\mathsf{X}$、$\mathsf{Y}$、$\mathsf{Z}$ など) の大文字で表され、インデックスの仕組み ($x_{ijk}$ や $[\mathsf{X}]_{1, 2i-1, 3}$ など) は行列のものと似ています。 
 
-画像を扱い始める際には、テンソルはより重要なものとなります。なぜなら画像は、高さ、幅、カラーチャンネル (RGB) の3軸をもつ `ndarray`だからです。しかしこの章では、さらに高次のテンソルについてはスキップして、基本的な事項に注目します。
+テンソルは、高さ、幅、およびカラーチャンネル (赤、緑、青) を積み重ねるための*channel* 軸に対応する 3 つの軸を持つ $n$ 次元の配列として到着するイメージで作業を開始するとより重要になります。ここでは、高次のテンソルをスキップして、基本に焦点を当てます。
 
 ```{.python .input}
-X = np.arange(24).reshape((2, 3, 4))
-print('X.shape =', X.shape)
-print('X =', X)
+X = np.arange(24).reshape(2, 3, 4)
+X
 ```
 
-## テンソル計算の基本的性質
+```{.python .input}
+#@tab pytorch
+X = torch.arange(24).reshape(2, 3, 4)
+X
+```
 
-スカラー、ベクトル、行列、そして任意の次数のテンソルは、頼りになる良い性質をもっています。たとえば、elementwiseな演算の定義で気付いた方もいるかもしれませんが、同じshapeの計算対象が与えられた場合、elementwiseな演算の結果は同じshapeのテンソルになります。
-Similarly, given any two tensors with the same shape,
-the result of any binary elementwise operation
-will be a tensor of that same shape.
-For example, adding two matrices of the same shape
-performs elementwise addition over these two matrices.
+```{.python .input}
+#@tab tensorflow
+X = tf.reshape(tf.range(24), (2, 3, 4))
+X
+```
+
+## テンソル演算の基本的性質
+
+任意の数の軸のスカラー、ベクトル、行列、テンソル (この項の「テンソル」は代数的オブジェクトを指します) には、便利な便利なプロパティがいくつかあります。たとえば、要素単位の単項演算の定義から、要素単位の単項演算ではオペランドの形状が変化しないことに気付いたかもしれません。同様に、[**同じ形状のテンソルが2つあれば、要素ごとの2進演算の結果は同じ形状のテンソルになります。**] たとえば、同じ形状の2つの行列を加算すると、これら 2 つの行列に対して要素単位の加算が行われます。
 
 ```{.python .input}
 A = np.arange(20).reshape(5, 4)
-B = A.copy()  # Assign a copy of A to B by allocating new memory
+B = A.copy()  # Assign a copy of `A` to `B` by allocating new memory
 A, A + B
 ```
 
-Specifically, elementwise multiplication of two matrices is called their *Hadamard product* (math notation $\odot$).
-Consider matrix $\mathbf{B} \in \mathbb{R}^{m \times n}$ whose element of row $i$ and column $j$ is $b_{ij}$. The Hadamard product of matrices $\mathbf{A}$ (defined in :eqref:`eq_matrix_def`) and $\mathbf{B}$
+```{.python .input}
+#@tab pytorch
+A = torch.arange(20, dtype=torch.float32).reshape(5, 4)
+B = A.clone()  # Assign a copy of `A` to `B` by allocating new memory
+A, A + B
+```
+
+```{.python .input}
+#@tab tensorflow
+A = tf.reshape(tf.range(20, dtype=tf.float32), (5, 4))
+B = A  # No cloning of `A` to `B` by allocating new memory
+A, A + B
+```
+
+具体的には、[**2つの行列の要素ごとの乗算を*アダマール積***](数学表記 $\odot$) と呼びます。行 $i$ と列 $j$ の要素が $b_{ij}$ である行列 $\mathbf{B} \in \mathbb{R}^{m \times n}$ について考えてみます。行列 $\mathbf{A}$ (:eqref:`eq_matrix_def` で定義されている) と $\mathbf{B}$ のアダマール積 
 
 $$
 \mathbf{A} \odot \mathbf{B} =
@@ -210,8 +282,18 @@ $$
 ```{.python .input}
 A * B
 ```
-Multiplying or adding a tensor by a scalar also does not change the shape of the tensor,
-where each element of the operand tensor will be added or multiplied by the scalar.
+
+```{.python .input}
+#@tab pytorch
+A * B
+```
+
+```{.python .input}
+#@tab tensorflow
+A * B
+```
+
+[**テンソルにスカラーを乗算または加算する**] もテンソルの形状は変化せず、オペランドテンソルの各要素にスカラーが加算または乗算されます。
 
 ```{.python .input}
 a = 2
@@ -219,108 +301,244 @@ X = np.arange(24).reshape(2, 3, 4)
 a + X, (a * X).shape
 ```
 
-## 縮約
+```{.python .input}
+#@tab pytorch
+a = 2
+X = torch.arange(24).reshape(2, 3, 4)
+a + X, (a * X).shape
+```
 
-任意のテンソルに対する演算で有用なものといえば、要素の合計を計算することでしょう。数学的表記では、合計を$\sum$記号を使って表現します。長さ$d$のベクトル$\mathbf{x}$の要素の合計を表すために$\sum_{i=1}^d x_i$と書くことができます。コード上は、`sum`の関数を呼び出すだけです。
+```{.python .input}
+#@tab tensorflow
+a = 2
+X = tf.reshape(tf.range(24), (2, 3, 4))
+a + X, (a * X).shape
+```
 
+## 減少
+:label:`subseq_lin-alg-reduction`
 
-```{.python .input  n=11}
+任意のテンソルで実行できる便利な操作の 1 つは、[**要素の和**] を計算することです。数学的表記法では、$\sum$ 記号を使用して和を表現します。要素の和を長さ $d$ のベクトル $\mathbf{x}$ で表すために、$\sum_{i=1}^d x_i$ と書きます。コードでは、合計を計算する関数を呼び出すだけです。
+
+```{.python .input}
 x = np.arange(4)
 x, x.sum()
 ```
 
-任意のshapeをもつテンソルの要素についても総和を計算することができます。たとえば、$m \times n$の行列　$\mathbf{A}$　の要素の合計は、$\sum_{i=1}^{m} \sum_{j=1}^{n} a_{ij}$と書くことができます。
+```{.python .input}
+#@tab pytorch
+x = torch.arange(4, dtype=torch.float32)
+x, x.sum()
+```
 
-```{.python .input  n=12}
+```{.python .input}
+#@tab tensorflow
+x = tf.range(4, dtype=tf.float32)
+x, tf.reduce_sum(x)
+```
+
+たとえば、$m \times n$ 行列 $\mathbf{A}$ の要素の和は $\sum_{i=1}^{m} \sum_{j=1}^{n} a_{ij}$ と書くことができます。
+
+```{.python .input}
 A.shape, A.sum()
 ```
 
+```{.python .input}
+#@tab pytorch
+A.shape, A.sum()
+```
 
-By default, invoking the `sum` function *reduces* a tensor along all its axes to a scalar.
-We can also specify the axes along which the tensor is reduced via summation.
-Take matrices as an example.
-To reduce the row dimension (axis $0$) by summing up elements of all the rows,
-we specify `axis=0` when invoking `sum`.
-Since the input matrix reduces along axis $0$ to generate the output vector,
-the dimension of axis $0$ of the input is lost in the output shape.
+```{.python .input}
+#@tab tensorflow
+A.shape, tf.reduce_sum(A)
+```
+
+デフォルトでは、合計を計算する関数を呼び出します。
+*テンソルをそのすべての軸に沿ってスカラーに縮小* します。
+また、[**加算によってテンソルを減少させる軸を指定することもできます**] 行列を例にとります。すべての行の要素を合計して行の次元 (軸 0) を減らすには、関数を呼び出すときに `axis=0` を指定します。入力行列は軸 0 に沿って縮小されて出力ベクトルが生成されるため、入力の軸 0 の次元は出力シェイプでは失われます。
 
 ```{.python .input}
 A_sum_axis0 = A.sum(axis=0)
 A_sum_axis0, A_sum_axis0.shape
 ```
 
-Specifying `axis=1` will reduce the column dimension (axis $1$) by summing up elements of all the columns.
-Thus, the dimension of axis $1$ of the input is lost in the output shape.
+```{.python .input}
+#@tab pytorch
+A_sum_axis0 = A.sum(axis=0)
+A_sum_axis0, A_sum_axis0.shape
+```
+
+```{.python .input}
+#@tab tensorflow
+A_sum_axis0 = tf.reduce_sum(A, axis=0)
+A_sum_axis0, A_sum_axis0.shape
+```
+
+`axis=1` を指定すると、すべての列の要素が合計され、列の次元 (軸 1) が縮小されます。したがって、入力の軸 1 の次元は出力形状では失われます。
 
 ```{.python .input}
 A_sum_axis1 = A.sum(axis=1)
 A_sum_axis1, A_sum_axis1.shape
 ```
 
-Reducing a matrix along both rows and columns via summation
-is equivalent to summing up all the elements of the matrix.
-
 ```{.python .input}
-A.sum(axis=[0, 1])  # Same as A.sum()
+#@tab pytorch
+A_sum_axis1 = A.sum(axis=1)
+A_sum_axis1, A_sum_axis1.shape
 ```
 
-関連する計算として*平均(mean)*があります。英語では*mean*以外に*average*とも呼ばれます。合計を要素の数で割ることで平均を計算します。コードでは、任意の形のテンソルに `mean` を呼び出すだけです。
+```{.python .input}
+#@tab tensorflow
+A_sum_axis1 = tf.reduce_sum(A, axis=1)
+A_sum_axis1, A_sum_axis1.shape
+```
 
-```{.python .input  n=13}
+加算によって行と列の両方に沿って行列を削減することは、行列のすべての要素を合計することと等価です。
+
+```{.python .input}
+A.sum(axis=[0, 1])  # Same as `A.sum()`
+```
+
+```{.python .input}
+#@tab pytorch
+A.sum(axis=[0, 1])  # Same as `A.sum()`
+```
+
+```{.python .input}
+#@tab tensorflow
+tf.reduce_sum(A, axis=[0, 1])  # Same as `tf.reduce_sum(A)`
+```
+
+[**関連する量は*平均*で、*平均*とも呼ばれます。**] 合計を要素の総数で割ることで平均を計算します。コードでは、任意の形状のテンソルの平均を計算する関数を呼び出すだけで済みます。
+
+```{.python .input}
 A.mean(), A.sum() / A.size
 ```
 
-Like `sum`, `mean` can also reduce a tensor along the specified axes.
+```{.python .input}
+#@tab pytorch
+A.mean(), A.sum() / A.numel()
+```
+
+```{.python .input}
+#@tab tensorflow
+tf.reduce_mean(A), tf.reduce_sum(A) / tf.size(A).numpy()
+```
+
+同様に、平均を計算する関数では、指定した軸に沿ってテンソルを減らすこともできます。
 
 ```{.python .input}
 A.mean(axis=0), A.sum(axis=0) / A.shape[0]
 ```
 
+```{.python .input}
+#@tab pytorch
+A.mean(axis=0), A.sum(axis=0) / A.shape[0]
+```
 
-### Non-Reduction Sum
+```{.python .input}
+#@tab tensorflow
+tf.reduce_mean(A, axis=0), tf.reduce_sum(A, axis=0) / A.shape[0]
+```
 
-However, sometimes it can be useful to keep the number of axes unchanged when invoking `sum` or `mean` by setting `keepdims=True`.
+### 非リダクション合計
+:label:`subseq_lin-alg-non-reduction`
+
+ただし、和または平均を計算する関数を呼び出す場合、[**軸の数を変更しない**] と便利な場合があります。
 
 ```{.python .input}
 sum_A = A.sum(axis=1, keepdims=True)
 sum_A
 ```
 
-For instance, since `sum_A` still keeps its $2$ axes after summing each row, we can divide `A` by `sum_A` with broadcasting.
+```{.python .input}
+#@tab pytorch
+sum_A = A.sum(axis=1, keepdims=True)
+sum_A
+```
+
+```{.python .input}
+#@tab tensorflow
+sum_A = tf.reduce_sum(A, axis=1, keepdims=True)
+sum_A
+```
+
+たとえば、`sum_A` は各行を合計した後も 2 つの軸を保持しているので、ブロードキャストで `A` を `sum_A` で割ることができます。
 
 ```{.python .input}
 A / sum_A
 ```
 
-If we want to calculate the cumulative sum of elements of `A` along some axis, say `axis=0` (row by row),
-we can call the `cumsum` function. This function will not reduce the input tensor along any axis.
+```{.python .input}
+#@tab pytorch
+A / sum_A
+```
+
+```{.python .input}
+#@tab tensorflow
+A / sum_A
+```
+
+[**軸に沿った `A` の要素の累積和**]、たとえば `axis=0` (行ごと) を計算したい場合は、`cumsum` 関数を呼び出すことができます。この関数は入力テンソルを軸に沿って減少させません。
 
 ```{.python .input}
 A.cumsum(axis=0)
 ```
 
-## ドット積
+```{.python .input}
+#@tab pytorch
+A.cumsum(axis=0)
+```
 
-これまでのところ、elementwiseな演算、合計、平均のみを扱ってきました。もし、これだけしかできないのであれば、線形代数として1つの章を設けるほどではないでしょう。ここで紹介したいのが、最も基本的な演算の1つであるドット積です。 2つのベクトル$\mathbf{x}, \mathbf{y} \in \mathbb{R}^d$ が与えられたとき、それらの*ドット積* $\mathbf{x}^T \mathbf{y}$ (または $\langle \mathbf{x}, \mathbf{y}  \rangle$) は、同じ位置の要素の積の和となります。すなわち、$\mathbf{x}^T \mathbf{y} = \sum_{i=1}^{d} x_i \cdot y_i$ となります。
+```{.python .input}
+#@tab tensorflow
+tf.cumsum(A, axis=0)
+```
 
+## ドットプロダクト
 
+これまでは、要素単位の演算、合計、平均のみを実行してきました。そして、これが私たちにできることのすべてであるならば、線形代数はおそらくそれ自身のセクションに値しないでしょう。ただし、最も基本的な演算の 1 つは内積です。2 つのベクトル $\mathbf{x}, \mathbf{y} \in \mathbb{R}^d$ が与えられた場合、それらの*内積* $\mathbf{x}^\top \mathbf{y}$ (または $\langle \mathbf{x}, \mathbf{y}  \rangle$) は、同じ位置 $\mathbf{x}^\top \mathbf{y} = \sum_{i=1}^{d} x_i y_i$ にある要素の積の和になります。 
 
-```{.python .input  n=14}
+[~~2つのベクトルの*内積* は、同じ位置にある要素の積の和です~~]
+
+```{.python .input}
 y = np.ones(4)
 x, y, np.dot(x, y)
 ```
 
-2つのベクトルのドット積は、要素ごとにelementwiseな乗算を実行して、その総和をとることと等価です。
+```{.python .input}
+#@tab pytorch
+y = torch.ones(4, dtype = torch.float32)
+x, y, torch.dot(x, y)
+```
+
+```{.python .input}
+#@tab tensorflow
+y = tf.ones(4, dtype=tf.float32)
+x, y, tf.tensordot(x, y, axes=1)
+```
+
+注意 (**要素ごとの乗算と和を実行することで、2つのベクトルの内積を等価的に表現できます:**)
 
 ```{.python .input}
 np.sum(x * y)
 ```
 
-ドット積の有用性は幅広いです。たとえば、ベクトル $\mathbf{x}  \in \mathbb{R}^d$ で表現される値の集合と、重みの集合 $\mathbf{w} \in \mathbb{R}^d$ が与えられたとき、重み $\mathbf{w}$ による $\mathbf{x}$の値の重み付け和は、ドット積$\mathbf{u}^T \mathbf{w}$として表すことができます。重みが負ではなく、その総和が1になる場合$\left(\sum_{i=1}^{d} {w_i}=1 \right)$、ドット積は*加重平均*を表します。2つのベクトルがそれぞれ長さ1になるように正規化されているとき、ドット積はそれらの間のコサイン角度を表します。この節では後ほど、*長さ*が何を意味するのかを説明します。
+```{.python .input}
+#@tab pytorch
+torch.sum(x * y)
+```
 
-## 行列ベクトル積
+```{.python .input}
+#@tab tensorflow
+tf.reduce_sum(x * y)
+```
 
-ドット積の計算方法がわかったところで、*行列ベクトル積*についても理解しましょう。行列$\mathbf{A} \in \mathbb{R}^{m \times n}$とベクトル$\mathbf{x} \in \mathbb{R}^n$ を定義して、eqref:`eq_matrix_def` と :eqref:`eq_vec_def` で見てみましょう。まず、行ベクトルの視点から行列 $\mathbf{A}$ を見てみましょう。
+内積は幅広い状況で役に立ちます。たとえば、ベクトル $\mathbf{x}  \in \mathbb{R}^d$ で表される値のセットと $\mathbf{w} \in \mathbb{R}^d$ で表される重みのセットがある場合、$\mathbf{x}$ の値の重み $\mathbf{w}$ に従った加重和は、ドット積 $\mathbf{x}^\top \mathbf{w}$ として表すことができます。重みが負でなく、合計が 1 の場合 ($\left(\sum_{i=1}^{d} {w_i} = 1\right)$)、内積は*加重平均*を表します。2 つのベクトルを正規化して単位長をもつと、内積はそれらの間の角度の余弦を表します。この*length* の概念については、このセクションの後半で正式に紹介します。 
+
+## マトリックス-ベクトル積
+
+ドット積の計算方法がわかったところで、*行列-ベクトル積*について理解できるようになります。:eqref:`eq_matrix_def` と :eqref:`eq_vec_def` でそれぞれ定義され可視化された行列 $\mathbf{A} \in \mathbb{R}^{m \times n}$ とベクトル $\mathbf{x} \in \mathbb{R}^n$ を思い出してください。まず、行列 $\mathbf{A}$ を行ベクトルで可視化することから始めましょう。 
 
 $$\mathbf{A}=
 \begin{bmatrix}
@@ -330,9 +548,9 @@ $$\mathbf{A}=
 \mathbf{a}^\top_m \\
 \end{bmatrix},$$
 
-それぞれ、$\mathbf{a}^\top_{i} \in \mathbb{R}^{n}$は、行列$A$の$i$番目の行を表す行ベクトルです。
-行列ベクトル積$\mathbf{A}\mathbf{x}$は、$i^\mathrm{th}$番目の要素がドット積 $\mathbf{a}^\top_i \mathbf{x}$となる長さ $m$ の列ベクトルとなります。
+ここで、各 $\mathbf{a}^\top_{i} \in \mathbb{R}^n$ は、行列 $\mathbf{A}$ の $i^\mathrm{th}$ 行を表す行ベクトルです。 
 
+[**行列-ベクトル積 $\mathbf{A}\mathbf{x}$ は長さが $m$ の列ベクトルで、$i^\mathrm{th}$ の要素はドット積 $\mathbf{a}^\top_i \mathbf{x}$: **] 
 
 $$
 \mathbf{A}\mathbf{x}
@@ -350,24 +568,39 @@ $$
 \end{bmatrix}.
 $$
 
+行列 $\mathbf{A}\in \mathbb{R}^{m \times n}$ による乗算は、ベクトルを $\mathbb{R}^{n}$ から $\mathbb{R}^{m}$ に投影する変換と考えることができます。これらの変換は非常に有用であることが分かります。たとえば、回転を正方行列による乗算として表すことができます。以降の章で説明するように、行列とベクトルの積を使用して、前の層の値からニューラルネットワークの各層を計算するときに必要な最も集中的な計算を記述することもできます。
 
-行列$\mathbf{A}\in \mathbb{R}^{m \times n}$による乗算は、ベクトルを$\mathbb{R}^{n}$から$\mathbb{R}^{m}$への変換として考えることができます。
+:begin_tab:`mxnet`
+行列とベクトルの積をテンソルでコードで表現する場合、ドット積と同じ関数 `dot` を使用します。行列 `A` とベクトル `x` をもって `np.dot(A, x)` を呼び出すと、行列とベクトルの積が実行されます。`A` の列の次元 (軸 1 に沿った長さ) は `x` の次元 (長さ) と同じでなければならないことに注意してください。
+:end_tab:
 
-これらの変換は非常に便利ですあることがわかります。たとえば回転という変換は、ある正方行列による乗算として表すことができます。以降の章で見られるように、前の層の値からニューラルネットワークの各層を計算する際、必要となるそれらの大量の計算を記述する際に、行列ベクトル積を使います。
+:begin_tab:`pytorch`
+行列とベクトルの積をテンソルを使ったコードで表現するには、`mv` 関数を使用します。行列 `A` とベクトル `x` をもって `torch.mv(A, x)` を呼び出すと、行列とベクトルの積が実行されます。`A` の列の次元 (軸 1 に沿った長さ) は `x` の次元 (長さ) と同じでなければならないことに注意してください。
+:end_tab:
 
-行列ベクトル積を`ndarray`を利用してコード内で表現するには、ドット積と同じ`dot`関数を使います。行列`Aとベクトル`xを指定して `np.dot(A, x)` を呼び出すと、行列ベクトル積が実行されます。 A`の列次元 (その長さは軸$1$方向のもの) は `x`の次元 (長さ) と同じでなければならないことに注意してください。
+:begin_tab:`tensorflow`
+行列とベクトルの積をテンソルを使ったコードで表現するには、`matvec` 関数を使用します。行列 `A` とベクトル `x` をもって `tf.linalg.matvec(A, x)` を呼び出すと、行列とベクトルの積が実行されます。`A` の列の次元 (軸 1 に沿った長さ) は `x` の次元 (長さ) と同じでなければならないことに注意してください。
+:end_tab:
 
-
-```{.python .input  n=16}
+```{.python .input}
 A.shape, x.shape, np.dot(A, x)
 ```
 
-## 行列同士の積
+```{.python .input}
+#@tab pytorch
+A.shape, x.shape, torch.mv(A, x)
+```
 
-もし、ドット積と行列ベクトル積を理解できたとしたら、行列同士の積も同様に理解できるでしょう。
+```{.python .input}
+#@tab tensorflow
+A.shape, x.shape, tf.linalg.matvec(A, x)
+```
 
-2つの行列$\mathbf{A} \in \mathbb{R}^{n \times k}$ と $\mathbf{B} \in \mathbb{R}^{k \times m}$を考えます。
+## マトリックス-マトリックス乗算
 
+ドット積と行列ベクトル積のコツをつかんだなら、*matrix-matrix乗算*は簡単なはずです。 
+
+$\mathbf{A} \in \mathbb{R}^{n \times k}$ と $\mathbf{B} \in \mathbb{R}^{k \times m}$ の 2 つの行列があるとします。 
 
 $$\mathbf{A}=\begin{bmatrix}
  a_{11} & a_{12} & \cdots & a_{1k} \\
@@ -382,24 +615,21 @@ $$\mathbf{A}=\begin{bmatrix}
  b_{k1} & b_{k2} & \cdots & b_{km} \\
 \end{bmatrix}.$$
 
-$\mathbf{a}^\top_{i} \in \mathbb{R}^k$ で、行列 $\mathbf{A}$ の $i$ 番目の行の行ベクトルを表し、 $\mathbf{b}_{j} \in \mathbb{R}^k$ で、行列 $\mathbf{B}$ の $j$ 番目の列の列ベクトルを表します。
-行列積 $\mathbf{C} = \mathbf{A}\mathbf{B}$ を計算するには、行ベクトルに関して$\mathbf{A}$を考えて、列ベクトルに関して$\mathbf{B}$ を考えるのが最も簡単でしょう。
+行列 $\mathbf{A}$ の $i^\mathrm{th}$ 行を表す行ベクトルを $\mathbf{a}^\top_{i} \in \mathbb{R}^k$ で表し、$\mathbf{b}_{j} \in \mathbb{R}^k$ を行列 $\mathbf{B}$ の $j^\mathrm{th}$ 列の列ベクトルとします。行列積 $\mathbf{C} = \mathbf{A}\mathbf{B}$ を生成するには、$\mathbf{A}$ を行ベクトルから、$\mathbf{B}$ を列ベクトルから考えるのが最も簡単です。 
 
-$$A=
-\begin{pmatrix}
-\mathbf{a}^T_{1} \\
-\mathbf{a}^T_{2} \\
+$$\mathbf{A}=
+\begin{bmatrix}
+\mathbf{a}^\top_{1} \\
+\mathbf{a}^\top_{2} \\
 \vdots \\
-\mathbf{a}^T_n \\
-\end{pmatrix},
-\quad B=\begin{pmatrix}
+\mathbf{a}^\top_n \\
+\end{bmatrix},
+\quad \mathbf{B}=\begin{bmatrix}
  \mathbf{b}_{1} & \mathbf{b}_{2} & \cdots & \mathbf{b}_{m} \\
-\end{pmatrix}.
+\end{bmatrix}.
 $$
 
-
-
-ここで行列積  $\mathbf{C} \in \mathbb{R}^{n \times m}$ は、各要素$\mathbf{C}_{ij}$ はドット積 $\mathbf{a}^\top_i \mathbf{b}_j$として計算されます。
+次に、各要素 $c_{ij}$ をドット積 $\mathbf{a}^\top_i \mathbf{b}_j$ として計算するだけで、行列積 $\mathbf{C} \in \mathbb{R}^{n \times m}$ が生成されます。 
 
 $$\mathbf{C} = \mathbf{AB} = \begin{bmatrix}
 \mathbf{a}^\top_{1} \\
@@ -418,150 +648,163 @@ $$\mathbf{C} = \mathbf{AB} = \begin{bmatrix}
 \end{bmatrix}.
 $$
 
-$\mathbf{AB}$の行列積については、単純に$m$個の行列ベクトル積を実行し、$n \times m$ の行列になるように、その結果をつなげていく操作とみなすことができます。ドット積や行列ベクトル積と同様に、`dot`関数を利用して行列積を計算することができます。
-In the following snippet, we perform matrix multiplication on `A` and `B`.
-Here, `A` is a matrix with $5$ rows and $4$ columns,
-and `B` is a matrix with $4$ rows and $3$ columns.
-After multiplication, we obtain a matrix with $5$ rows and $3$ columns.
-
+[**行列と行列の乗算 $\mathbf{AB}$ は、単に $m$ の行列とベクトルの積を実行し、その結果をつなぎ合わせて $n \times m$ 行列を形成すると考えることができます。**] 次のスニペットでは、`A` と `B` で行列の乗算を実行しています。ここで、`A` は 5 行 4 列の行列で、`B` は 4 行 3 列の行列です。乗算後、5行3列の行列が得られます。
 
 ```{.python .input}
 B = np.ones(shape=(4, 3))
 np.dot(A, B)
 ```
 
-Matrix-matrix multiplication can be simply called *matrix multiplication*, and should not be confused with the Hadamard product.
+```{.python .input}
+#@tab pytorch
+B = torch.ones(4, 3)
+torch.mm(A, B)
+```
 
+```{.python .input}
+#@tab tensorflow
+B = tf.ones((4, 3), tf.float32)
+tf.matmul(A, B)
+```
 
-## ノルム
+行列-行列の乗算は単に「*行列乗算*」と呼ぶことができ、アダマール積と混同しないでください。 
 
-線形代数で最も有用な演算子であるノルムです。簡単に言えば、ベクトルのノルムは、ベクトルがどれくらい*大きい*かを示します。ここで考慮される*サイズ*は dimensionality ではなく、むしろ要素の大きさを表します。
+## 規範
+:label:`subsec_lin-algebra-norms`
 
-線形代数では、ベクトルノルムはベクトルをスカラーにマップする関数 $f$ であり、扱いやすい性質を持っています。あらゆるベクトル $\mathbf{x}$ に対して成り立つ最初の性質は、ベクトルの要素をすべて定数 $\alpha$ 倍したとき、そのノルムも同じ定数の*絶対値*で倍にしたものになります。
+線形代数で最も有用な演算子には、*norms* があります。非公式には、ベクトルのノルムによってベクトルがどれだけ*大きい*かがわかります。ここで検討中の*size* の概念は、次元性ではなく、成分の大きさに関係します。 
 
+線形代数では、ベクトルノルムは、ベクトルをスカラーにマッピングし、いくつかの特性を満たす関数 $f$ です。任意のベクトル $\mathbf{x}$ が与えられた場合、1 番目の特性は、ベクトルのすべての要素を定数係数 $\alpha$ でスケーリングすると、そのノルムも同じ定数因子の*絶対値* でスケーリングされることを示しています。 
 
 $$f(\alpha \mathbf{x}) = |\alpha| f(\mathbf{x}).$$
 
-次の性質は三角不等式です。
-
+2 つ目の特性は、おなじみの三角不等式です。 
 
 $$f(\mathbf{x} + \mathbf{y}) \leq f(\mathbf{x}) + f(\mathbf{y}).$$
 
-3つ目の性質は、単にノルムは非負でなければならないというものです。
+3番目の特性は、ノルムが非負でなければならないことを単純に示しています。 
 
 $$f(\mathbf{x}) \geq 0.$$
 
-これは、最小の*サイズ*が0であるという意味において納得できる性質です。最後の性質は、最小のノルムは全てのベクトルの要素がゼロであることと必要十分であることです。
+ほとんどのコンテキストでは、何かの最小の*size*は0なので、これは理にかなっています。最終的な特性では、最小ノルムが達成され、すべてゼロで構成されるベクトルによってのみ達成されることが要求されます。 
 
 $$\forall i, [\mathbf{x}]_i = 0 \Leftrightarrow f(\mathbf{x})=0.$$
 
+ノルムは距離の尺度によく似ていることに気付くかもしれません。小学校からのユークリッド距離（ピタゴラスの定理を考えて）を覚えていれば、非否定性と三角不等式の概念が鐘を鳴らすかもしれません。実際、ユークリッド距離はノルムです。具体的には $L_2$ ノルムです。$n$ 次元ベクトル $\mathbf{x}$ の要素が $x_1, \ldots, x_n$ であると仮定します。 
 
-ひょっとするとノルムは距離の尺度の一種のように思えるかもしれません。
-あなたが小学校で学んだユークリッド距離 (ピタゴラスの定理を思い浮かべてください) を覚えていれば、そこから非負性と三角不等式について気づくかもしれません。
-実際のところ、ユークリッド距離はノルムで、具体的には$\ell_2$ノルムです。
-Suppose that the elements in the $n$-dimensional vector
-$\mathbf{x}$ are $x_1, \ldots, x_n$.
-The $\ell_2$ *norm* of $\mathbf{x}$ is the square root of the sum of the squares of the vector elements:
+[**$\mathbf{x}$ の $L_2$ *ノルム* は、ベクトル要素の二乗和の平方根です:**] 
 
-$$\|\mathbf{x}\|_2 = \sqrt{\sum_{i=1}^n x_i^2},$$
+(** $\|\mathbf{x}\|_2 = \sqrt{\sum_{i=1}^n x_i^2},$ドル**) 
 
-where the subscript $2$ is often omitted in $\ell_2$ norms, i.e., $\|\mathbf{x}\|$ is equivalent to $\|\mathbf{x}\|_2$. コードでは、$\ell_2$ノルムを計算するためには`linalg.norm`を呼ぶだけです。
+$L_2$ の基準では、添字の $2$ が省略されることがよくあります。つまり $\|\mathbf{x}\|$ は $\|\mathbf{x}\|_2$ に相当します。コードでは、ベクトルの $L_2$ ノルムを次のように計算できます。
 
-```{.python .input  n=18}
+```{.python .input}
 u = np.array([3, -4])
 np.linalg.norm(u)
 ```
 
+```{.python .input}
+#@tab pytorch
+u = torch.tensor([3.0, -4.0])
+torch.norm(u)
+```
 
-In deep learning, we work more often
-with the squared $\ell_2$ norm.
-You will also frequently encounter the $\ell_1$ *norm*,
-which is expressed as the sum of the absolute values of the vector elements:
+```{.python .input}
+#@tab tensorflow
+u = tf.constant([3.0, -4.0])
+tf.norm(u)
+```
 
-$$\|\mathbf{x}\|_1 = \sum_{i=1}^n \left|x_i \right|.$$
+ディープラーニングでは、$L_2$ の二乗ノルムを使用する頻度が高くなります。 
 
-As compared with the $\ell_2$ norm,
-it is less influenced by outliers.
-To calculate the $\ell_1$ norm, we compose
-the absolute value function with a sum over the elements.
+また、[**the $L_1$ *norm***] もよく見かけますが、これはベクトル要素の絶対値の和で表されます。 
 
-```{.python .input  n=19}
+(** $\|\mathbf{x}\|_1 = \sum_{i=1}^n \left|x_i \right|.$ドル**) 
+
+$L_2$ ノルムと比較すると、外れ値の影響は小さくなります。$L_1$ ノルムを計算するために、要素の合計をもつ絶対値関数を作成します。
+
+```{.python .input}
 np.abs(u).sum()
 ```
 
-Both the $\ell_2$ norm and the $\ell_1$ norm
-are special cases of the more general $\ell_p$ *norm*:
+```{.python .input}
+#@tab pytorch
+torch.abs(u).sum()
+```
+
+```{.python .input}
+#@tab tensorflow
+tf.reduce_sum(tf.abs(u))
+```
+
+$L_2$ ノルムと $L_1$ ノルムはどちらも、より一般的な $L_p$ *ノルム* の特殊なケースです。 
 
 $$\|\mathbf{x}\|_p = \left(\sum_{i=1}^n \left|x_i \right|^p \right)^{1/p}.$$
 
-Analogous to $\ell_2$ norms of vectors,
-the *Frobenius norm* of a matrix $\mathbf{X} \in \mathbb{R}^{m \times n}$
-is the square root of the sum of the squares of the matrix elements:
+ベクトルのノルム $L_2$ と同様に、[***フロベニウスノルム* の行列 $\mathbf{X} \in \mathbb{R}^{m \times n}$**] は、行列要素の二乗和の平方根です。 
 
-$$\|\mathbf{X}\|_F = \sqrt{\sum_{i=1}^m \sum_{j=1}^n x_{ij}^2}.$$
+[** $\|\mathbf{X}\|_F = \sqrt{\sum_{i=1}^m \sum_{j=1}^n x_{ij}^2}.$ドル**] 
 
-The Frobenius norm satisfies all the properties of vector norms.
-It behaves as if it were an $\ell_2$ norm of a matrix-shaped vector. Invoking `linalg.norm` will calculate the Frobenius norm of a matrix.
+Frobenius ノルムは、ベクトルノルムのすべての特性を満たします。行列型のベクトルの $L_2$ ノルムであるかのように動作します。次の関数を呼び出すと、行列のフロベニウスノルムが計算されます。
 
 ```{.python .input}
 np.linalg.norm(np.ones((4, 9)))
 ```
 
-## ノルムと目的関数
+```{.python .input}
+#@tab pytorch
+torch.norm(torch.ones((4, 9)))
+```
+
+```{.python .input}
+#@tab tensorflow
+tf.norm(tf.ones((4, 9)))
+```
+
+### 規範と目標
 :label:`subsec_norms_and_objectives`
 
-先に進みすぎることは本意ではないのですが、なぜこれらの概念が有用なのか知ってほしいと思います。深層学習では、最適化問題を解くことがよくあります。最適化問題においては、観測されたデータに割り当てられる確率を最大化したり、予測と真実の観測との間の距離を*最小化*します。つまり、類似アイテム (単語、商品、ニュース記事など) 間の距離を最小化したり、非類似アイテム間の距離を最大化するように、アイテムにベクトル表現を割り当てます。この目的関数は、おそらく深層学習のアルゴリズムの構成要素で (データと並んで) 最も重要で、多くの場合、ノルムで表されます。
+私たちは自分より先に進みたくはありませんが、なぜこれらの概念が役に立つのかについて、すでにいくつかの直感を植え付けることができます。ディープラーニングでは、最適化問題を解こうとすることがよくあります。
+*観測データに割り当てられる確率を最大化*
+*予測間の距離を最小化*
+そしてグラウンドトゥルースの観測。類似するアイテム間の距離が最小化され、異なるアイテム間の距離が最大になるように、アイテム (単語、製品、ニュース記事など) にベクトル表現を割り当てます。多くの場合、(データ以外に) ディープラーニングアルゴリズムの最も重要なコンポーネントである目的は標準として表現されます。 
 
-## 線形代数のさらに先
+## 線形代数の詳細
 
-In just this section,
-we have taught you all the linear algebra
-that you will need to understand
-a remarkable chunk of modern deep learning.
-There is a lot more to linear algebra
-and a lot of that mathematics is useful for machine learning.
-For example, matrices can be decomposed into factors,
-and these decompositions can reveal
-low-dimensional structure in real-world datasets.
-There are entire subfields of machine learning
-that focus on using matrix decompositions
-and their generalizations to high-order tensors
-to discover structure in datasets and solve prediction problems.
-But this book focuses on deep learning.
-And we believe you will be much more inclined to learn more mathematics
-once you have gotten your hands dirty
-deploying useful machine learning models on real datasets.
-So while we reserve the right to introduce more mathematics much later on,
-we will wrap up this section here.
+このセクションでは、現代のディープラーニングの驚くべき部分を理解するために必要なすべての線形代数について説明しました。線形代数には他にも多くの機能があり、その数学の多くは機械学習に役立ちます。たとえば、行列を因子に分解することができ、この分解によって実世界のデータセットでは低次元の構造が明らかになります。機械学習には、行列分解とその高次テンソルへの一般化を使用してデータセット内の構造を発見し、予測問題を解決することに重点を置いたサブフィールドがあります。しかし、この本はディープラーニングに焦点を当てています。また、実際のデータセットに有用な機械学習モデルを導入して手を汚すと、より多くの数学を学ぶ傾向が強まると私たちは信じています。したがって、後で数学をさらに紹介する権利を留保しますが、このセクションをここでまとめます。 
 
-If you are eager to learn more about linear algebra,
-you may refer to either :numref:`sec_geometry-linear-algebric-ops`
-or other excellent resources :cite:`Strang.1993,Kolter.2008,Petersen.Pedersen.ea.2008`.
+線形代数についてもっと知りたければ、[online appendix on linear algebraic operations](https://d2l.ai/chapter_appendix-mathematics-for-deep-learning/geometry-linear-algebraic-ops.html) またはその他の優れたリソース :cite:`Strang.1993,Kolter.2008,Petersen.Pedersen.ea.2008` を参照してください。 
 
+## [概要
 
-## まとめ
+* スカラー、ベクトル、行列、テンソルは、線形代数の基本的な数学オブジェクトです。
+* ベクトルはスカラーを一般化し、行列はベクトルを一般化します。
+* スカラー、ベクトル、行列、テンソルにはそれぞれ 0、1、2、任意の数の軸があります。
+* 指定した軸に沿って `sum` と `mean` だけテンソルを減らすことができます。
+* 2 つの行列の要素ごとの乗算は、アダマール積と呼ばれます。行列の乗算とは異なります。
+* ディープラーニングでは、$L_1$ ノルム、$L_2$ ノルム、フロベニウスノルムなどのノルムを扱うことがよくあります。
+* スカラー、ベクトル、行列、テンソルに対してさまざまな演算を実行できます。
 
-* Scalars, vectors, matrices, and tensors are basic mathematical objects in linear algebra.
-* Vectors generalize scalars, and matrices generalize vectors.
-* In the `ndarray` representation, scalars, vectors, matrices, and tensors have 0, 1, 2, and an arbitrary number of axes, respectively.
-* A tensor can be reduced along the specified axes by `sum` and `mean`.
-* Elementwise multiplication of two matrices is called their Hadamard product. It is different from matrix multiplication.
-* In deep learning, we often work with norms such as the $\ell_1$ norm, the $\ell_2$ norm, and the Frobenius norm.
-* We can perform a variety of operations over scalars, vectors, matrices, and tensors with `ndarray` functions.
+## 演習
 
+1. 行列 $\mathbf{A}$ の転置の転置が $\mathbf{A}$:$(\mathbf{A}^\top)^\top = \mathbf{A}$ であることを証明します。
+1. 2 つの行列 $\mathbf{A}$ と $\mathbf{B}$ が与えられた場合、転置の和が和の転置に等しいことを示します。$\mathbf{A}^\top + \mathbf{B}^\top = (\mathbf{A} + \mathbf{B})^\top$
+1. 正方行列 $\mathbf{A}$ がある場合、$\mathbf{A} + \mathbf{A}^\top$ は常に対称ですか?なぜ？
+1. この節では、形状 (2, 3, 4) のテンソル `X` を定義しました。`len(X)`の出力は何ですか？
+1. 任意の形状のテンソル `X` に対して、`len(X)` は常に `X` の特定の軸の長さに対応しますか？その軸は何ですか？
+1. `A / A.sum(axis=1)` を実行して、何が起こるか見てみましょう。その理由を分析できますか？
+1. マンハッタンの2地点間を移動する場合、座標、つまり道路と道路の観点からカバーする必要がある距離はどれくらいですか？斜めに旅行できますか。
+1. 形状 (2, 3, 4) のテンソルを考えてみます。軸 0、1、2 に沿った加算出力の形状を教えてください。
+1. 3 軸以上のテンソルを関数 `linalg.norm` に送り、その出力を観測します。この関数は任意の形状のテンソルに対して何を計算しますか？
 
-## 練習
+:begin_tab:`mxnet`
+[Discussions](https://discuss.d2l.ai/t/30)
+:end_tab:
 
-1. Prove that the transpose of a matrix $\mathbf{A}$'s transpose is $\mathbf{A}$: $(\mathbf{A}^\top)^\top = \mathbf{A}$.
-1. Given two matrices $\mathbf{A}$ and $\mathbf{B}$, show that the sum of transposes is equal to the transpose of a sum: $\mathbf{A}^\top + \mathbf{B}^\top = (\mathbf{A} + \mathbf{B})^\top$.
-1. Given any square matrix $\mathbf{A}$, is $\mathbf{A} + \mathbf{A}^\top$ always symmetric? Why?
-1. We defined the tensor `X` of shape ($2$, $3$, $4$) in this section. What is the output of `len(X)`?
-1. For a tensor `X` of arbitrary shape, does `len(X)` always correspond to the length of a certain axis of `X`? What is that axis?
-1. Run `A / A.sum(axis=1)` and see what happens. Can you analyze the reason?
-1. When traveling between two points in Manhattan, what is the distance that you need to cover in terms of the coordinates, i.e., in terms of avenues and streets? Can you travel diagonally?
-1. Consider a tensor with shape ($2$, $3$, $4$). What are the shapes of the summation outputs along axis $0$, $1$, and $2$?
-1. Feed a tensor with 3 or more axes to the `linalg.norm` function and observe its output. What does this function compute for `ndarray`s of arbitrary shape?
+:begin_tab:`pytorch`
+[Discussions](https://discuss.d2l.ai/t/31)
+:end_tab:
 
-## [議論のための](https://discuss.mxnet.io/t/2317)QRコード
-
-![](../img/qr_linear-algebra.svg)
+:begin_tab:`tensorflow`
+[Discussions](https://discuss.d2l.ai/t/196)
+:end_tab:
