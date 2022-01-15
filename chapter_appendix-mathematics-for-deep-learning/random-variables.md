@@ -596,7 +596,7 @@ $$
 \end{aligned}
 $$
 
-![By summing along the columns of our array of probabilities, we are able to obtain the marginal distribution for just the random variable represented along the $x$-axis.](../img/marginal.svg)
+![By summing along the columns of our array of probabilities, we are able to obtain the marginal distribution for just the random variable represented along the $x$-axis.](../img/Marginal.svg)
 :label:`fig_marginal`
 
 これは :numref:`fig_marginal` に示すように、一直線に並んだ一連の正方形に沿って密度の値を足し合わせるように指示します。実際、両側からイプシロンの1つの因数をキャンセルし、右側の合計が$y$を超える積分であることを認識した後、次のように結論付けることができます。 
