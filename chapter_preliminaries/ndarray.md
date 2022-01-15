@@ -14,7 +14,7 @@ Python で最も広く使われている科学計算パッケージである Num
 :end_tab:
 
 :begin_tab:`pytorch`
-(**まず、`torch` をインポートします。PyTorch という名前ですが、`pytorch` ではなく `torch` をインポートする必要があることに注意してください (**)
+(**まず、`torch` をインポートします。PyTorch という名前ですが、`pytorch` ではなく `torch` をインポートする必要があることに注意してください **)
 :end_tab:
 
 :begin_tab:`tensorflow`

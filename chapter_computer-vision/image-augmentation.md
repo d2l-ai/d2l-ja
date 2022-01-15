@@ -128,7 +128,7 @@ apply(img, torchvision.transforms.ColorJitter(
     brightness=0, contrast=0, saturation=0, hue=0.5))
 ```
 
-また、`RandomColorJitter` インスタンスを作成し、[**イメージの `brightness`、`contrast`、`saturation`、`hue` を同時にランダムに変更する方法を設定することもできます。
+また、`RandomColorJitter` インスタンスを作成し、[**イメージの `brightness`、`contrast`、`saturation`、`hue` を同時にランダムに変更する方法を設定することもできます**]。
 
 ```{.python .input}
 color_aug = gluon.data.vision.transforms.RandomColorJitter(

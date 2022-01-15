@@ -371,7 +371,7 @@ class DotProductAttention(tf.keras.layers.Layer):
         return tf.matmul(self.dropout(self.attention_weights, **kwargs), values)
 ```
 
-[**上記の `DotProductAttention` クラス** を実証するために]、加法的な注意として、前の toy の例と同じキー、値、有効な長さを使用します。内積演算では、クエリの特徴量をキーの特徴量と同じにします。
+[**上記の `DotProductAttention` クラス を実証するために**]、加法的な注意として、前の toy の例と同じキー、値、有効な長さを使用します。内積演算では、クエリの特徴量をキーの特徴量と同じにします。
 
 ```{.python .input}
 queries = d2l.normal(0, 1, (2, 1, 2))

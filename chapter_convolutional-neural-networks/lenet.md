@@ -9,7 +9,7 @@
 
 ## LeNet
 
-大まかに言うと、(**LeNet (LeNet-5) は、(i) 2 つの畳み込み層からなる畳み込み符号化器と (ii) 3 つの完全結合層からなる高密度ブロック** の 2 つの部分から構成されます)。アーキテクチャは :numref:`img_lenet` にまとめられています。 
+大まかに言うと、(**LeNet (LeNet-5) は、(i) 2 つの畳み込み層からなる畳み込み符号化器と (ii) 3 つの完全結合層からなる高密度ブロック の 2 つの部分から構成されます**)。アーキテクチャは :numref:`img_lenet` にまとめられています。 
 
 ![Data flow in LeNet. The input is a handwritten digit, the output a probability over 10 possible outcomes.](../img/lenet.svg)
 :label:`img_lenet`

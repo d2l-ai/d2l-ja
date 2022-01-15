@@ -1,6 +1,6 @@
 # Kaggleでの犬種識別 (ImageNet 犬)
 
-このセクションでは、Kaggle で犬種識別問題を練習します。(**このコンペティションのウェブアドレスは https://www.kaggle.com/c/dog-breed-identification ** です) 
+このセクションでは、Kaggle で犬種識別問題を練習します。(**このコンペティションのウェブアドレスは https://www.kaggle.com/c/dog-breed-identification  です**)
 
 このコンテストでは、120種類の犬種が表彰されます。実際、このコンペティションのデータセットは ImageNet データセットのサブセットです。:numref:`sec_kaggle_cifar10` の CIFAR-10 データセット内のイメージとは異なり、ImageNet データセット内のイメージは、さまざまな次元でより高く、幅が広くなっています。:numref:`fig_kaggle_dog` は、競合他社のウェブページに情報を表示します。結果を送信するには Kaggle アカウントが必要です。 
 

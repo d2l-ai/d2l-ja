@@ -179,7 +179,7 @@ print('output image shape:', out_img.shape)
 d2l.plt.imshow(out_img);
 ```
 
-完全畳み込みネットワークでは、転置畳み込み層を双一次内挿のアップサンプリングで初期化します。$1\times 1$ 畳み込み層には Xavier 初期化を使います。**]
+完全畳み込みネットワークでは、[**転置畳み込み層を双一次内挿のアップサンプリングで初期化します。$1\times 1$ 畳み込み層には Xavier 初期化を使います。**]
 
 ```{.python .input}
 W = bilinear_kernel(num_classes, num_classes, 64)
