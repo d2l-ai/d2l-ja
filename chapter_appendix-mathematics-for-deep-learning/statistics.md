@@ -273,9 +273,9 @@ tf.square(tf.math.reduce_std(samples)) + tf.square(bias)
 
 $$ \text{statistical significance }= 1 - \alpha = 1 - P(\text{reject } H_0 \mid H_0 \text{ is true} ).$$
 
-*Type I エラー* または*誤検出*とも呼ばれます。$\alpha$ は*有意水準*と呼ばれ、一般的に使用される値は $5\ %$, i.e., $1-\ alpha = 95\ %$ です。有意水準は、真の帰無仮説を棄却する場合に、我々が取るべきリスクの水準として説明できます。 
+*Type I エラー* または*誤検出*とも呼ばれます。$\alpha$ は*有意水準*と呼ばれ、一般的に使用される値は $5\%$, i.e., $1-\alpha = 95\%$ です。有意水準は、真の帰無仮説を棄却する場合に、我々が取るべきリスクの水準として説明できます。 
 
-:numref:`fig_statistical_significance` は、2 標本仮説検定における特定の正規分布の観測値と確率を示します。観測データの例が $95\ %$ の閾値外にある場合、帰無仮説の仮定の下では非常にありそうもない観測になります。したがって、帰無仮説に誤りがある可能性があり、棄却します。 
+:numref:`fig_statistical_significance` は、2 標本仮説検定における特定の正規分布の観測値と確率を示します。観測データの例が $95\%$ の閾値外にある場合、帰無仮説の仮定の下では非常にありそうもない観測になります。したがって、帰無仮説に誤りがある可能性があり、棄却します。 
 
 ![Statistical significance.](../img/statistical-significance.svg)
 :label:`fig_statistical_significance`
@@ -345,19 +345,19 @@ $$P_{\theta} (C_n \ni \theta) \geq 1 - \alpha, \forall \theta.$$
 
 ### 通訳
 
-生成された間隔の 95\ %$ confidence interval as an interval where you can be $95\ %$ sure the true parameter lies, however this is sadly not true.  The true parameter is fixed, and it is the interval that is random.  Thus a better interpretation would be to say that if you generated a large number of confidence intervals by this procedure, $95\ %$ に真のパラメータが含まれると解釈するのはとても魅力的です。 
+生成された間隔の $95\%$ confidence interval as an interval where you can be $95\%$ sure the true parameter lies, however this is sadly not true.  The true parameter is fixed, and it is the interval that is random.  Thus a better interpretation would be to say that if you generated a large number of confidence intervals by this procedure, $95\%$ に真のパラメータが含まれると解釈するのはとても魅力的です。 
 
-これは賢明なことのように思えるかもしれませんが、結果の解釈に実際の意味を持つ可能性があります。特に、真値を含まないことを「ほぼ確実」する区間を構築することで :eqref:`eq_confidence` を満たすことができます。ただし、そうすることがほとんどない限りは。このセクションは、魅力的でありながら虚偽の陳述を3つ提供することで締めくくります。これらの点についての詳細な説明は :cite:`Morey.Hoekstra.Rouder.ea.2016` にあります。 
+This may seem pedantic, but it can have real implications for the interpretation of the results.  In particular, we may satisfy :eqref:`eq_confidence` by constructing intervals that we are *almost certain* do not contain the true value, as long as we only do so rarely enough.  We close this section by providing three tempting but false statements.  An in-depth discussion of these points can be found in :cite:`Morey.Hoekstra.Rouder.ea.2016`.
 
-* **ファラシー 1**。信頼区間が狭いということは、パラメーターを正確に推定できることを意味します。
-* **ファラシー 2**。信頼区間内の値は、区間外の値よりも真の値である可能性が高くなります。
-* **ファラシー 3**。特定の人が95\ %$ confidence interval contains the true value is $95\ %$を観測した確率。
+* **Fallacy 1**. Narrow confidence intervals mean we can estimate the parameter precisely.
+* **Fallacy 2**. The values inside the confidence interval are more likely to be the true value than those outside the interval.
+* **Fallacy 3**. The probability that a particular observed $95\%$ confidence interval contains the true value is $95\%$.
 
-信頼区間は微妙なオブジェクトだと言っても過言ではありません。しかし、解釈を明確にしておけば、強力なツールになり得ます。 
+Sufficed to say, confidence intervals are subtle objects.  However, if you keep the interpretation clear, they can be powerful tools. 
 
 ### ガウス分布の例
 
-最も古典的な例として、未知の平均と分散をもつガウス分布の平均に対する信頼区間について考えてみましょう。ガウス分布の $\mathcal{N}(\mu, \sigma^2)$ から $n$ サンプル $\{x_i\}_{i=1}^n$ を収集するとします。平均と標準偏差の推定量は次のように計算できます。 
+Let us discuss the most classical example, the confidence interval for the mean of a Gaussian of unknown mean and variance.  Suppose we collect $n$ samples $\{x_i\}_{i=1}^n$ from our Gaussian $\mathcal{N}(\mu, \sigma^2)$.  We can compute estimators for the mean and standard deviation by taking
 
 $$\hat\mu_n = \frac{1}{n}\sum_{i=1}^n x_i \;\text{and}\; \hat\sigma^2_n = \frac{1}{n-1}\sum_{i=1}^n (x_i - \hat\mu)^2.$$
 
@@ -369,7 +369,7 @@ $$
 
 * $n-1$ *自由度* の*スチューデントの t 分布と呼ばれるよく知られた分布に従う確率変数が得られます。 
 
-この分布は非常によく研究されており、例えば $n\rightarrow \infty$ としてはほぼ標準ガウス分布であることが知られています。したがって、ガウスc.d.f. の値をテーブルで調べると、$T$ の値は区間 $[-1.96, 1.96]$ に少なくとも $95\ %$ of the time.  For finite values of $n$ であると結論付けることができます。多少大きくなりますが、よく知られており、表では事前計算されています。 
+この分布は非常によく研究されており、例えば $n\rightarrow \infty$ としてはほぼ標準ガウス分布であることが知られています。したがって、ガウスc.d.f. の値をテーブルで調べると、$T$ の値は区間 $[-1.96, 1.96]$ に少なくとも $95\%$ of the time.  For finite values of $n$ であると結論付けることができます。多少大きくなりますが、よく知られており、表では事前計算されています。 
 
 したがって、大規模な$n$については、 
 
@@ -383,7 +383,9 @@ $$
 P\left(\mu \in \left[\hat\mu_n - 1.96\frac{\hat\sigma_n}{\sqrt{n}}, \hat\mu_n + 1.96\frac{\hat\sigma_n}{\sqrt{n}}\right]\right) \ge 0.95.
 $$
 
-したがって、95\ %$の信頼区間が見つかったことがわかります。$\left[\hat\mu_n - 1.96\frac{\hat\sigma_n}{\sqrt{n}}, \hat\mu_n + 1.96\frac{\hat\sigma_n}{\sqrt{n}}\right].$ドル :eqlabel:`eq_gauss_confidence` 
+Thus we know that we have found our $95\%$ confidence interval:
+$$\left[\hat\mu_n - 1.96\frac{\hat\sigma_n}{\sqrt{n}}, \hat\mu_n + 1.96\frac{\hat\sigma_n}{\sqrt{n}}\right].$$
+:eqlabel:`eq_gauss_confidence`
 
 :eqref:`eq_gauss_confidence`は統計学で最もよく使われる数式の一つと言っても過言ではありません。それを実装して、統計についての議論を締めくくりましょう。簡単にするために、ここでは漸近的な体制にあると仮定します。$N$ の小さい値には、プログラムまたは $t$ テーブルから取得した正しい `t_star` の値を含める必要があります。
 

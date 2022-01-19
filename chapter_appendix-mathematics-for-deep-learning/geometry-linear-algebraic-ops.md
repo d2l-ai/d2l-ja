@@ -131,7 +131,21 @@ angle(tf.constant([0, 1, 2], dtype=tf.float32), tf.constant([2.0, 3, 4]))
 
 ここでは使用しませんが、角度が $\pi/2$ (または $90^{\circ}$) のベクトルを*直交*として参照することを知っておくと便利です。上の方程式を調べると、$\cos(\theta) = 0$ と同じである $\theta = \pi/2$ のときにこの現象が発生することがわかります。これが発生する唯一の方法は、内積自体がゼロで、$\mathbf{v}\cdot\mathbf{w} = 0$ の場合にのみ 2 つのベクトルが直交する場合です。これは、オブジェクトを幾何学的に理解する場合に役立つ公式です。 
 
-角度の計算がなぜ役立つのか、と尋ねるのは合理的です。その答えは、データに期待される不変性の種類にあります。イメージと複製イメージについて考えてみましょう。すべてのピクセル値は同じですが、明るさは $10\ %$ です。通常、個々のピクセルの値は元の値とはかけ離れています。したがって、元のイメージと暗いイメージの間の距離を計算すると、距離が大きくなる可能性があります。ただし、ほとんどの ML アプリケーションでは、*content* は同じです。猫/犬の分類子に関する限り、これはまだ猫のイメージです。しかし、角度を考慮すると、$\mathbf{v}$ のベクトル $\mathbf{v}$ と $0.1\cdot\mathbf{v}$ の間の角度がゼロであることは分かりにくいです。これは、スケーリングベクトルが同じ方向を保ち、長さが変わるだけであるという事実に相当します。この角度は、暗い方のイメージを同一とみなします。 
+It is reasonable to ask: why is computing the angle useful?
+The answer comes in the kind of invariance we expect data to have.
+Consider an image, and a duplicate image,
+where every pixel value is the same but $10\%$ the brightness.
+The values of the individual pixels are in general far from the original values.
+Thus, if one computed the distance between the original image and the darker one,
+the distance can be large.
+However, for most ML applications, the *content* is the same---it is still
+an image of a cat as far as a cat/dog classifier is concerned.
+However, if we consider the angle, it is not hard to see
+that for any vector $\mathbf{v}$, the angle
+between $\mathbf{v}$ and $0.1\cdot\mathbf{v}$ is zero.
+This corresponds to the fact that scaling vectors
+keeps the same direction and just changes the length.
+The angle considers the darker image identical.
 
 このような例はいたるところにあります。テキストでは、同じことを言っている文書を2倍長く書けば、議論されているトピックが変わらないようにしたいと思うかもしれません。一部のエンコーディング (ボキャブラリ内の単語の出現回数を数えるなど) では、これはドキュメントをエンコードするベクトルの 2 倍に相当するので、角度も使用できます。 
 
@@ -674,7 +688,31 @@ np.einsum(B, [0, 1, 2], A, [0, 3], v, [1], [2, 3])
 
 ## 概要 * ベクトルは、空間内の点または方向として幾何学的に解釈できます。* ドット積は、任意の高次元空間に対する角度の概念を定義します。* 超平面は、線と平面を高次元で一般化したものです。これらは、分類タスクの最終ステップとしてよく使用される決定平面を定義するために使用できます。* 行列の乗算は、基礎となる座標の一様な歪みとして幾何学的に解釈できます。これらは、ベクトルを変換するための非常に制限された、しかし数学的にクリーンな方法を表しています。* 線形依存は、ベクトルの集合が予想よりも低い次元空間に存在することを知る方法です ($2$ 次元の空間に存在する $3$ 個のベクトルがあるとします)。行列のランクは、線形独立している列の中で最大のサブセットのサイズです。* 行列の逆行列が定義されると、行列の逆行列を使用すると、最初の行列の動作を取り消す別の行列を見つけることができます。行列反転は理論上は有用ですが、数値が不安定なため実際には注意が必要です。* 行列式により、行列が空間をどれだけ拡大または縮小するかを測定できます。非ゼロ行列式は可逆 (非特異な) 行列を意味し、ゼロ値の行列式は行列が非可逆 (特異数) であることを意味します。* テンソル収縮と Einstein 加算は、機械学習で見られる多くの計算を表現するための、すっきりとした簡潔な表記法を提供します。 
 
-## 演習 1.$$\ vec v_1 =\ begin {bmatrix} 1\\ 0\\ -1\\ 2\ 終了 {bmatrix},\ quad\ vec v_2 =\ begin {bmatrix} 3\\ 1\\ 0\\ 1\ end {bmatrix} の間の角度は何ですか？$$2。正か偽か:$\ begin {bmatrix} 1 & 2\\ 0&1\ end {bmatrix} $ and $\ begin {bmatrix} 1 & -2\\ 0&1\ end {bmatrix} $ は互いに逆ですか？3。面積 $100\mathrm{m}^2$ の平面上にシェイプを描画するとします。行列 $$\ begin {bmatrix} 2 & 3\\ 1 & 2\ end {bmatrix} によって図形を変換した後の領域は何ですか。$$ 4.次のベクトルセットのうち、線形的に独立しているのはどれですか?$\left\{\begin{pmatrix}1\\0\\-1\end{pmatrix}, \begin{pmatrix}2\\1\\-1\end{pmatrix}, \begin{pmatrix}3\\1\\1\end{pmatrix}\right\}$ * $\left\{\begin{pmatrix}3\\1\\1\end{pmatrix}, \begin{pmatrix}1\\1\\1\end{pmatrix}, \begin{pmatrix}0\\0\\0\end{pmatrix}\right\}$$A =\ begin {bmatrix} c\\ d\ end {bmatrix}\ cdot\ begin {bmatrix} a & b\ end {bmatrix} $ for some choice of values $a, b, b, c$, and $d$.  True or false: the determinant of such a matrix is always $0 $？6。ベクトル $e_1 =\ begin {bmatrix} 1\\ 0\ end {bmatrix} $ and $e_2 =\ begin {bmatrix} 0\\ 1\ end {bmatrix} $ は直交しています。$Ae_1$ と $Ae_2$ が直交するように、行列 $A$ の条件は何ですか？7。任意行列 $A$ に対して $\mathrm{tr}(\mathbf{A}^4)$ をアインシュタイン記法でどのように書くことができますか？
+## Exercises
+1. What is the angle between
+$$
+\vec v_1 = \begin{bmatrix}
+1 \\ 0 \\ -1 \\ 2
+\end{bmatrix}, \qquad \vec v_2 = \begin{bmatrix}
+3 \\ 1 \\ 0 \\ 1
+\end{bmatrix}?
+$$
+2. True or false: $\begin{bmatrix}1 & 2\\0&1\end{bmatrix}$ and $\begin{bmatrix}1 & -2\\0&1\end{bmatrix}$ are inverses of one another?
+3. Suppose that we draw a shape in the plane with area $100\mathrm{m}^2$.  What is the area after transforming the figure by the matrix
+$$
+\begin{bmatrix}
+2 & 3\\
+1 & 2
+\end{bmatrix}.
+$$
+4. Which of the following sets of vectors are linearly independent?
+ * $\left\{\begin{pmatrix}1\\0\\-1\end{pmatrix}, \begin{pmatrix}2\\1\\-1\end{pmatrix}, \begin{pmatrix}3\\1\\1\end{pmatrix}\right\}$
+ * $\left\{\begin{pmatrix}3\\1\\1\end{pmatrix}, \begin{pmatrix}1\\1\\1\end{pmatrix}, \begin{pmatrix}0\\0\\0\end{pmatrix}\right\}$
+ * $\left\{\begin{pmatrix}1\\1\\0\end{pmatrix}, \begin{pmatrix}0\\1\\-1\end{pmatrix}, \begin{pmatrix}1\\0\\1\end{pmatrix}\right\}$
+5. Suppose that you have a matrix written as $A = \begin{bmatrix}c\\d\end{bmatrix}\cdot\begin{bmatrix}a & b\end{bmatrix}$ for some choice of values $a, b, c$, and $d$.  True or false: the determinant of such a matrix is always $0$?
+6. The vectors $e_1 = \begin{bmatrix}1\\0\end{bmatrix}$ and $e_2 = \begin{bmatrix}0\\1\end{bmatrix}$ are orthogonal.  What is the condition on a matrix $A$ so that $Ae_1$ and $Ae_2$ are orthogonal?
+7. How can you write $\mathrm{tr}(\mathbf{A}^4)$ in Einstein notation for an arbitrary matrix $A$?
+
 
 :begin_tab:`mxnet`
 [Discussions](https://discuss.d2l.ai/t/410)

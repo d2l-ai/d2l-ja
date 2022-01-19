@@ -514,7 +514,7 @@ $$
 f(x, y) = xe^{-x^2-y^2}.
 $$
 
-勾配とヘッシアンは$$\ nabla f (x, y) = e^ {-x^2-y^2}\ begin {pmatrix} 1-2x^2\\ -2xy\ 終了 {pmatrix}\;\ text {と}\;\ mathbf {H} f (x, y) = e^ {-x^2-y^2}\ begin {pマトリックス} 4x^3-6x & 4x^2y-2y\\ 4x^2y-2y &4xy^2-2x\ end {pmatrix}。$$ 
+勾配とヘッシアンは$$\ nabla f (x, y) = e^ {-x^2-y^2}\ begin {pmatrix} 1-2x^2\\ -2xy\ 終了 {pmatrix}\;\text {と}\;\ mathbf {H} f (x, y) = e^ {-x^2-y^2}\ begin {pマトリックス} 4x^3-6x & 4x^2y-2y\\ 4x^2y-2y &4xy^2-2x\ end {pmatrix}。$$ 
 
 したがって、少し代数を使うと、$[-1,0]^\top$ の近似二次関数は次のようになります。 
 

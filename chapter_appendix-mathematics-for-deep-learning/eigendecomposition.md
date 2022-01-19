@@ -467,7 +467,30 @@ d2l.plot(tf.range(1, 100), norm_ratio_list, 'Iteration', 'Ratio')
 
 ## 概要 * 固有ベクトルは、方向を変えずに行列によって引き伸ばされるベクトルです。* 固有値とは、行列を適用することによって固有ベクトルが引き伸ばされる量です。* 行列の固有分解により、多くの演算を固有値に対する演算に還元できます。ゲルシュゴリン円定理は行列の固有値の近似値を得ることができる。* 反復された行列のべき乗の振る舞いは、主に最大固有値の大きさに依存する。この理解は、ニューラルネットワークの初期化の理論に多くの応用があります。 
 
-## 演習 1.$$\ mathbf {A} =\ begin {bmatrix} 2 & 1\\ 1 & 2\ end {bmatrix} の固有値と固有ベクトルは何ですか？$$1。次の行列の固有値と固有ベクトルは何ですか？また、この例が前の例と比べて奇妙な点は何ですか？$$\ mathbf {A} =\ begin {bmatrix} 2 & 1\\ 0 & 2\ end {bmatrix}. $$ 1.固有値を計算しないで、次の行列の最小固有値が $0.5$ より小さい可能性はありますか？*注意*: この問題は頭の中で起こり得ます。$$\ mathbf {A} =\ begin {bmatrix} 3.0 & 0.1 & 0.3 & 1.0\\ 0.1 & 1.0 & 0.1 & 0.2\\ 0.3 & 0.1 & 5.0 & 0.0\ 1.0 & 0.2 & 0.0 & 1.8\ end {bmatrix}。$$
+## Exercises
+1. What are the eigenvalues and eigenvectors of
+$$
+\mathbf{A} = \begin{bmatrix}
+2 & 1 \\
+1 & 2
+\end{bmatrix}?
+$$
+1.  What are the eigenvalues and eigenvectors of the following matrix, and what is strange about this example compared to the previous one?
+$$
+\mathbf{A} = \begin{bmatrix}
+2 & 1 \\
+0 & 2
+\end{bmatrix}.
+$$
+1. Without computing the eigenvalues, is it possible that the smallest eigenvalue of the following matrix is less that $0.5$? *Note*: this problem can be done in your head.
+$$
+\mathbf{A} = \begin{bmatrix}
+3.0 & 0.1 & 0.3 & 1.0 \\
+0.1 & 1.0 & 0.1 & 0.2 \\
+0.3 & 0.1 & 5.0 & 0.0 \\
+1.0 & 0.2 & 0.0 & 1.8
+\end{bmatrix}.
+$$
 
 :begin_tab:`mxnet`
 [Discussions](https://discuss.d2l.ai/t/411)

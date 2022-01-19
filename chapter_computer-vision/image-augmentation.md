@@ -87,7 +87,8 @@ apply(img, torchvision.transforms.RandomVerticalFlip())
 
 使用した画像の例では、猫は画像の中央にいますが、一般的にはそうではないかもしれません。:numref:`sec_pooling` では、プーリング層は畳み込み層の目標位置に対する感度を下げることができると説明した。また、画像をランダムに切り抜いて、オブジェクトが画像内の異なる位置に異なる縮尺で表示されるようにすることもできます。これにより、ターゲット位置に対するモデルの感度を下げることもできます。 
 
-以下のコードでは、$10\%\ sim 100\ %$ of the original area each time, and the ratio of width to height of this area is randomly selected from $0.5\ sim 2$ のエリアを [**ランダムにトリミング**] しています。次に、領域の幅と高さが両方とも 200 ピクセルにスケーリングされます。特に指定がない限り、このセクションの $a$ から $b$ までの乱数は、区間 $[a, b]$ からランダムかつ均一にサンプリングされた連続値を参照します。
+In the code below, we [**randomly crop**] an area with an area of $10\% \sim 100\%$ of the original area each time, and the ratio of width to height of this area is randomly selected from $0.5 \sim 2$. Then, the width and height of the region are both scaled to 200 pixels. 
+Unless otherwise specified, the random number between $a$ and $b$ in this section refers to a continuous value obtained by random and uniform sampling from the interval $[a, b]$.
 
 ```{.python .input}
 shape_aug = gluon.data.vision.transforms.RandomResizedCrop(

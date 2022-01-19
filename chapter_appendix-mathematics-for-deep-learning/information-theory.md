@@ -19,11 +19,11 @@
 
 これを論理的に極端に考えてみましょう。最後に、デッキのすべてのカードを裏返して、シャッフルされたデッキのシーケンス全体を読み取るとします。52ドルあります！$デッキへのさまざまな注文、再びすべて同じ可能性が高いため、どれであるかを知るには多くの情報が必要です。 
 
-私たちが開発する情報の概念は、この直感に従わなければなりません。実際、次のセクションでは、これらのイベントがそれぞれ $0\text{ bits}$、$2\text{ bits}$、$~5.7\ text {bits} $, and $~225.6\ text {bits} $ の情報を持つことを計算する方法を学びます。 
+私たちが開発する情報の概念は、この直感に従わなければなりません。実際、次のセクションでは、これらのイベントがそれぞれ $0\text{ bits}$、$2\text{ bits}$、$~5.7\text{ bits}$, and $~225.6\text{ bits}$ の情報を持つことを計算する方法を学びます。 
 
 これらの思考実験を読み通せば、自然な発想がわかります。出発点として、知識に気を配るのではなく、情報は驚きの度合いや出来事の抽象的な可能性を表すという考え方から構築されるかもしれません。たとえば、異常なイベントを記述する場合は、多くの情報が必要です。一般的なイベントでは、あまり情報が必要ない場合があります。 
 
-1948年、クロード・E・シャノンは「*コミュニケーションの数理理論」*:cite:`Shannon.1948`を出版し、情報理論を確立した。シャノンは自身の記事で初めて情報エントロピーの概念を紹介した。ここから旅を始めます。 
+In 1948, Claude E. Shannon published *A Mathematical Theory of Communication* :cite:`Shannon.1948` establishing the theory of information.  In his article, Shannon introduced the concept of information entropy for the first time. We will begin our journey here. 
 
 ### 自己情報
 

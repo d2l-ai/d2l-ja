@@ -9,36 +9,36 @@
 
 ### 離散から連続へ
 
-連続確率変数を扱うときに遭遇するその他の技術的課題を理解するために、思考実験を行ってみましょう。ダーツボードにダーツを投げ、ダーツがボードの中央から正確に $2 \text{cm}$ に当たる確率を知りたいとします。 
+To understand the additional technical challenges encountered when working with continuous random variables, let us perform a thought experiment.  Suppose that we are throwing a dart at the dart board, and we want to know the probability that it hits exactly $2 \text{cm}$ from the center of the board.
 
-まず、$0 \text{cm}$、$1 \text{cm}$、$2 \text{cm}$ などのビンを使用して 1 桁の精度を測定することを想像します。ダーツボードに$100$ダーツを投げ、$20$が$2\text{cm}$のビンに落ちると、20ドル\ %$ of the darts we throw hit the board $2\ text {cm} $が中心から離れていると結論付けられます。 
+To start with, we imagine measuring a single digit of accuracy, that is to say with bins for $0 \text{cm}$, $1 \text{cm}$, $2 \text{cm}$, and so on.  We throw say $100$ darts at the dart board, and if $20$ of them fall into the bin for $2\text{cm}$ we conclude that $20\%$ of the darts we throw hit the board $2 \text{cm}$ away from the center.
 
-しかし、よく見ると、これは私たちの質問と一致しません！正確な等価性を求めていましたが、これらのビンには $1.5\text{cm}$ と $2.5\text{cm}$ の間にあるすべてのビンが保持されます。 
+However, when we look closer, this does not match our question!  We wanted exact equality, whereas these bins hold all that fell between say $1.5\text{cm}$ and $2.5\text{cm}$.
 
-思いとどまらず、我々はさらに続ける。$1.9\text{cm}$、$2.0\text{cm}$、$2.1\text{cm}$ とすると、$100$ ダーツのうちの $3$ が $2.0\text{cm}$ バケットのボードに当たっていることが分かります。したがって、確率は$3\ %$であると結論付けます。 
+Undeterred, we continue further.  We measure even more precisely, say $1.9\text{cm}$, $2.0\text{cm}$, $2.1\text{cm}$, and now see that perhaps $3$ of the $100$ darts hit the board in the $2.0\text{cm}$ bucket.  Thus we conclude the probability is $3\%$.
 
-しかし、これでは何も解決しません！この問題をさらに1桁下げたところです。少し抽象化してみましょう。最初の $k$ 桁が $2.00000\ldots$ と一致する確率を知っていて、最初の $k+1$ 桁と一致する確率を知りたいとします。${k+1}^{\mathrm{th}}$ の数字は基本的に $\{0, 1, 2, \ldots, 9\}$ のセットからランダムに選択されると仮定するのはかなり妥当です。少なくとも、中心からマイクロメートル離れた数が $3$ に対して $7$ で終わるように強制する、物理的に意味のあるプロセスは考えられません。 
+However, this does not solve anything!  We have just pushed the issue down one digit further.  Let us abstract a bit. Imagine we know the probability that the first $k$ digits match with $2.00000\ldots$ and we want to know the probability it matches for the first $k+1$ digits. It is fairly reasonable to assume that the ${k+1}^{\mathrm{th}}$ digit is essentially a random choice from the set $\{0, 1, 2, \ldots, 9\}$.  At least, we cannot conceive of a physically meaningful process which would force the number of micrometers away form the center to prefer to end in a $7$ vs a $3$.
 
-つまり、本質的には、必要な精度が1桁増えるごとに、マッチングの確率は$10$の倍に減少するということです。言い換えれば、私たちはそれを期待するでしょう 
+What this means is that in essence each additional digit of accuracy we require should decrease probability of matching by a factor of $10$.  Or put another way, we would expect that
 
 $$
 P(\text{distance is}\; 2.00\ldots, \;\text{to}\; k \;\text{digits} ) \approx p\cdot10^{-k}.
 $$
 
-値 $p$ は基本的に最初の数桁で起きることをエンコードし、残りは $10^{-k}$ が処理します。 
+The value $p$ essentially encodes what happens with the first few digits, and the $10^{-k}$ handles the rest.
 
-小数点以下$k=4$桁までの正確な位置がわかっている場合は、値が区間内にあることがわかっていることを意味します。つまり、$[(1.99995,2.00005]$は長さ$2.00005-1.99995 = 10^{-4}$の間隔です。したがって、この間隔の長さを$\epsilon$と呼ぶと、 
+Notice that if we know the position accurate to $k=4$ digits after the decimal. that means we know the value falls within the interval say $[(1.99995,2.00005]$ which is an interval of length $2.00005-1.99995 = 10^{-4}$.  Thus, if we call the length of this interval $\epsilon$, we can say
 
 $$
 P(\text{distance is in an}\; \epsilon\text{-sized interval around}\; 2 ) \approx \epsilon \cdot p.
 $$
 
-この最後の一歩を踏み出しましょう。私たちは$2$という点についてずっと考えていましたが、他の点については考えていませんでした。基本的には何も違いはありませんが、$p$ という値は異なる可能性があります。少なくとも、$20\text{cm}$よりも$2\text{cm}$のように、ダーツを投げる人がセンター近くのポイントに当たる可能性が高いことを願っています。したがって、値 $p$ は固定ではなく、ポイント $x$ に依存する必要があります。これは、私たちが期待すべきであることを示しています 
+Let us take this one final step further.  We have been thinking about the point $2$ the entire time, but never thinking about other points.  Nothing is different there fundamentally, but it is the case that the value $p$ will likely be different.  We would at least hope that a dart thrower was more likely to hit a point near the center, like $2\text{cm}$ rather than $20\text{cm}$.  Thus, the value $p$ is not fixed, but rather should depend on the point $x$.  This tells us that we should expect
 
 $$P(\text{distance is in an}\; \epsilon \text{-sized interval around}\; x ) \approx \epsilon \cdot p(x).$$
 :eqlabel:`eq_pdf_deriv`
 
-実際、:eqref:`eq_pdf_deriv` は*確率密度関数* を正確に定義しています。これは関数 $p(x)$ で、あるポイントと別のポイント付近でヒットする相対確率をエンコードします。そのような関数がどのように見えるかを視覚化してみましょう。
+Indeed, :eqref:`eq_pdf_deriv` precisely defines the *probability density function*.  It is a function $p(x)$ which encodes the relative probability of hitting near one point vs. another.  Let us visualize what such a function might look like.
 
 ```{.python .input}
 %matplotlib inline
@@ -310,9 +310,9 @@ $$
 P\left(X \not\in [a - 4\sqrt{2p}, a + 4\sqrt{2p}]\right) \le \frac{1}{4}.
 $$
 
-つまり、$75\ %$ of the time, this random variable will fall within this interval for any value of $p$.  Now, notice that as $p\ 右矢印 0$, this interval also converges to the single point $a$.  But we know that our random variable takes the values $a-2、a$, and $a+2$ only so eventually we can be certain $a-2$ and $a+2 $ がインターバルの外に落ちるということです。問題は、$p$が何時に起こるかということです。そこで、$p$が何をするのか、$a+4\sqrt{2p} = a+2$が何をするのか、$p=1/8$が*正確に*最初の$p$であるときに解決され、分布のサンプルは$1/4$以下が区間 (左に$1/8$) から外れるという私たちの主張に違反することなく起こり得ます。$1/8$ 右に)。 
+This means that $75\%$ of the time, this random variable will fall within this interval for any value of $p$.  Now, notice that as $p \rightarrow 0$, this interval also converges to the single point $a$.  But we know that our random variable takes the values $a-2, a$, and $a+2$ only so eventually we can be certain $a-2$ and $a+2$ will fall outside the interval!  The question is, at what $p$ does that happen.  So we want to solve: for what $p$ does $a+4\sqrt{2p} = a+2$, which is solved when $p=1/8$, which is *exactly* the first $p$ where it could possibly happen without violating our claim that no more than $1/4$ of samples from the distribution would fall outside the interval ($1/8$ to the left, and $1/8$ to the right).
 
-これを視覚化してみましょう。3つの値を得る確率を、確率に比例した高さの3本の縦棒で示します。間隔は中央に水平線として描画されます。最初のプロットは、区間にすべての点が安全に含まれる場合に $p > 1/8$ で何が起こるかを示しています。
+Let us visualize this.  We will show the probability of getting the three values as three vertical bars with height proportional to the probability.  The interval will be drawn as a horizontal line in the middle.  The first plot shows what happens for $p > 1/8$ where the interval safely contains all points.
 
 ```{.python .input}
 # Define a helper to plot these figures
