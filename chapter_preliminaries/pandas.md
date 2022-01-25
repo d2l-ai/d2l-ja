@@ -1,36 +1,32 @@
-# Data Preprocessing
+# データ前処理
 :label:`sec_pandas`
 
-So far we have introduced a variety of techniques for manipulating data that are already stored in `ndarray`s.
-To apply deep learning to solving real-world problems,
-we often begin with preprocessing raw data, rather than those nicely prepared data in the `ndarray` format.
-Among popular data analytic tools in Python, the `pandas` package is commonly used.
-Like many other extension packages in the vast ecosystem of Python,
-`pandas` can work together with `ndarray`.
-So, we will briefly walk through steps for preprocessing raw data with `pandas`
-and converting them into the `ndarray` format.
-We will cover more data preprocessing techniques in later chapters.
+これまで、テンソルにすでに格納されているデータを操作するためのさまざまな手法を紹介してきました。ディープラーニングを現実世界の問題の解決に適用するために、テンソル形式で適切に準備されたデータではなく、生データの前処理から始めることがよくあります。Python でよく使われるデータ分析ツールの中でも、`pandas` パッケージがよく使われています。Python の広大なエコシステムにある他の多くの拡張パッケージと同様に、`pandas` はテンソルと連携して動作することができます。そこで、生データを `pandas` で前処理し、テンソル形式に変換する手順を簡単に説明します。データの前処理テクニックについては、後の章で詳しく説明します。 
 
-## Reading the Dataset
+## データセットの読み取り
 
-As an example, we begin by creating an artificial dataset that is stored in a csv (comma-separated values) file. Data stored in other formats may be processed in similar ways.
+例として、(**csv (カンマ区切り値) ファイルに格納される人工データセットを作成する**) `../data/house_tiny.csv` から始めます。他の形式で保存されたデータも同様の方法で処理される場合があります。 
+
+以下では、データセットを行ごとにcsvファイルに書き込みます。
 
 ```{.python .input}
-# Write the dataset row by row into a csv file
-data_file = '../data/house_tiny.csv'
+#@tab all
+import os
+
+os.makedirs(os.path.join('..', 'data'), exist_ok=True)
+data_file = os.path.join('..', 'data', 'house_tiny.csv')
 with open(data_file, 'w') as f:
     f.write('NumRooms,Alley,Price\n')  # Column names
-    f.write('NA,Pave,127500\n')  # Each row is a data point
+    f.write('NA,Pave,127500\n')  # Each row represents a data example
     f.write('2,NA,106000\n')
     f.write('4,NA,178100\n')
     f.write('NA,NA,140000\n')
 ```
 
-To load the raw dataset from the created csv file,
-we import the `pandas` package and invoke the `read_csv` function.
-This dataset has $4$ rows and $3$ columns, where each row describes the number of rooms ("NumRooms"), the alley type ("Alley"), and the price ("Price") of a house.
+[**作成した csv ファイルから生のデータセットを読み込む**] には、`pandas` パッケージをインポートし、`read_csv` 関数を呼び出します。このデータセットには 4 つの行と 3 つの列があり、各行には家の部屋数 (「numRooms」)、路地のタイプ (「路地」)、価格 (「価格」) が記述されています。
 
 ```{.python .input}
+#@tab all
 # If pandas is not installed, just uncomment the following line:
 # !pip install pandas
 import pandas as pd
@@ -39,38 +35,30 @@ data = pd.read_csv(data_file)
 print(data)
 ```
 
-## Handling Missing Data
+## 欠損データの処理
 
-Note that "NaN" entries are missing values.
-To handle missing data, typical methods include *imputation* and *deletion*,
-where imputation replaces missing values with substituted ones,
-while deletion ignores missing values. Here we will consider imputation.
+「NaN」エントリは欠損値であることに注意してください。欠損データを処理するために、典型的な方法には*imputation* と*delettion* があります。補完では欠損値が置換された値に置き換えられ、削除では欠損値は無視されます。ここでは、帰属について検討します。 
 
-By integer-location based indexing (`iloc`), we split `data` into `inputs` and `outputs`,
-where the former takes the first 2 columns while the later only keeps the last column.
-For numerical values in `inputs` that are missing, we replace the "NaN" entries with the mean value of the same column.
+整数位置ベースのインデックス (`iloc`) により、`data` を `inputs` と `outputs` に分割しました。前者は最初の 2 つのカラムを取り、後者は最後のカラムだけを保持します。`inputs` の数値が欠落している場合は、[**「NaN」エントリを同じ列の平均値に置き換えます。**]
 
 ```{.python .input}
+#@tab all
 inputs, outputs = data.iloc[:, 0:2], data.iloc[:, 2]
 inputs = inputs.fillna(inputs.mean())
 print(inputs)
 ```
 
-For categorical or discrete values in `inputs`, we consider "NaN" as a category.
-Since the "Alley" column only takes 2 types of categorical values "Pave" and "NaN",
-`pandas` can automatically convert this column to 2 columns "Alley_Pave" and "Alley_nan".
-A row whose alley type is "Pave" will set values of "Alley_Pave" and "Alley_nan" to $1$ and $0$.
-A row with a missing alley type will set their values to $0$ and $1$.
+[** `inputs` のカテゴリ値または不連続値については、「NaN」をカテゴリと見なします。**]「Alley」列は「Pave」と「NaN」の 2 種類のカテゴリ値しか取らないため、`pandas` はこの列を「Alley_Pave」と「alley_NAN」の 2 つの列に自動的に変換できます。路地タイプが「Pave」の行は、「Alley_Pave」と「alley_NAN」の値を 1 と 0 に設定します。路地タイプが欠落している行は、その値を 0 と 1 に設定します。
 
 ```{.python .input}
+#@tab all
 inputs = pd.get_dummies(inputs, dummy_na=True)
 print(inputs)
 ```
 
-## Conversion to the  `ndarray` Format
+## テンソル形式への変換
 
-Now that all the entries in `inputs` and `outputs` are numerical, they can be converted to the `ndarray` format.
-Once data are in this format, they can be further manipulated with those `ndarray` functionalities that we have introduced in :numref:`sec_ndarray`.
+[**`inputs` と `outputs` のすべてのエントリは数値なので、テンソル形式に変換できます。**] データがこの形式になると、:numref:`sec_ndarray` で紹介したテンソル関数でさらに操作できるようになります。
 
 ```{.python .input}
 from mxnet import np
@@ -79,20 +67,42 @@ X, y = np.array(inputs.values), np.array(outputs.values)
 X, y
 ```
 
-## Summary
+```{.python .input}
+#@tab pytorch
+import torch
 
-* Like many other extension packages in the vast ecosystem of Python, `pandas` can work together with `ndarray`.
-* Imputation and deletion can be used to handle missing data.
+X, y = torch.tensor(inputs.values), torch.tensor(outputs.values)
+X, y
+```
 
+```{.python .input}
+#@tab tensorflow
+import tensorflow as tf
 
-## Exercises
+X, y = tf.constant(inputs.values), tf.constant(outputs.values)
+X, y
+```
 
-Create a raw dataset with more rows and columns.
+## [概要
 
-1. Delete the column with the most missing values.
-2. Convert the preprocessed dataset to the `ndarray` format.
+* Python の広大なエコシステムにある他の多くの拡張パッケージと同様に、`pandas` はテンソルと連携して動作することができます。
+* 補完と削除は、欠損データを処理するために使用できます。
 
+## 演習
 
-## [Discussions](https://discuss.mxnet.io/t/4973)
+行と列の数が多い生データセットを作成します。 
 
-![](../img/qr_pandas.svg)
+1. 欠損値が最も多い列を削除します。
+2. 前処理されたデータセットをテンソル形式に変換します。
+
+:begin_tab:`mxnet`
+[Discussions](https://discuss.d2l.ai/t/28)
+:end_tab:
+
+:begin_tab:`pytorch`
+[Discussions](https://discuss.d2l.ai/t/29)
+:end_tab:
+
+:begin_tab:`tensorflow`
+[Discussions](https://discuss.d2l.ai/t/195)
+:end_tab:

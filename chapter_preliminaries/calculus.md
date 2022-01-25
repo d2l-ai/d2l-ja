@@ -1,83 +1,32 @@
-# Calculus
+# 微積分
 :label:`sec_calculus`
 
-Finding the area of a polygon had remained mysterious
-until at least $2,500$ years ago, when ancient Greeks divided a polygon into triangles and summed their areas.
-To find the area of curved shapes, such as a circle,
-ancient Greeks inscribed polygons in such shapes.
-As shown in :numref:`fig_circle_area`,
-an inscribed polygon with more sides of equal length better approximates
-the circle. This process is also known as the *method of exhaustion*.
+多角形の面積を見つけることは、少なくとも2500年前、古代ギリシア人が多角形を三角形に分割して面積を合計するまで不思議なままでした。円などの湾曲した形状の領域を見つけるために、古代ギリシア人はそのような形状のポリゴンを内接しました。:numref:`fig_circle_area` に示すように、辺の長さが等しい内接多角形は、円の近似がよくなります。このプロセスは「枯渇方法」とも呼ばれています。 
 
-![Find the area of a circle with the method of exhaustion.](../img/polygon_circle.svg)
+![Find the area of a circle with the method of exhaustion.](../img/polygon-circle.svg)
 :label:`fig_circle_area`
 
-In fact, the method of exhaustion is where *integral calculus* (will be described in :numref:`sec_integral_calculus`) originates from.
-More than $2,000$ years later,
-the other branch of calculus, *differential calculus*,
-was invented.
-Among the most critical applications of differential calculus,
-optimization problems consider how to do something *the best*.
-As discussed in :numref:`subsec_norms_and_objectives`,
-such problems are ubiquitous in deep learning.
+実際、枯渇法は*積分計算* (:numref:`sec_integral_calculus` で説明される) の由来です。2000年以上経った今後、微積分学のもうひとつの分野、*微分積分* が発明されました。微分積分の最も重要な応用例の中でも、最適化問題では「最良」なことをどう行うかが考慮されます。:numref:`subsec_norms_and_objectives` で説明したように、このような問題は深層学習では広く見られます。 
 
-In deep learning, we *train* models, updating them successively
-so that they get better and better as they see more and more data.
-Usually, getting better means minimizing a *loss function*,
-a score that answers the question "how *bad* is our model?"
-This question is more subtle than it appears.
-Ultimately, what we really care about
-is producing a model that performs well on data
-that we have never seen before.
-But we can only fit the model to data that we can actually see.
-Thus we can decompose the task of fitting models into two key concerns:
-i) *optimization*: the process of fitting our models to observed data;
-ii) *generalization*: the mathematical principles and practitioners' wisdom
-that guide as to how to produce models whose validity extends
-beyond the exact set of data points used to train them.
+ディープラーニングでは、モデルを「トレーニング」し、連続的に更新することで、見るデータが増えていくにつれてモデルがどんどん良くなるようにします。通常、より良くなるということは、「私たちのモデルがどれほど悪い*？」という質問に答えるスコアである*損失関数*を最小化することを意味します。この質問は見た目よりも微妙です。最終的に、私たちが本当に気にかけているのは、これまでに見たことのないデータに対して優れたパフォーマンスを発揮するモデルを作成することです。しかし、実際に見ることができるデータにしかモデルをあてはめられません。したがって、モデルをフィッティングするタスクを、(i) *最適化*: 観測されたデータにモデルをフィッティングするプロセス、(ii) *一般化*: 正確なデータセットを超える妥当性を持つモデルの作成方法を導く数学的原理と実践者の知恵に分解できます。彼らを訓練するのに使われた例。 
 
-To help you understand
-optimization problems and methods in later chapters,
-here we give a very brief primer on differential calculus
-that is commonly used in deep learning.
+後の章で最適化の問題と手法を理解しやすくするために、ここではディープラーニングで一般的に使用される微分計算について簡単に説明します。 
 
+## デリバティブと微分
 
-## Derivatives and Differentiation
+まず、ほとんどすべてのディープラーニング最適化アルゴリズムにおいて重要なステップである微分の計算に取り組みます。ディープラーニングでは、通常、モデルのパラメーターに関して微分可能な損失関数を選択します。簡単に言うと、各パラメータについて、そのパラメータを極小の「増加」または「減少」した場合に、損失がどれだけ急速に増減するかを判断できるということです。 
 
-We begin by addressing the calculation of derivatives,
-a crucial step in nearly all deep learning optimization algorithms.
-In deep learning, we typically choose loss functions
-that are differentiable with respect to our model's parameters.
-Put simply, this means that for each parameter,
-we can determine how rapidly the loss would increase or decrease,
-were we to *increase* or *decrease* that parameter
-by an infinitesimally small amount.
+入力と出力の両方がスカラーである関数 $f: \mathbb{R} \rightarrow \mathbb{R}$ があるとします。[**$f$ の*微分* は次のように定義されます**] 
 
-Suppose that we have a function $f: \mathbb{R} \rightarrow \mathbb{R}$,
-whose input and output are both scalars.
-The *derivative* of $f$ is defined as
+(** $f'(x) = \lim_{h \rightarrow 0} \frac{f(x+h) - f(x)}{h},$ドル**) :eqlabel:`eq_derivative` 
 
-$$f'(x) = \lim_{h \rightarrow 0} \frac{f(x+h) - f(x)}{h},$$
-:eqlabel:`eq_derivative`
+この制限が存在する場合。$f'(a)$ が存在する場合、$a$ では $f$ は*微分可能* であると言われます。$f$ が区間の数ごとに微分可能である場合、この関数はこの区間で微分可能です。:eqref:`eq_derivative` の導関数 $f'(x)$ は、$x$ に対する $f(x)$ の*瞬間的な*変化率として解釈できます。いわゆる瞬時変化率は、$x$ の $h$ の変動 $h$ に基づいており、$0$ に近づいています。 
 
-if this limit exists.
-If $f'(a)$ exists,
-$f$ is said to be *differentiable* at $a$.
-If $f$ is differentiable at every number of an interval,
-then this function is differentiable on this interval.
-We can interpret the derivative $f'(x)$ in :eqref:`eq_derivative`
-as the *instantaneous* rate of change of $f(x)$
-with respect to $x$.
-The so-called instantaneous rate of change is based on
-the variation $h$ in $x$, which approaches $0$.
-
-To illustrate derivatives,
-let's experiment with an example.
-Define $u = f(x) = 3x^2-4x$.
+導関数を説明するために、例を挙げて実験してみましょう。(** $u = f(x) = 3x^2-4x$ を定義してください**)
 
 ```{.python .input}
 %matplotlib inline
-import d2l
+from d2l import mxnet as d2l
 from IPython import display
 from mxnet import np, npx
 npx.set_np()
@@ -86,94 +35,94 @@ def f(x):
     return 3 * x ** 2 - 4 * x
 ```
 
-By setting $x=1$ and letting $h$ approach $0$,
-the numerical result of $\frac{f(x+h) - f(x)}{h}$
-in :eqref:`eq_derivative` approaches $2$.
-Though this experiment is not a mathematical proof,
-we will see later that the derivative $u'$ is $2$ when $x=1$.
+```{.python .input}
+#@tab pytorch
+%matplotlib inline
+from d2l import torch as d2l
+from IPython import display
+import numpy as np
+
+def f(x):
+    return 3 * x ** 2 - 4 * x
+```
 
 ```{.python .input}
+#@tab tensorflow
+%matplotlib inline
+from d2l import tensorflow as d2l
+from IPython import display
+import numpy as np
+
+def f(x):
+    return 3 * x ** 2 - 4 * x
+```
+
+[**$x=1$ を設定し $h$ を $0$ に近づけると $\frac{f(x+h) - f(x)}{h}$ の数値結果**] :eqref:`eq_derivative` (** $2$ に近づく**) この実験は数学的な証明ではありませんが、$x=1$ のときに導関数 $u'$ が $2$ であることが後でわかります。
+
+```{.python .input}
+#@tab all
 def numerical_lim(f, x, h):
     return (f(x + h) - f(x)) / h
 
 h = 0.1
 for i in range(5):
-    print('h=%.5f, numerical limit=%.5f' % (h, numerical_lim(f, 1, h)))
+    print(f'h={h:.5f}, numerical limit={numerical_lim(f, 1, h):.5f}')
     h *= 0.1
 ```
 
-Let's familiarize ourselves with a few equivalent notations for derivatives.
-Given $y = f(x)$, where $x$ and $y$ are the independent variable and the dependent variable of the function $f$, respectively. The following expressions are equivalent:
+デリバティブの同等の表記法をいくつか理解しておきましょう。$y = f(x)$ を指定すると、$x$ と $y$ はそれぞれ関数 $f$ の独立変数と従属変数です。次の式は同等です。 
 
 $$f'(x) = y' = \frac{dy}{dx} = \frac{df}{dx} = \frac{d}{dx} f(x) = Df(x) = D_x f(x),$$
 
-where symbols $\frac{d}{dx}$ and $D$ are *differentiation operators* that indicate operation of *differentiation*.
-We can use the following rules to differentiate common functions:
+シンボル $\frac{d}{dx}$ と $D$ は、*微分* の演算を示す*微分演算子* です。一般的な機能を区別するために、次のルールを使用できます。 
 
-* $DC = 0$ ($C$ is a constant),
-* $Dx^n = nx^{n-1}$ (the *power rule*, $n$ is any real number),
+* $DC = 0$ ($C$ は定数です)
+* $Dx^n = nx^{n-1}$ (*べき乗則*、$n$ は任意の実数です)
 * $De^x = e^x$,
 * $D\ln(x) = 1/x.$
 
-To differentiate a function that is formed from a few simpler functions such as the above common functions,
-the following rules can be handy for us.
-Suppose that functions $f$ and $g$ are both differentiable and $C$ is a constant,
-we have the *constant multiple rule*
+上記の共通関数のようないくつかのより単純な関数から形成される関数を区別するために、以下のルールが役に立ちます。関数 $f$ と $g$ が両方とも微分可能で、$C$ が定数であると仮定すると、*定数の倍数規則* があります。 
 
 $$\frac{d}{dx} [Cf(x)] = C \frac{d}{dx} f(x),$$
 
-the *sum rule*
+*sumルール* 
 
 $$\frac{d}{dx} [f(x) + g(x)] = \frac{d}{dx} f(x) + \frac{d}{dx} g(x),$$
 
-the *product rule*
+*製品ルール* 
 
 $$\frac{d}{dx} [f(x)g(x)] = f(x) \frac{d}{dx} [g(x)] + g(x) \frac{d}{dx} [f(x)],$$
 
-and the *quotient rule*
+そして*商の法則* 
 
 $$\frac{d}{dx} \left[\frac{f(x)}{g(x)}\right] = \frac{g(x) \frac{d}{dx} [f(x)] - f(x) \frac{d}{dx} [g(x)]}{[g(x)]^2}.$$
 
-Now we can apply a few of the above rules to find
-$u' = f'(x) = 3 \frac{d}{dx} x^2-4\frac{d}{dx}x = 6x-4$.
-Thus, by setting $x = 1$, we have $u' = 2$:
-this is supported by our earlier experiment in this section
-where the numerical result approaches $2$.
-This derivative is also the slope of the tangent line
-to the curve $u = f(x)$ when $x = 1$.
+これで $u' = f'(x) = 3 \frac{d}{dx} x^2-4\frac{d}{dx}x = 6x-4$ を見つけるために、上記の規則のいくつかを適用できます。したがって、$x = 1$ を設定すると $u' = 2$ が得られます。これは、このセクションの以前の実験でサポートされており、数値結果は $2$ に近づきます。この微分は、$x = 1$ のときの曲線 $u = f(x)$ に対する接線の傾きでもあります。 
 
-To visualize such an interpretation of derivatives,
-we will use `matplotlib`,
-a popular plotting library in Python.
-To configure properties of the figures produced by `matplotlib`,
-we need to define a few functions.
-In the following,
-the `use_svg_display` function specifies the `matplotlib` package to output the svg figures for sharper images.
-The comment `# Saved in the d2l package for later use`
-is a special mark where the following function, class, or import statements
-are also saved in the `d2l` package so that we can directly invoke `d2l.use_svg_display()` later.
+[**このような微分の解釈を視覚化するために、Python でよく使われるプロットライブラリである `matplotlib`, **] を使います。`matplotlib` で生成される Figure のプロパティを設定するには、いくつかの関数を定義する必要があります。次の例では、`use_svg_display` 関数は `matplotlib` パッケージを指定して、より鮮明なイメージのために svg Figure を出力します。コメント `# @save `は、以下の関数、クラス、文を `d2l` パッケージに保存する特別なマークなので、あとで再定義することなく直接呼び出せる (`d2l.use_svg_display()` など) ことができます。
 
 ```{.python .input}
-# Saved in the d2l package for later use
-def use_svg_display():
+#@tab all
+def use_svg_display():  #@save
     """Use the svg format to display a plot in Jupyter."""
     display.set_matplotlib_formats('svg')
 ```
 
-We define the `set_figsize` function to specify the figure sizes. Note that here we directly use `d2l.plt` since the import statement `from matplotlib import pyplot as plt` has been marked for being saved in the `d2l` package in the preface.
+`set_figsize` 関数を定義して Figure のサイズを指定します。ここでは `d2l.plt` を直接使用することに注意してください。これは、インポートステートメント `from matplotlib import pyplot as plt` が、序文で `d2l` パッケージに保存されるようマークされているためです。
 
 ```{.python .input}
-# Saved in the d2l package for later use
-def set_figsize(figsize=(3.5, 2.5)):
+#@tab all
+def set_figsize(figsize=(3.5, 2.5)):  #@save
     """Set the figure size for matplotlib."""
     use_svg_display()
     d2l.plt.rcParams['figure.figsize'] = figsize
 ```
 
-The following `set_axes` function sets properties of axes of figures produced by `matplotlib`.
+次の `set_axes` 関数は `matplotlib` によって生成される図形座標軸のプロパティを設定します。
 
 ```{.python .input}
-# Saved in the d2l package for later use
+#@tab all
+#@save
 def set_axes(axes, xlabel, ylabel, xlim, ylim, xscale, yscale, legend):
     """Set the axes for matplotlib."""
     axes.set_xlabel(xlabel)
@@ -187,21 +136,22 @@ def set_axes(axes, xlabel, ylabel, xlim, ylim, xscale, yscale, legend):
     axes.grid()
 ```
 
-With these $3$ functions for figure configurations,
-we define the `plot` function
-to plot multiple curves succinctly
-since we will need to visualize many curves throughout the book.
+Figure コンフィギュレーション用のこれら 3 つの関数を使用して、本書全体で多くの曲線を視覚化する必要があるため、複数の曲線を簡潔にプロットする関数 `plot` を定義します。
 
 ```{.python .input}
-# Saved in the d2l package for later use
-def plot(X, Y=None, xlabel=None, ylabel=None, legend=[], xlim=None,
+#@tab all
+#@save
+def plot(X, Y=None, xlabel=None, ylabel=None, legend=None, xlim=None,
          ylim=None, xscale='linear', yscale='linear',
-         fmts=['-', 'm--', 'g-.', 'r:'], figsize=(3.5, 2.5), axes=None):
+         fmts=('-', 'm--', 'g-.', 'r:'), figsize=(3.5, 2.5), axes=None):
     """Plot data points."""
-    d2l.set_figsize(figsize)
+    if legend is None:
+        legend = []
+
+    set_figsize(figsize)
     axes = axes if axes else d2l.plt.gca()
 
-    # Return True if X (ndarray or list) has 1 axis
+    # Return True if `X` (tensor or list) has 1 axis
     def has_one_axis(X):
         return (hasattr(X, "ndim") and X.ndim == 1 or isinstance(X, list)
                 and not hasattr(X[0], "__len__"))
@@ -223,94 +173,80 @@ def plot(X, Y=None, xlabel=None, ylabel=None, legend=[], xlim=None,
     set_axes(axes, xlabel, ylabel, xlim, ylim, xscale, yscale, legend)
 ```
 
-Now we can plot the function $u = f(x)$ and its tangent line $y = 2x - 3$ at $x=1$, where the coefficient $2$ is the slope of the tangent line.
+これで、[**関数 $u = f(x)$ とその接線 $y = 2x - 3$ を $x=1$ にプロット**] できます。ここで、係数 $2$ は接線の傾きです。
 
 ```{.python .input}
+#@tab all
 x = np.arange(0, 3, 0.1)
 plot(x, [f(x), 2 * x - 3], 'x', 'f(x)', legend=['f(x)', 'Tangent line (x=1)'])
 ```
 
-## Partial Derivatives
+## 偏微分
 
-So far we have dealt with the differentiation of functions of just one variable.
-In deep learning, functions often depend on *many* variables.
-Thus, we need to extend the ideas of differentiation to these *multivariate* functions.
+これまで、1つの変数の関数の微分を扱ってきました。ディープラーニングでは、関数は多くの場合、*多数* 個の変数に依存しています。したがって、微分の概念をこれらの「多変量関数」にまで拡張する必要があります。 
 
-
-Let $y = f(x_1, x_2, \ldots, x_n)$ be a function with $n$ variables. The *partial derivative* of $y$ with respect to its $i^\mathrm{th}$  parameter $x_i$ is
+$y = f(x_1, x_2, \ldots, x_n)$ を $n$ 個の変数をもつ関数とします。$i^\mathrm{th}$ パラメーター $x_i$ に対する $y$ の *偏微分* は次のようになります。 
 
 $$ \frac{\partial y}{\partial x_i} = \lim_{h \rightarrow 0} \frac{f(x_1, \ldots, x_{i-1}, x_i+h, x_{i+1}, \ldots, x_n) - f(x_1, \ldots, x_i, \ldots, x_n)}{h}.$$
 
-
-To calculate $\frac{\partial y}{\partial x_i}$, we can simply treat $x_1, \ldots, x_{i-1}, x_{i+1}, \ldots, x_n$ as constants and calculate the derivative of $y$ with respect to $x_i$.
-For notation of partial derivatives, the following are equivalent:
+$\frac{\partial y}{\partial x_i}$ を計算するには、$x_1, \ldots, x_{i-1}, x_{i+1}, \ldots, x_n$ を定数として扱い、$x_i$ に対する $y$ の導関数を計算します。偏微分の表記法では、以下は同等です。 
 
 $$\frac{\partial y}{\partial x_i} = \frac{\partial f}{\partial x_i} = f_{x_i} = f_i = D_i f = D_{x_i} f.$$
 
+## グラデーション
+:label:`subsec_calculus-grad`
 
-## Gradients
-
-We can concatenate partial derivatives of a multivariate function with respect to all its variables to obtain the *gradient* vector of the function.
-Suppose that the input of function $f: \mathbb{R}^n \rightarrow \mathbb{R}$ is an $n$-dimensional vector $\mathbf{x} = [x_1, x_2, \ldots, x_n]^\top$ and the output is a scalar. The gradient of the function $f(\mathbf{x})$ with respect to $\mathbf{x}$ is a vector of $n$ partial derivatives:
+多変量関数の偏導関数をそのすべての変数に対して連結して、関数の*gradient* ベクトルを求めることができます。関数 $f: \mathbb{R}^n \rightarrow \mathbb{R}$ の入力が $n$ 次元のベクトル $\mathbf{x} = [x_1, x_2, \ldots, x_n]^\top$ で、出力がスカラーであるとします。$\mathbf{x}$ に対する関数 $f(\mathbf{x})$ の勾配は $n$ 偏微分のベクトルです。 
 
 $$\nabla_{\mathbf{x}} f(\mathbf{x}) = \bigg[\frac{\partial f(\mathbf{x})}{\partial x_1}, \frac{\partial f(\mathbf{x})}{\partial x_2}, \ldots, \frac{\partial f(\mathbf{x})}{\partial x_n}\bigg]^\top,$$
 
-where $\nabla_{\mathbf{x}} f(\mathbf{x})$ is often replaced by $\nabla f(\mathbf{x})$ when there is no ambiguity.
+$\nabla_{\mathbf{x}} f(\mathbf{x})$ は、あいまいさがなければ $\nabla f(\mathbf{x})$ に置き換えられることがよくあります。 
 
-Let $\mathbf{x}$ be an $n$-dimensional vector, the following rules are often used when differentiating multivariate functions:
+$\mathbf{x}$ を $n$ 次元のベクトルとすると、多変量関数を微分するときには次の規則がよく使われます。 
 
-* For all $\mathbf{A} \in \mathbb{R}^{m \times n}$, $\nabla_{\mathbf{x}} \mathbf{A} \mathbf{x} = \mathbf{A}^\top$,
-* For all  $\mathbf{A} \in \mathbb{R}^{n \times m}$, $\nabla_{\mathbf{x}} \mathbf{x}^\top \mathbf{A}  = \mathbf{A}$,
-* For all  $\mathbf{A} \in \mathbb{R}^{n \times n}$, $\nabla_{\mathbf{x}} \mathbf{x}^\top \mathbf{A} \mathbf{x}  = (\mathbf{A} + \mathbf{A}^\top)\mathbf{x}$,
-* $\nabla_{\mathbf{x}} \|\mathbf{x} \|^2 = \nabla_{\mathbf{x}} \mathbf{x}^\top \mathbf{x} = 2\mathbf{x}$.
+* すべての$\mathbf{A} \in \mathbb{R}^{m \times n}$、$\nabla_{\mathbf{x}} \mathbf{A} \mathbf{x} = \mathbf{A}^\top$、
+* すべての$\mathbf{A} \in \mathbb{R}^{n \times m}$、$\nabla_{\mathbf{x}} \mathbf{x}^\top \mathbf{A}  = \mathbf{A}$、
+* すべての$\mathbf{A} \in \mathbb{R}^{n \times n}$、$\nabla_{\mathbf{x}} \mathbf{x}^\top \mathbf{A} \mathbf{x}  = (\mathbf{A} + \mathbf{A}^\top)\mathbf{x}$、
+* $\nabla_{\mathbf{x}} \|\mathbf{x} \|^2 = \nabla_{\mathbf{x}} \mathbf{x}^\top \mathbf{x} = 2\mathbf{x}$。
 
-Similarly, for any matrix $\mathbf{X}$, we have $\nabla_{\mathbf{X}} \|\mathbf{X} \|_F^2 = 2\mathbf{X}$. As we will see later, gradients are useful for designing optimization algorithms in deep learning.
+同様に、マトリックス $\mathbf{X}$ については $\nabla_{\mathbf{X}} \|\mathbf{X} \|_F^2 = 2\mathbf{X}$ があります。後で説明するように、勾配はディープラーニングにおける最適化アルゴリズムの設計に役立ちます。 
 
+## 連鎖規則
 
-## Chain Rule
+しかし、そのようなグラデーションは見つけにくい場合があります。これは、ディープラーニングの多変量関数は*合成*であることが多いため、これらの関数を区別するために前述のルールを適用しない可能性があるためです。幸いなことに、*chainルール*によって複合関数を区別することができます。 
 
-However, such gradients can be hard to find.
-This is because multivariate functions in deep learning are often *composite*,
-so we may not apply any of the aforementioned rules to differentiate these functions.
-Fortunately, the *chain rule* enables us to differentiate composite functions.
-
-Let's first consider functions of a single variable.
-Suppose that functions $y=f(u)$ and $u=g(x)$ are both differentiable, then the chain rule states that
+まず、単一変数の関数について考えてみましょう。関数 $y=f(u)$ と $u=g(x)$ がどちらも微分可能であると仮定すると、連鎖規則は次のようになります。 
 
 $$\frac{dy}{dx} = \frac{dy}{du} \frac{du}{dx}.$$
 
-Now let's turn our attention to a more general scenario
-where functions have an arbitrary number of variables.
-Suppose that the differentiable function $y$ has variables
-$u_1, u_2, \ldots, u_m$, where each differentiable function $u_i$
-has variables $x_1, x_2, \ldots, x_n$.
-Note that $y$ is a function of $x_1, x_2, \ldots, x_n$.
-Then the chain rule gives
+ここで、関数が任意の数の変数をもつ、より一般的なシナリオに注目しましょう。微分可能関数 $y$ に変数 $u_1, u_2, \ldots, u_m$ があり、各微分可能関数 $u_i$ には変数 $x_1, x_2, \ldots, x_n$ があるとします。$y$ は $x_1, x_2, \ldots, x_n$ の関数であることに注意してください。そして、連鎖規則は次のようになります。 
 
 $$\frac{dy}{dx_i} = \frac{dy}{du_1} \frac{du_1}{dx_i} + \frac{dy}{du_2} \frac{du_2}{dx_i} + \cdots + \frac{dy}{du_m} \frac{du_m}{dx_i}$$
 
-for any $i = 1, 2, \ldots, n$.
+どんな$i = 1, 2, \ldots, n$にも合います。 
 
+## [概要
 
+* 微分積分学と積分微積分は微積分学の2つの分岐であり、前者は深層学習におけるユビキタス最適化問題に適用できます。
+* 微分は、その変数に対する関数の瞬間的な変化率として解釈できます。これは、関数の曲線に対する接線の傾きでもあります。
+* 勾配は、そのすべての変数に対する多変量関数の偏導関数を成分とするベクトルです。
+* 連鎖則により、複合関数を区別することができます。
 
-## Summary
+## 演習
 
+1. $x = 1$ の場合、関数 $y = f(x) = x^3 - \frac{1}{x}$ とその接線をプロットします。
+1. 関数 $f(\mathbf{x}) = 3x_1^2 + 5e^{x_2}$ の勾配を求めます。
+1. 関数$f(\mathbf{x}) = \|\mathbf{x}\|_2$の勾配は何ですか？
+1. $u = f(x, y, z)$ と $x = x(a, b)$、$y = y(a, b)$、$z = z(a, b)$ の場合のチェーンルールを書き出せますか？
 
-* Differential calculus and integral calculus are two branches of calculus, where the former can be applied to the ubiquitous optimization problems in deep learning.
-* A derivative can be interpreted as the instantaneous rate of change of a function with respect to its variable. It is also the slope of the tangent line to the curve of the function.
-* A gradient is a vector whose components are the partial derivatives of a multivariate function with respect to all its variables.
-* The chain rule enables us to differentiate composite functions.
+:begin_tab:`mxnet`
+[Discussions](https://discuss.d2l.ai/t/32)
+:end_tab:
 
+:begin_tab:`pytorch`
+[Discussions](https://discuss.d2l.ai/t/33)
+:end_tab:
 
-
-## Exercises
-
-1. Plot the function $y = f(x) = x^3 - \frac{1}{x}$ and its tangent line when $x = 1$.
-1. Find the gradient of the function $f(\mathbf{x}) = 3x_1^2 + 5e^{x_2}$.
-1. What is the gradient of the function $f(\mathbf{x}) = \|\mathbf{x}\|_2$?
-1. Can you write out the chain rule for the case where $u = f(x, y, z)$ and $x = x(a, b)$, $y = y(a, b)$, and $z = z(a, b)$?
-
-
-## [Discussions](https://discuss.mxnet.io/t/5008)
-
-![](../img/qr_calculus.svg)
+:begin_tab:`tensorflow`
+[Discussions](https://discuss.d2l.ai/t/197)
+:end_tab:

@@ -1,300 +1,491 @@
-# データの取り扱い
+# データ操作
+:label:`sec_ndarray`
 
-データを格納したり操作したりできなければ、何も行うことはできません。一般的に、データを処理する上で重要なことは次の2点です。（i）データを獲得すること、および（ii）コンピュータに取り込んだらそれを処理することです。データの格納方法さえわからなければ、データを獲得することに意味がありません。合成データを利用して実際に触ってみましょう。はじめに、データ格納と変換のための MXNet の主なツールである $n$次元配列 (`ndarray`) を紹介します。MXNet では、`ndarray` はクラスであり、インスタンスを "an `ndarray`" と呼びます。
+何かを成し遂げるためには、データを保存し操作する何らかの方法が必要です。一般に、データを扱うには、(i) データを取得することと、(ii) データがコンピューター内に収まった後に処理するという2つの重要なことがあります。なんらかの保存方法がないとデータを取得しても意味がないので、まずは合成データをいじって手を汚しましょう。まず、*テンソル* とも呼ばれる $n$ 次元配列を紹介します。 
 
-Python の科学計算パッケージに広く利用されている NumPy を以前に使用したことがあれば、この説は馴染みがあると感じるでしょう。意図的にそうなっているのです。 We designed MXNet's `ndarray` to be an extension to NumPy's `ndarray` with a few killer features.
-まず、MXNet の `ndarray`は、CPU、GPU、および分散クラウドアーキテクチャでの非同期計算をサポートしています。第二に、MXNet の `ndarray` は自動微分をサポートしています。これらの特性によって、`ndarray`は深層学習に適うものとなっています。この書籍では、`ndarray` といえば、特に記述がない場合は、MXNet の `ndarray` を指すものとします。
+Python で最も広く使われている科学計算パッケージである NumPy を使ったことがあるなら、この節はよく知っていることでしょう。どのフレームワークを使用するかにかかわらず、その*テンソルクラス* (MXNet では `ndarray`、PyTorch と TensorFlow の両方で `Tensor`) は NumPy の `ndarray` と似ていますが、いくつかのキラーな機能があります。まず、GPU は計算を高速化するために十分にサポートされていますが、NumPy は CPU 計算しかサポートしていません。第2に、テンソルクラスは自動微分をサポートしている。これらの特性により、テンソルクラスはディープラーニングに適しています。本書全体を通して、テンソルと言うとき、特に明記されていない限り、テンソルクラスのインスタンスを指しています。 
 
-## まずはじめに
+## はじめに
 
-In this section, we aim to get you up and running,
-equipping you with the basic math and numerical computing tools
-that you will build on as you progress through the book.
-Do not worry if you struggle to grok some of
-the mathematical concepts or library functions.
-The following sections will revisit this material
-in the context of practical examples and it will sink.
-On the other hand, if you already have some background
-and want to go deeper into the mathematical content, just skip this section.
+このセクションでは、本書を読み進めていくにつれて構築する基本的な数学および数値計算ツールを身に付けて、使い始めることを目指しています。数学的な概念やライブラリ関数を掘り起こすのに苦労しても心配しないでください。次のセクションでは、この資料を実際的な例のコンテキストで再検討します。一方、すでに何らかの経歴があり、数学的な内容をより深く掘り下げたい場合は、このセクションをスキップしてください。
 
-To start, we import the `np` (`numpy`) and
-`npx` (`numpy_extension`) modules from MXNet.
-Here, the `np` module includes functions supported by NumPy,
-while the `npx` module contains a set of extensions
-developed to empower deep learning within a NumPy-like environment.
-When using `ndarray`, we almost always invoke the `set_np` function:
-this is for compatibility of `ndarray` processing by other components of MXNet.
+:begin_tab:`mxnet`
+まず、`np` (`numpy`) と `npx` (`numpy_extension`) のモジュールを MXnet からインポートします。ここで、`np` モジュールには NumPy でサポートされる関数が含まれ、`npx` モジュールには Numpy ライクな環境でディープラーニングを強化するために開発された一連の拡張機能が含まれています。テンソルを使用する場合、ほとんどの場合 `set_np` 関数を呼び出します。これは、MXNet の他のコンポーネントによるテンソル処理の互換性のためです。
+:end_tab:
 
-```{.python .input  n=1}
+:begin_tab:`pytorch`
+(**まず、`torch` をインポートします。PyTorch という名前ですが、`pytorch` ではなく `torch` をインポートする必要があることに注意してください **)
+:end_tab:
+
+:begin_tab:`tensorflow`
+まず、`tensorflow` をインポートします。名前が少し長いため、短いエイリアス `tf` を付けてインポートすることがよくあります。
+:end_tab:
+
+```{.python .input}
 from mxnet import np, npx
 npx.set_np()
 ```
 
-`ndarray` は数値の (多次元の) 配列を表します。 1軸の`ndarray`は(数学的には)*vector*に対応します。2軸の`ndarray`は*行列*に対応します。3つ以上の軸を持つ配列に関しては、数学者は特別な名前を与えていません - 単にそれらを*テンソル*と呼びます。
+```{.python .input}
+#@tab pytorch
+import torch
+```
 
-To start, we can use `arange` to create a row vector `x`
-containing the first $12$ integers starting with $0$,
-though they are created as floats by default.
-Each of the values in an `ndarray` is called an *element* of the `ndarray`.
-For instance, there are $12$ elements in the `ndarray` `x`.
-Unless otherwise specified, a new `ndarray`
-will be stored in main memory and designated for CPU-based computation.
+```{.python .input}
+#@tab tensorflow
+import tensorflow as tf
+```
 
-```{.python .input  n=2}
+[**テンソルは数値の (多次元の) 配列を表す。**] 1つの軸で、テンソルを*vector* と呼びます。2 つの軸を持つテンソルを*matrix* と呼びます。$k > 2$ 軸では、特殊な名前を削除し、オブジェクトを $k^\mathrm{th}$ *次数テンソル* として参照します。
+
+:begin_tab:`mxnet`
+MXNet には、値が事前設定された新しいテンソルを作成するためのさまざまな関数が用意されています。たとえば、`arange(n)` を呼び出すと、0 (含まれる) から始まって `n` (含まれていない) で終わる等間隔の値のベクトルを作成できます。デフォルトのインターバルサイズは $1$ です。特に指定しない限り、新しいテンソルはメインメモリに格納され、CPU ベースの計算用に指定されます。
+:end_tab:
+
+:begin_tab:`pytorch`
+PyTorch には、値があらかじめ入力された新しいテンソルを作成するためのさまざまな関数が用意されています。たとえば、`arange(n)` を呼び出すと、0 (含まれる) から始まって `n` (含まれていない) で終わる等間隔の値のベクトルを作成できます。デフォルトのインターバルサイズは $1$ です。特に指定しない限り、新しいテンソルはメインメモリに格納され、CPU ベースの計算用に指定されます。
+:end_tab:
+
+:begin_tab:`tensorflow`
+TensorFlow には、値が事前設定された新しいテンソルを作成するためのさまざまな関数が用意されています。たとえば、`range(n)` を呼び出すと、0 (含む) から始まって `n` (含まれていない) で終わる等間隔の値のベクトルを作成できます。デフォルトのインターバルサイズは $1$ です。特に指定しない限り、新しいテンソルはメインメモリに格納され、CPU ベースの計算用に指定されます。
+:end_tab:
+
+```{.python .input}
 x = np.arange(12)
 x
 ```
-`
 
-`ndarray`の shape (各軸に対する長さ) は `shape`のプロパティを利用して確認することができます。
-
-```{.python .input  n=8}
-x.shape
-```
-
-`size`のプロパティから、`ndarray`インスタンスの要素の総数を得ることもできます。これは`shape`の要素の積となります。ここではベクトルを扱っているので、`size`も`shape`の一要素も同じ数になります。
-
-
-```{.python .input  n=9}
-x.size
-```
-
-ある`ndarray`に関して、要素数や要素の値を変えることなくshapeを変えるためには`reshape`関数を使います。例えば、shape が ($12$,)の行ベクトル`x`を、shape が ($3$, $4$) の行列に変換することができます。この新しい `ndarray` は同じ値で構成されますが、3行4列の行列となります。shapeは変わっていますが、`x`の要素は変わっていないことに注意してください。`size`は同じままです。
-
-
-```{.python .input  n=3}
-x = x.reshape((3, 4))
+```{.python .input}
+#@tab pytorch
+x = torch.arange(12, dtype=torch.float32)
 x
 ```
 
-すべての次元をそれぞれ手動で指定してreshapeする必要はありません。 (高さ, 幅) の shape をもつ行列を対象としていて、幅の値がわかったとすれば、高さの値も暗にわかるでしょう。つまり、割り算を実行すればよいのです。
-たとえば、上の例では、3行の行列を取得するために、3行と4列の両方を指定しました。幸いなことに、`ndArray` はある次元数を残りの次元数から自動的に決定することができます。 `ndarray`では、自動的に推測させたい次元に `-1`を配置します。さきほどの例では `x.reshape(3, 4)`の代わりに、 `x.reshape(-1, 4)`または `x.reshape(3,-1)`を使用することが可能です。
-
-`empty`のメソッドは、いくらかのメモリを確保して、その要素に対する値を気にしない行列を返します。これは非常に効率的ですが、各要素は非常に大きな値も含め、任意の値を取る可能性がありますので注意しましょう
-
-
 ```{.python .input}
-np.empty((3, 4))
+#@tab tensorflow
+x = tf.range(12, dtype=tf.float32)
+x
 ```
 
-通常は、行列を、1、ゼロ、既知の定数、または既知の分布から無作為に抽出された数値のいずれかで初期化しようとするでしょう。
-すべての要素が0、shapeが(2,3,4)であるようなテンソルを表す`ndarray`を作成することもできます。
+(**テンソルの*shape***) (~~と要素の総数~~) (各軸に沿った長さ) は `shape` プロパティを調べることでアクセスできます。
 
-```{.python .input  n=4}
+```{.python .input}
+#@tab all
+x.shape
+```
+
+テンソルの要素の総数、つまりすべての形状要素の積を知りたいだけなら、その大きさを調べることができます。ここではベクトルを扱っているので、その `shape` の 1 つの要素はそのサイズと同じです。
+
+```{.python .input}
+x.size
+```
+
+```{.python .input}
+#@tab pytorch
+x.numel()
+```
+
+```{.python .input}
+#@tab tensorflow
+tf.size(x)
+```
+
+[**要素数も値も変えずにテンソルの形を変える**] には、`reshape` 関数を呼び出します。たとえば、テンソル `x` を形状 (12,) の行ベクトルから形状 (3, 4) の行列に変換できます。この新しいテンソルにはまったく同じ値が含まれていますが、3 行 4 列で構成された行列として表示されます。繰り返しますが、形状は変更されましたが、要素は変更されていません。形状を変更してもサイズは変更されないことに注意してください。
+
+```{.python .input}
+#@tab mxnet, pytorch
+X = x.reshape(3, 4)
+X
+```
+
+```{.python .input}
+#@tab tensorflow
+X = tf.reshape(x, (3, 4))
+X
+```
+
+すべてのディメンションを手動で指定して形状を変更する必要はありません。ターゲットの形状が形状 (高さ、幅) をもつ行列の場合、幅がわかると、高さが暗黙的に与えられます。なぜ自分たちで除算をしなければならないのですか？上の例では、3 行の行列を得るために、3 行と 4 列の両方を指定しました。幸いなことに、テンソルは残りの次元を指定して 1 つの次元を自動的に計算できます。この機能を呼び出すには、テンソルで自動的に推論する次元に `-1` を配置します。私たちの場合、`x.reshape(3, 4)` を呼び出す代わりに、`x.reshape(-1, 4)` または `x.reshape(3, -1)` を同等に呼び出すことができます。 
+
+通常、行列はゼロ、1、その他の定数、または特定の分布からランダムにサンプリングされた数値のいずれかで初期化されます。[**すべての要素を0に設定したテンソルを表すテンソルを作成できます**](~~or 1~~)、(2, 3, 4) の形状は次のようになります。
+
+```{.python .input}
 np.zeros((2, 3, 4))
 ```
 
-同様に、すべての要素が1であるようなテンソルを作成するためには以下を実行します。
+```{.python .input}
+#@tab pytorch
+torch.zeros((2, 3, 4))
+```
 
-```{.python .input  n=5}
+```{.python .input}
+#@tab tensorflow
+tf.zeros((2, 3, 4))
+```
+
+同様に、次のように、各要素を 1 に設定したテンソルを作成できます。
+
+```{.python .input}
 np.ones((2, 3, 4))
 ```
-場合によっては、既知の確率分布に従って、`ndarray` の各要素の値をランダムにサンプリングすることもあるでしょう。例えば、ニューラルネットワークにおいて、パラメータのための配列を作成する場合、一般にその配列の値はランダムに初期化されるでしょう。次のスニペットは、(3, 4)の形状をもつ`ndarray`を作成します。その要素は平均がゼロで分散が1のガウス分布(正規分布)から無作為にサンプリングされた値をもちます。
 
-```{.python .input  n=7}
+```{.python .input}
+#@tab pytorch
+torch.ones((2, 3, 4))
+```
+
+```{.python .input}
+#@tab tensorflow
+tf.ones((2, 3, 4))
+```
+
+多くの場合、何らかの確率分布から [**テンソルの各要素の値をランダムにサンプリング**] します。たとえば、ニューラルネットワークでパラメーターとして機能する配列を作成する場合、通常、配列の値をランダムに初期化します。次のスニペットは、形状 (3, 4) を持つテンソルを作成します。各要素は、平均 0、標準偏差 1 の標準ガウス (正規) 分布からランダムにサンプリングされます。
+
+```{.python .input}
 np.random.normal(0, 1, size=(3, 4))
 ```
 
-数値を含む Python のリストを与えることで、特定の値を要素にもつ `ndarray` を作成することもできます。Here, the outermost list corresponds to axis $0$, and the inner list to axis $1$.
-
-
-```{.python .input  n=6}
-y = np.array([[2, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]])
+```{.python .input}
+#@tab pytorch
+torch.randn(3, 4)
 ```
 
+```{.python .input}
+#@tab tensorflow
+tf.random.normal(shape=[3, 4])
+```
 
+また、数値を含む Python リスト (またはリストのリスト) を提供することで、目的のテンソルで [**各要素の正確な値を指定**] することもできます。ここで、最も外側のリストは軸 0 に対応し、内側のリストは軸 1 に対応しています。
 
-## 演算
+```{.python .input}
+np.array([[2, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]])
+```
 
-This book is not about software engineering.
-Our interests are not limited to simply
-reading and writing data from/to arrays.
-配列に対して数学演算を適用したい場合があると思います。最も単純かつ便利な機能として要素ごとの (elementwise)の機能が挙げられます。These apply a standard scalar operation
-to each element of an array.
-For functions that take two arrays as inputs,
-elementwise operations apply some standard binary operator
-on each pair of corresponding elements from the two arrays. スカラーからスカラーへ写像するあらゆる関数に対して、element-wiseな関数を作成することができます。
+```{.python .input}
+#@tab pytorch
+torch.tensor([[2, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]])
+```
 
-単項のスカラー演算 (入力を1つだけとる) は、数学的な記法を用いると、 $f: \mathbb{R} \rightarrow \mathbb{R}$ で表すことができます。This just mean that the function is mapping
-from any real number ($\mathbb{R}$) onto another.
-Likewise, we denote a *binary* scalar operator
-(taking two real inputs, and yielding one output)
-by the signature $f: \mathbb{R}, \mathbb{R} \rightarrow \mathbb{R}$. 同じshapeの2つのベクトル$\mathbf{u}$と$\mathbf{v}$、バイナリの演算子$f$が与えられているとき、すべての$i$に対して、$c_i \gets f(u_i, v_i)$ となるようなベクトル$\mathbf{c} = F(\mathbf{u},\mathbf{v})$を作成することができます。ここで、where $c_i, u_i$, and $v_i$ are the $i^\mathrm{th}$ elements
-of vectors $\mathbf{c}, \mathbf{u}$, and $\mathbf{v}$.
-ここで、スカラー関数をelement-wiseなベクトル演算に*置き換える*ことで、ベクトル値関数$F: \mathbb{R}^d \rightarrow \mathbb{R}^d$を作成することもできます。
+```{.python .input}
+#@tab tensorflow
+tf.constant([[2, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]])
+```
 
-MXNetでは、基本的な数式演算である (+,-,/,\*,\*\*) はすべて、任意のshapeに対して、shapeが同じテンソルであれば、element-wiseな演算に*置き換える*ことが可能です。同じ shapeをもつ2つのテンソルおよび行列に対して、element-wiseな演算を行うことができます。
-In the following example, we use commas to formulate a $5$-element tuple,
-where each element is the result of an elementwise operation.
+## オペレーション
 
-```{.python .input  n=11}
+この本はソフトウェア工学に関するものではありません。私たちの関心は、単に配列からデータを読み書きすることに限定されません。これらの配列に対して数学演算を実行したいと考えています。最も単純で有用な操作には、*elementwise* 演算があります。これらは、配列の各要素に標準のスカラー演算を適用します。2 つの配列を入力として取る関数の場合、要素単位の演算では、2 つの配列の対応する要素のペアごとに、何らかの標準二項演算子が適用されます。スカラーからスカラーにマッピングする任意の関数から要素単位の関数を作成できます。 
+
+数学的表記法では、このような*単項* スカラー演算子 (入力を 1 つ取る) を $f: \mathbb{R} \rightarrow \mathbb{R}$ というシグネチャで表します。これは、関数が任意の実数 ($\mathbb{R}$) から別の実数にマッピングしていることを意味します。同様に、シグネチャ $f: \mathbb{R}, \mathbb{R} \rightarrow \mathbb{R}$ によって、*binary* スカラー演算子 (2 つの実数入力を取り、1 つの出力を生成する) を表します。同じ形状* の 2 つのベクトル $\mathbf{u}$ と $\mathbf{v}$ と二項演算子 $f$ を指定すると、$i$ すべてに対して $c_i \gets f(u_i, v_i)$ を設定することでベクトル $\mathbf{c} = F(\mathbf{u},\mathbf{v})$ を生成できます。$c_i, u_i$ と $v_i$ は $\mathbf{c}, \mathbf{u}$ および $\mathbf{v}$ の $i^\mathrm{th}$ 要素です。ここでは、スカラー関数を要素単位のベクトル演算に*リフト* して、ベクトル値 $F: \mathbb{R}^d, \mathbb{R}^d \rightarrow \mathbb{R}^d$ を生成しました。 
+
+一般的な標準算術演算子 (`+`、`-`、`*`、`/`、および `**`) はすべて、任意の形状の同じ形状のテンソルに対して要素単位の演算に*解除* されています。要素単位の演算は、同じ形状の任意の 2 つのテンソルに対して呼び出すことができます。次の例では、カンマを使用して 5 要素のタプルを生成します。各要素は要素ごとの演算の結果です。 
+
+### オペレーション
+
+[**一般的な標準算術演算子 (`+`、`-`、`*`、`/`、`**`) は、すべて要素単位の演算に*解除* されました。**]
+
+```{.python .input}
 x = np.array([1, 2, 4, 8])
 y = np.array([2, 2, 2, 2])
 x + y, x - y, x * y, x / y, x ** y  # The ** operator is exponentiation
 ```
 
-より多くの演算をelement-wiseに適用することも可能です。例えば指数の単項演算子は:
+```{.python .input}
+#@tab pytorch
+x = torch.tensor([1.0, 2, 4, 8])
+y = torch.tensor([2, 2, 2, 2])
+x + y, x - y, x * y, x / y, x ** y  # The ** operator is exponentiation
+```
 
-```{.python .input  n=12}
+```{.python .input}
+#@tab tensorflow
+x = tf.constant([1.0, 2, 4, 8])
+y = tf.constant([2.0, 2, 2, 2])
+x + y, x - y, x * y, x / y, x ** y  # The ** operator is exponentiation
+```
+
+べき乗のような単項演算子を含む、多くの (**より多くの演算を要素単位に適用できる**)。
+
+```{.python .input}
 np.exp(x)
 ```
 
-
-In addition to elementwise computations,
-we can also perform linear algebra operations,
-including vector dot products and matrix multiplication.
-We will explain the crucial bits of linear algebra
-(with no assumed prior knowledge) in :numref:`sec_linear-algebra`.
-
-We can also *concatenate* multiple `ndarray`s together,
-stacking them end-to-end to form a larger `ndarray`.
-We just need to provide a list of `ndarray`s
-and tell the system along which axis to concatenate.
-The example below shows what happens when we concatenate
-two matrices along rows (axis $0$, the first element of the shape)
-vs. columns (axis $1$, the second element of the shape).
-We can see that, the first output `ndarray`'s axis-$0$ length ($6$)
-is the sum of the two input `ndarray`s' axis-$0$ lengths ($3 + 3$);
-while the second output `ndarray`'s axis-$1$ length ($8$)
-is the sum of the two input `ndarray`s' axis-$1$ lengths ($4 + 4$).
-
-```{.python .input  n=14}
-x = np.arange(12).reshape(3, 4)
-y = np.array([[2, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]])
-np.concatenate([x, y], axis=0), np.concatenate([x, y], axis=1)
+```{.python .input}
+#@tab pytorch
+torch.exp(x)
 ```
-
-ときには、*論理式*を使って2値の`ndarray`を作成したいと思うかもしれません。例えば `x == y`を取り上げましょう。ある、要素に関して`x`と`y`が等しい場合、新しく作成される`ndarray`において、その要素と同じ位置には1の値が入ります。それ以外の場合は0です。
 
 ```{.python .input}
-x == y
+#@tab tensorflow
+tf.exp(x)
 ```
-`ndarray`における全要素の和を計算すると、その和だけを唯一の要素としてもつ`ndarray`を生成します。
+
+要素単位の計算に加えて、ベクトルドット積や行列乗算などの線形代数演算も実行できます。:numref:`sec_linear-algebra`では、線形代数の重要な部分（事前知識は想定されていない）について説明します。 
+
+また、複数のテンソルを端から端まで積み重ねて [***連結*、**] してより大きなテンソルを形成することもできます。テンソルのリストを提供し、どの軸に沿って連結するかをシステムに指示するだけです。以下の例は、行 (図形の最初の要素である軸 0) と列 (軸1、図形の 2 番目の要素) に沿って 2 つの行列を連結した場合の動作を示しています。1 番目の出力テンソルの軸 0 の長さ ($6$) は、2 つの入力テンソルの軸 0 の長さ ($3 + 3$) の和であり、2 番目の出力テンソルの軸 1 の長さ ($8$) は、2 つの入力テンソルの軸 1 の長さ ($4 + 4$) の合計であることがわかります。
 
 ```{.python .input}
-x.sum()
+X = np.arange(12).reshape(3, 4)
+Y = np.array([[2, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]])
+np.concatenate([X, Y], axis=0), np.concatenate([X, Y], axis=1)
 ```
 
-利便性の観点から、`x.sum()` は `np.sum(x)` と書くこともできます。
+```{.python .input}
+#@tab pytorch
+X = torch.arange(12, dtype=torch.float32).reshape((3,4))
+Y = torch.tensor([[2.0, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]])
+torch.cat((X, Y), dim=0), torch.cat((X, Y), dim=1)
+```
 
-## Broadcast の仕組み
+```{.python .input}
+#@tab tensorflow
+X = tf.reshape(tf.range(12, dtype=tf.float32), (3, 4))
+Y = tf.constant([[2.0, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]])
+tf.concat([X, Y], axis=0), tf.concat([X, Y], axis=1)
+```
 
-上記の節では、同じshapeをもつ、2つの`ndarray`に対する演算について説明しました。shapeが異なっていたとしても、特定の条件下においては、*broadcasting* によって要素ごとの演算が実行可能です。These mechanisms work in the following way:
-First, expand one or both arrays
-by copying elements appropriately
-so that after this transformation,
-the two `ndarray`s have the same shape.
-Second, carry out the elementwise operations
-on the resulting arrays.
+時々、[**論理文で二項テンソルを構築する*。**] `X == Y` を例に挙げてみましょう。位置ごとに `X` と `Y` がその位置で等しい場合、新しいテンソルの対応するエントリは値 1 を取ります。これは、論理ステートメント `X == Y` がその位置で真であることを意味します。
 
-In most cases, we broadcast along an axis where an array
-initially only has length $1$, such as in the following example:
+```{.python .input}
+#@tab all
+X == Y
+```
 
+[**テンソルのすべての要素を合計すると**] は要素が 1 つだけのテンソルになります。
 
-```{.python .input  n=14}
-a = np.arange(3).reshape((3, 1))
-b = np.arange(2).reshape((1, 2))
+```{.python .input}
+#@tab mxnet, pytorch
+X.sum()
+```
+
+```{.python .input}
+#@tab tensorflow
+tf.reduce_sum(X)
+```
+
+## ブロードキャストメカニズム
+:label:`subsec_broadcasting`
+
+上のセクションでは、同じ形状の 2 つのテンソルに対して要素単位の演算を実行する方法を説明しました。特定の条件下では、形状が異なっていても [**ブロードキャストメカニズム*を呼び出すことで要素単位の演算を実行できる。**] このメカニズムは次のように機能します。まず、要素を適切にコピーして一方または両方の配列を展開し、この変換後、2 つのテンソルが同じ形。次に、結果の配列に対して要素ごとの演算を実行します。 
+
+ほとんどの場合、次の例のように、配列が最初は長さが 1 しかない軸に沿ってブロードキャストします。
+
+```{.python .input}
+a = np.arange(3).reshape(3, 1)
+b = np.arange(2).reshape(1, 2)
 a, b
 ```
 
-`a`と`b`はそれぞれ（$3 \times 1$）と（$1 \times 2$）の行列なので、これらの加算を行おうと思っても、shapeが互いに一致しません。 `ndarray`は、両方の行列の要素を次のようにBroadcastすることで、より大きな（3×2）行列を生成し、これに対処します。行列`a`に対しては列を複製し、行列`b`に対しては行を複製し、最後に要素ごとに加算します。
+```{.python .input}
+#@tab pytorch
+a = torch.arange(3).reshape((3, 1))
+b = torch.arange(2).reshape((1, 2))
+a, b
+```
 
 ```{.python .input}
+#@tab tensorflow
+a = tf.reshape(tf.range(3), (3, 1))
+b = tf.reshape(tf.range(2), (1, 2))
+a, b
+```
+
+`a` と `b` はそれぞれ $3\times1$ と $1\times2$ の行列なので、加算してもそれらの形状は一致しません。以下のように、両方の行列のエントリをより大きな $3\times2$ 行列に「ブロードキャスト」します。行列 `a` では列を複製し、行列 `b` では行を複製してから両方を要素ごとに加算します。
+
+```{.python .input}
+#@tab all
 a + b
 ```
 
-## Indexing と Slicing
+## インデックス作成とスライシング
 
-他のPython配列と同じように、`ndarray`の要素はそのインデックスによってアクセスできます。 Python の配列と同様に、最初の要素のインデックスは0で、範囲を最初の要素から最後の要素の*手前*までを含むように指定します。As in standard Python lists, we can access elements
-according to their relative position to the end of the list
-by using negative indices.
+他の Python 配列と同様に、テンソル内の要素にはインデックスでアクセスできます。Python の配列と同様に、最初の要素のインデックスは 0 で、範囲は最初で最後の要素の*前* を含むように指定されます。標準の Python リストと同様に、負のインデックスを使って、リストの最後に対する相対的な位置に従って要素にアクセスできます。 
 
-Thus, `[-1]` selects the last element and `[1:3]`
-selects the second and the third elements as follows:
+したがって、[**`[-1]` は最後の要素を選択し、`[1:3]` は 2 番目と 3 番目の要素**] を選択します。
 
-```{.python .input  n=19}
-x[-1], x[1:3]
+```{.python .input}
+#@tab all
+X[-1], X[1:3]
 ```
 
-上記で説明したように、行列の要素に値を書き込むこともできます。
+:begin_tab:`mxnet, pytorch`
+reading以外にも (**インデックスを指定して行列の要素を書くこともできます**)
+:end_tab:
 
-```{.python .input  n=20}
-x[1, 2] = 9
-x
+:begin_tab:`tensorflow`
+TensorFlow の `Tensors` は不変であり、割り当てることはできません。TensorFlow の `Variables` は、割り当てをサポートする状態の可変コンテナです。TensorFlow のグラデーションは `Variable` の割り当てでは逆流しないことに注意してください。 
+
+`Variable` 全体に値を代入するだけでなく、インデックスを指定することで `Variable` の要素を書くことができます。
+:end_tab:
+
+```{.python .input}
+#@tab mxnet, pytorch
+X[1, 2] = 9
+X
 ```
 
-複数の要素に同じ値を割り当てたい場合は、それらのすべてにインデックスに対して値を割り当てれば良いです。例えば、 `[0:2,:]`は1行目と2行目にアクセスします。ここで、`:` は軸 $1$ (列) に関するすべての要素をとります。行列のindexingについて説明しましたが、いうまでもなくベクトルや $2$ 次元以上のテンソルに対しても同様のことが機能します。
-
-
-```{.python .input  n=21}
-x[0:2, :] = 12
-x
+```{.python .input}
+#@tab tensorflow
+X_var = tf.Variable(X)
+X_var[1, 2].assign(9)
+X_var
 ```
 
-## メモリの節約
+[**複数の要素に同じ値を割り当てるには、すべての要素にインデックスを付けてから値を割り当てます。**] たとえば、`[0:2, :]` は 1 行目と 2 行目にアクセスし、`:` は軸 1 (列) に沿ってすべての要素を取得します。行列の索引付けについて説明しましたが、これは明らかにベクトルや2次元以上のテンソルでも機能します。
 
-前に紹介した例では、演算を実行するたびに、その結​​果を格納するために新しいメモリを割り当てていました。たとえば、 `y = x + y`と書くと、もともと`y`が指していた行列への参照をはずし、代わりに新しく割り当てられたメモリ上の`y`を指します。以下の例では、Pythonの`id()`関数という、メモリの参照オブジェクトの正確なアドレスを返す関数を使って実際に説明します。`y = y + x`を実行した後、`id(y)`が別の場所を指していることがわかります。これは、Pythonが最初に`y + x`を評価し、その結果に新しいメモリを割り当て、それからメモリ内のこの新しい位置を`y`が指すようにしているからです。
-
-
-```{.python .input  n=15}
-before = id(y)
-y = y + x
-id(y) == before
-```
-これが望まれない場合として、以下の2つが挙げられます。第一に、私たちは常に不必要なメモリ割り当てを行いたくありません。 機械学習では、数百メガバイトのパラメータがあり、1秒のうちにそれらすべてを複数回更新します。 通常は、これらの更新を*その場で実行(in-place)*します。 第二に、同じパラメータは複数の変数が参照しているかもしれません。 適切に更新しないと、メモリリークが発生し、誤って古いパラメータを参照する可能性があります。
-
-幸運にも、in-placeな演算は、MXNetでは簡単に行うことができます。sliceを利用して以前に確保された配列に対して、演算の結果を割り当てることができます。つまり、y[:] = <expression>とします。この挙動を示すために、0の要素ブロックを割り当てるzero_likeを利用して、行列のshapeをコピーします。
-
-
-```{.python .input  n=16}
-z = np.zeros_like(y)
-print('id(z):', id(z))
-z[:] = x + y
-print('id(z):', id(z))
+```{.python .input}
+#@tab mxnet, pytorch
+X[0:2, :] = 12
+X
 ```
 
-もし、`x`の値が以降の計算において再利用されないのであれば、その演算のオーバーヘッドを削減するために`x[:] = x + y` or `x += y` とすることも可能です。
+```{.python .input}
+#@tab tensorflow
+X_var = tf.Variable(X)
+X_var[0:2, :].assign(tf.ones(X_var[0:2,:].shape, dtype = tf.float32) * 12)
+X_var
+```
 
-```{.python .input  n=18}
-before = id(x)
-x += y
-id(x) == before
+## メモリーの節約
+
+[**操作を実行すると、新しいメモリがホストの結果に割り当てられる場合があります**] たとえば、`Y = X + Y` と書くと、`Y` が指していたテンソルを逆参照し、代わりに新しく割り当てられたメモリで `Y` をポイントします。次の例では、Python の `id()` 関数でこれを実証しています。この関数は、メモリ内の参照先オブジェクトの正確なアドレスを与えます。`Y = Y + X` を実行すると、`id(Y)` が別の場所を指していることがわかります。これは、Python が最初に `Y + X` を評価し、結果に対して新しいメモリを割り当て、`Y` がメモリ内のこの新しい位置を指すようにするためです。
+
+```{.python .input}
+#@tab all
+before = id(Y)
+Y = Y + X
+id(Y) == before
+```
+
+これは、2 つの理由から望ましくない場合があります。まず、常に不必要にメモリを割り当てることを回避したくありません。機械学習では、数百メガバイトのパラメータがあり、それらすべてを毎秒複数回更新することがあります。通常は、これらの更新を「その場で」* 実行します。2つ目は、複数の変数から同じパラメータを指す場合です。インプレースで更新しなければ、他の参照は古いメモリ位置を指すため、コードの一部が誤って古いパラメータを参照する可能性があります。
+
+:begin_tab:`mxnet, pytorch`
+幸い、(**インプレース操作の実行**) は簡単です。操作の結果は、`Y[:] = <expression>` のようにスライス表記を使用して、前に割り当てた配列に代入できます。この概念を説明するために、`zeros_like` を使用して $0$ エントリのブロックを割り当てて、別の `Y` と同じ形状の新しい行列 `Z` を最初に作成します。
+:end_tab:
+
+:begin_tab:`tensorflow`
+`Variables` は、TensorFlow の可変状態のコンテナーです。モデルパラメータを保存する方法を提供します。`assign` を使用して `Variable` に操作の結果を割り当てることができます。この概念を説明するために、`zeros_like` を使用して $0$ エントリのブロックを割り当てて、別のテンソル `Y` と同じ形状の `Variable` `Z` を作成します。
+:end_tab:
+
+```{.python .input}
+Z = np.zeros_like(Y)
+print('id(Z):', id(Z))
+Z[:] = X + Y
+print('id(Z):', id(Z))
+```
+
+```{.python .input}
+#@tab pytorch
+Z = torch.zeros_like(Y)
+print('id(Z):', id(Z))
+Z[:] = X + Y
+print('id(Z):', id(Z))
+```
+
+```{.python .input}
+#@tab tensorflow
+Z = tf.Variable(tf.zeros_like(Y))
+print('id(Z):', id(Z))
+Z.assign(X + Y)
+print('id(Z):', id(Z))
+```
+
+:begin_tab:`mxnet, pytorch`
+[**`X` の値が以降の計算で再利用されない場合、`X[:] = X + Y` または `X += Y` を使用して操作のメモリオーバーヘッドを減らすこともできます。**]
+:end_tab:
+
+:begin_tab:`tensorflow`
+`Variable` に状態を永続的に保存した後でも、モデルパラメーターではないテンソルに対する過剰な割り当てを避けることで、メモリ使用量をさらに削減できます。 
+
+TensorFlow `Tensors` は不変であり、勾配は `Variable` の割り当てを通過しないため、TensorFlow では個々の操作をインプレースで実行する明示的な方法を提供していません。 
+
+ただし、TensorFlow には `tf.function` デコレータが用意されており、実行前にコンパイルおよび最適化される TensorFlow グラフ内に計算をラップします。これにより、TensorFlow は未使用の値をプルーニングし、不要になった以前の割り当てを再利用できます。これにより、TensorFlow 計算のメモリオーバーヘッドが最小限に抑えられます。
+:end_tab:
+
+```{.python .input}
+#@tab mxnet, pytorch
+before = id(X)
+X += Y
+id(X) == before
+```
+
+```{.python .input}
+#@tab tensorflow
+@tf.function
+def computation(X, Y):
+    Z = tf.zeros_like(Y)  # This unused value will be pruned out
+    A = X + Y  # Allocations will be re-used when no longer needed
+    B = A + Y
+    C = B + Y
+    return C + Y
+
+computation(X, Y)
 ```
 
 ## 他の Python オブジェクトへの変換
 
-MXNet `ndarray`と NumPy `ndarray`との間の変換は容易です。変換された配列はメモリを共有*しません*。 これは少し不便に感じるかもしれませんが、実は非常に重要です。CPUまたは複数GPUの1つで演算を実行する際、NumPyで何か実行する場合、同じメモリ領域でMXNetがその処理を待つということは望ましくありません。`array` や ` asnumpy` の関数はこれに対処しています。
+:begin_tab:`mxnet, tensorflow`
+[**NumPy テンソル (`ndarray`) への変換 (`ndarray`) **]、またはその逆は簡単です。変換された結果はメモリを共有しません。この小さな不便さは、実際には非常に重要です。CPU や GPU で操作を実行するときに、Python の NumPy パッケージが同じメモリチャンクで何か他の処理を行いたいかどうかを待って、計算を中断したくありません。
+:end_tab:
 
+:begin_tab:`pytorch`
+[**NumPy テンソル (`ndarray`) への変換 (`ndarray`) **]、またはその逆は簡単です。Tensor と numpy 配列は、基になるメモリ位置を共有し、インプレース操作で一方を変更すると、もう一方も変更されます。
+:end_tab:
 
-```{.python .input  n=25}
-a = x.asnumpy()
-b = np.array(a)
-type(a), type(b)
+```{.python .input}
+A = X.asnumpy()
+B = np.array(A)
+type(A), type(B)
 ```
 
+```{.python .input}
+#@tab pytorch
+A = X.numpy()
+B = torch.from_numpy(A)
+type(A), type(B)
+```
 
-To convert a size-$1$ `ndarray` to a Python scalar,
-we can invoke the `item` function or Python's built-in functions.
+```{.python .input}
+#@tab tensorflow
+A = X.numpy()
+B = tf.constant(A)
+type(A), type(B)
+```
+
+(**サイズ 1 のテンソルを Python スカラーに変換**) するには、`item` 関数または Python の組み込み関数を呼び出すことができます。
 
 ```{.python .input}
 a = np.array([3.5])
 a, a.item(), float(a), int(a)
 ```
 
-## Summary
+```{.python .input}
+#@tab pytorch
+a = torch.tensor([3.5])
+a, a.item(), float(a), int(a)
+```
 
-* MXNet's `ndarray` is an extension to NumPy's `ndarray`
-  with a few killer advantages that make it suitable for deep learning.
-* MXNet's `ndarray` provides a variety of functionalities including
-  basic mathematics operations, broadcasting, indexing, slicing,
-  memory saving, and conversion to other Python objects.
+```{.python .input}
+#@tab tensorflow
+a = tf.constant([3.5]).numpy()
+a, a.item(), float(a), int(a)
+```
 
+## [概要
 
-## 練習
+* ディープラーニング用のデータを格納および操作するための主要なインターフェイスは、テンソル ($n$ 次元配列) です。基本的な数学演算、ブロードキャスト、インデックス作成、スライス、メモリ節約、他の Python オブジェクトへの変換など、さまざまな機能を提供します。
 
-1. この節のコードを実行しましょう。この節の条件文 `x == y`を`x < y`または`x > y`に変更して、どのような`ndarray`を得られるか確認してください。
-1. Broadcastの仕組みで要素ごとの演算を行った2つの `ndarray` を別のshapeに変えてみましょう。例えば、三次元テンソルです。結果は予想と同じでしょうか?
+## 演習
 
-## [議論](https://discuss.mxnet.io/t/2316)
+1. このセクションのコードを実行します。このセクションの条件文 `X == Y` を `X < Y` または `X > Y` に変更し、取得できるテンソルの種類を確認します。
+1. ブロードキャストメカニズムの要素によって動作する 2 つのテンソルを、3 次元テンソルなどの他の形状に置き換えます。結果は期待したとおりですか？
 
-![](../img/qr_ndarray.svg)
+:begin_tab:`mxnet`
+[Discussions](https://discuss.d2l.ai/t/26)
+:end_tab:
+
+:begin_tab:`pytorch`
+[Discussions](https://discuss.d2l.ai/t/27)
+:end_tab:
+
+:begin_tab:`tensorflow`
+[Discussions](https://discuss.d2l.ai/t/187)
+:end_tab:

@@ -1,130 +1,124 @@
-# Linear Regression Implementation from Scratch
+# 線形回帰のゼロからの実装
 :label:`sec_linear_scratch`
 
-Now that you understand the key ideas behind linear regression,
-we can begin to work through a hands-on implementation in code.
-In this section, we will implement the entire method from scratch,
-including the data pipeline, the model,
-the loss function, and the gradient descent optimizer.
-While modern deep learning frameworks can automate nearly all of this work,
-implementing things from scratch is the only
-to make sure that you really know what you are doing.
-Moreover, when it comes time to customize models,
-defining our own layers, loss functions, etc.,
-understanding how things work under the hood will prove handy.
-In this section, we will rely only on `ndarray` and `autograd`.
-Afterwards, we will introduce a more compact implementation,
-taking advantage of Gluon's bells and whistles.
-To start off, we import the few required packages.
+線形回帰の背後にある重要な概念を理解できたので、コードでの実践的な実装に取り掛かることができます。このセクションでは (**データパイプライン、モデル、損失関数、ミニバッチ確率的勾配降下オプティマイザーなど、メソッド全体をゼロから実装します。**) 最新のディープラーニングフレームワークではこの作業のほとんどすべてを自動化できますが、ゼロから実装することが唯一の方法です自分が何をしているのか本当にわかっていることを確認するためです。さらに、モデルをカスタマイズしたり、独自のレイヤーや損失関数を定義したりするときは、内部で物事がどのように機能するかを理解すると便利です。このセクションでは、テンソルと自動微分にのみ依存します。その後、ディープラーニングフレームワークの特徴を生かして、より簡潔な実装を紹介します。
 
-```{.python .input  n=1}
+```{.python .input}
 %matplotlib inline
-import d2l
+from d2l import mxnet as d2l
 from mxnet import autograd, np, npx
 import random
 npx.set_np()
 ```
 
-## Generating the Dataset
+```{.python .input}
+#@tab pytorch
+%matplotlib inline
+from d2l import torch as d2l
+import torch
+import random
+```
 
-To keep things simple, we will construct an artificial dataset
-according to a linear model with additive noise.
-Out task will be to recover this model's parameters
-using the finite set of examples contained in our dataset.
-We will keep the data low-dimensional so we can visualize it easily.
-In the following code snippet, we generated a dataset 
-containing $1000$ examples, each consisting of $2$ features
-sampled from a standard normal distribution.
-Thus our synthetic dataset will be an object
-$\mathbf{X}\in \mathbb{R}^{1000 \times 2}$.
+```{.python .input}
+#@tab tensorflow
+%matplotlib inline
+from d2l import tensorflow as d2l
+import tensorflow as tf
+import random
+```
 
-The true parameters generating our data will be 
-$\mathbf{w} = [2, -3.4]^\top$ and $b = 4.2$
-and our synthetic labels will be assigned according 
-to the following linear model with noise term $\epsilon$:
+## データセットの生成
 
-$$\mathbf{y}= \mathbf{X} \mathbf{w} + b + \mathbf\epsilon.$$
+単純化するために、[**加法性ノイズを含む線形モデルに従って人工データセットを構築する**] 私たちの仕事は、データセットに含まれる有限な例集合を使用して、このモデルのパラメーターを回復することです。データを低次元に保ち、簡単に視覚化できるようにします。次のコードスニペットでは、1000 個の例を含むデータセットを生成します。各サンプルは、標準正規分布からサンプリングされた 2 つの特徴量から構成されます。したがって、合成データセットは行列 $\mathbf{X}\in \mathbb{R}^{1000 \times 2}$ になります。 
 
-You could think of $\epsilon$ as capturing potential 
-measurement errors on the features and labels.
-We will assume that the standard assumptions hold and thus
-that $\epsilon$ obeys a normal distribution with mean of $0$.
-To make our problem easy, we will set its standard deviation to $0.01$.
-The following code generates our synthetic dataset:
+(**データセットを生成する真のパラメーターは $\mathbf{w} = [2, -3.4]^\top$ と $b = 4.2$、**) 合成ラベルは、ノイズ項 $\epsilon$ をもつ次の線形モデルに従って割り当てられます。 
 
-```{.python .input  n=2}
-# Saved in the d2l package for later use
-def synthetic_data(w, b, num_examples):
-    """Generate y = X w + b + noise."""
-    X = np.random.normal(0, 1, (num_examples, len(w)))
-    y = np.dot(X, w) + b
-    y += np.random.normal(0, 0.01, y.shape)
+(** $\mathbf{y}= \mathbf{X} \mathbf{w} + b + \mathbf\epsilon.$ドル**) 
+
+$\epsilon$ は、フィーチャとラベルの潜在的な計測誤差をキャプチャするものと考えることができます。標準的な仮定が成り立ち、$\epsilon$ は平均 0 の正規分布に従うと仮定します。問題を簡単にするために、標準偏差を 0.01 に設定します。次のコードは、合成データセットを生成します。
+
+```{.python .input}
+#@tab mxnet, pytorch
+def synthetic_data(w, b, num_examples):  #@save
+    """Generate y = Xw + b + noise."""
+    X = d2l.normal(0, 1, (num_examples, len(w)))
+    y = d2l.matmul(X, w) + b
+    y += d2l.normal(0, 0.01, y.shape)
+    return X, d2l.reshape(y, (-1, 1))
+```
+
+```{.python .input}
+#@tab tensorflow
+def synthetic_data(w, b, num_examples):  #@save
+    """Generate y = Xw + b + noise."""
+    X = d2l.zeros((num_examples, w.shape[0]))
+    X += tf.random.normal(shape=X.shape)
+    y = d2l.matmul(X, tf.reshape(w, (-1, 1))) + b
+    y += tf.random.normal(shape=y.shape, stddev=0.01)
+    y = d2l.reshape(y, (-1, 1))
     return X, y
+```
 
-true_w = np.array([2, -3.4])
+```{.python .input}
+#@tab all
+true_w = d2l.tensor([2, -3.4])
 true_b = 4.2
 features, labels = synthetic_data(true_w, true_b, 1000)
 ```
 
-Note that each row in `features` consists of a 2-dimensional data point 
-and that each row in `labels` consists of a 1-dimensional target value (a scalar).
+[**`features` の各行は 2 次元のデータ例で構成され、`labels` の各行は 1 次元のラベル値 (スカラー) で構成されていることに注意してください。**]
 
-```{.python .input  n=3}
+```{.python .input}
+#@tab all
 print('features:', features[0],'\nlabel:', labels[0])
 ```
 
-By generating a scatter plot using the second `features[:, 1]` and `labels`, 
-we can clearly observe the linear correlation between the two.
+2 番目のフィーチャ `features[:, 1]` と `labels` を使用して散布図を生成すると、この 2 つのフィーチャ間の線形相関を明確に観察できます。
 
-```{.python .input  n=18}
-d2l.set_figsize((3.5, 2.5))
-d2l.plt.scatter(features[:, 1].asnumpy(), labels.asnumpy(), 1);
+```{.python .input}
+#@tab all
+d2l.set_figsize()
+# The semicolon is for displaying the plot only
+d2l.plt.scatter(d2l.numpy(features[:, 1]), d2l.numpy(labels), 1);
 ```
 
-## Reading the Dataset
+## データセットの読み取り
 
-Recall that training models consists of 
-making multiple passes over the dataset, 
-grabbing one minibatch of examples at a time,
-and using them to update our model. 
-Since this process is so fundamental 
-to training machine learning algorithms, 
-its worth defining a utility function 
-to shuffle the data and access it in minibatches.
+モデルのトレーニングは、データセットに対して複数のパスを作成し、サンプルのミニバッチを一度に 1 つずつ取得し、それらを使用してモデルを更新することで構成されることを思い出してください。このプロセスは機械学習アルゴリズムのトレーニングにとって非常に重要なので、データセットをシャッフルしてミニバッチでアクセスするユーティリティ関数を定義する価値があります。 
 
-In the following code, we define a `data_iter` function 
-to demonstrate one possible implementation of this functionality.
-The function takes a batch size, a design matrix,
-and a vector of labels, yielding minibatches of size `batch_size`.
-Each minibatch consists of a tuple of features and labels.
+以下のコードでは、[**`data_iter` 関数を定義**](~~that~~) して、この機能の 1 つの可能な実装を示します。関数 (**バッチサイズ、特徴の行列、ラベルのベクトルをとり、サイズ `batch_size` のミニバッチを生成する**) 各ミニバッチは、特徴量とラベルのタプルで構成されます。
 
-```{.python .input  n=5}
+```{.python .input}
+#@tab mxnet, pytorch
 def data_iter(batch_size, features, labels):
     num_examples = len(features)
     indices = list(range(num_examples))
     # The examples are read at random, in no particular order
     random.shuffle(indices)
     for i in range(0, num_examples, batch_size):
-        batch_indices = np.array(
+        batch_indices = d2l.tensor(
             indices[i: min(i + batch_size, num_examples)])
         yield features[batch_indices], labels[batch_indices]
 ```
 
-In general, note that we want to use reasonably sized minibatches
-to take advantage of the GPU hardware,
-which excels at parallelizing operations.
-Because each example can be fed through our models in parallel
-and the gradient of the loss function for each example can also be taken in parallel,
-GPUs allow us to process hundreds of examples in scarcely more time
-than it might take to process just a single example.
+```{.python .input}
+#@tab tensorflow
+def data_iter(batch_size, features, labels):
+    num_examples = len(features)
+    indices = list(range(num_examples))
+    # The examples are read at random, in no particular order
+    random.shuffle(indices)
+    for i in range(0, num_examples, batch_size):
+        j = tf.constant(indices[i: min(i + batch_size, num_examples)])
+        yield tf.gather(features, j), tf.gather(labels, j)
+```
 
-To build some intuition, let us read and print
-the first small batch of data examples.
-The shape of the features in each minibatch tells us
-both the minibatch size and the number of input features.
-Likewise, our minibatch of labels will have a shape given by `batch_size`.
+一般的には、並列化操作に優れた GPU ハードウェアを活用するために、適度なサイズのミニバッチを使用することに注意してください。各例はモデルを通じて並列に供給でき、各例の損失関数の勾配も並列で取得できるため、GPU を使用すると、1 つの例を処理するよりも短時間で数百もの例を処理できます。 
 
-```{.python .input  n=6}
+直感を深めるために、データ例の最初の小さなバッチを読んで印刷してみましょう。各ミニバッチ内のフィーチャの形状から、ミニバッチのサイズと入力フィーチャの数の両方がわかります。同様に、ラベルのミニバッチは `batch_size` で指定された形状になります。
+
+```{.python .input}
+#@tab all
 batch_size = 10
 
 for X, y in data_iter(batch_size, features, labels):
@@ -132,236 +126,186 @@ for X, y in data_iter(batch_size, features, labels):
     break
 ```
 
-As we run the iterator, we obtain distinct minibatches 
-successively until all the data has been exhausted (try this).
-While the iterator implemented above is good for didactic purposes,
-it is inefficient in ways that might get us in trouble on real problems.
-For example, it requires that we load all data in memory
-and that we perform lots of random memory access.
-The built-in iterators implemented in Apache MXNet
-are considerably more efficient and they can deal
-both with data stored in file and data fed via a data stream.
+反復を実行すると、データセット全体が使い果たされるまで、個別のミニバッチが連続して取得されます (これを試してください)。上記で実装したイテレーションは教訓的な目的には適していますが、実際の問題でトラブルに巻き込まれるような点では非効率的です。たとえば、すべてのデータをメモリにロードし、大量のランダムメモリアクセスを実行する必要があります。ディープラーニングフレームワークに実装されたビルトインイテレーターは非常に効率的で、ファイルに格納されたデータとデータストリームを介して供給されるデータの両方を処理できます。 
 
-## Initializing Model Parameters
+## モデルパラメーターの初期化
 
-Before we can begin optimizing our model's parameters by gradient descent,
-we need to have some parameters in the first place.
-In the following code, we initialize weights by sampling
-random numbers from a normal distribution with mean 0
-and a standard deviation of $0.01$, setting the bias $b$ to $0$.
+[**モデルのパラメーターの最適化を始める前に**] ミニバッチ確率的勾配降下法 (**最初にいくつかのパラメーターが必要です**) 次のコードでは、平均 0、標準偏差 0.01 の正規分布から乱数をサンプリングして重みを初期化します。バイアスを 0 に設定します。
 
-```{.python .input  n=7}
+```{.python .input}
 w = np.random.normal(0, 0.01, (2, 1))
 b = np.zeros(1)
-```
-
-Now that we have initialized our parameters,
-our next task is to update them until 
-they fit our data sufficiently well.
-Each update requires taking the gradient
-(a multi-dimensional derivative)
-of our loss function with respect to the parameters.
-Given this gradient, we can update each parameter
-in the direction that reduces the loss.
-
-Since nobody wants to compute gradients explicitly
-(this is tedious and error prone),
-we use automatic differentiation to compute the gradient.
-See :numref:`sec_autograd` for more details.
-Recall from the autograd chapter
-that in order for `autograd` to know
-that it should store a gradient for our parameters,
-we need to invoke the `attach_grad` function,
-allocating memory to store the gradients that we plan to take.
-
-```{.python .input  n=8}
 w.attach_grad()
 b.attach_grad()
 ```
 
-## Defining the Model
-
-Next, we must define our model,
-relating its inputs and parameters to its outputs.
-Recall that to calculate the output of the linear model,
-we simply take the matrix-vector dot product
-of the examples $\mathbf{X}$ and the models weights $w$,
-and add the offset $b$ to each example.
-Note that below `np.dot(X, w)` is a vector and `b` is a scalar.
-Recall that when we add a vector and a scalar,
-the scalar is added to each component of the vector.
-
-```{.python .input  n=9}
-# Saved in the d2l package for later use
-def linreg(X, w, b):
-    return np.dot(X, w) + b
+```{.python .input}
+#@tab pytorch
+w = torch.normal(0, 0.01, size=(2,1), requires_grad=True)
+b = torch.zeros(1, requires_grad=True)
 ```
 
-## Defining the Loss Function
-
-Since updating our model requires taking 
-the gradient of our loss function,
-we ought to define the loss function first.
-Here we will use the squared loss function
-as described in the previous section.
-In the implementation, we need to transform the true value `y` 
-into the predicted value's shape `y_hat`.
-The result returned by the following function
-will also be the same as the `y_hat` shape.
-
-```{.python .input  n=10}
-# Saved in the d2l package for later use
-def squared_loss(y_hat, y):
-    return (y_hat - y.reshape(y_hat.shape)) ** 2 / 2
+```{.python .input}
+#@tab tensorflow
+w = tf.Variable(tf.random.normal(shape=(2, 1), mean=0, stddev=0.01),
+                trainable=True)
+b = tf.Variable(tf.zeros(1), trainable=True)
 ```
 
-## Defining the Optimization Algorithm
+パラメーターを初期化したら、次のタスクは、データに十分適合するまでパラメーターを更新することです。更新のたびに、パラメーターに関する損失関数の勾配を取る必要があります。この勾配が与えられると、損失が減少する方向に各パラメータを更新できます。 
 
-As we discussed in the previous section,
-linear regression has a closed-form solution.
-However, this is not a book about linear regression,
-it is a book about deep learning.
-Since none of the other models that this book introduces
-can be solved analytically, we will take this opportunity to introduce your first working example of stochastic gradient descent (SGD).
+誰も勾配を明示的に計算したくないので (これは面倒でエラーが発生しやすい)、:numref:`sec_autograd` で導入された自動微分を使用して勾配を計算します。 
 
+## モデルを定義する
 
-At each step, using one batch randomly drawn from our dataset,
-we will estimate the gradient of the loss with respect to our parameters.
-Next, we will update our parameters (a small amount)
-in the direction that reduces the loss.
-Recall from :numref:`sec_autograd` that after we call `backward`
-each parameter (`param`) will have its gradient stored in `param.grad`.
-The following code applies the SGD update,
-given a set of parameters, a learning rate, and a batch size.
-The size of the update step is determined by the learning rate `lr`.
-Because our loss is calculated as a sum over the batch of examples,
-we normalize our step size by the batch size (`batch_size`),
-so that the magnitude of a typical step size
-does not depend heavily on our choice of the batch size.
+次に、[**モデルを定義し、入力とパラメーターを出力に関連付ける**] 必要があります。線形モデルの出力を計算するには、入力フィーチャ $\mathbf{X}$ とモデルの重み $\mathbf{w}$ の行列-ベクトルドット積を取り、オフセット $b$ を各例に追加するだけです。$\mathbf{Xw}$ 以下はベクトルで、$b$ はスカラーであることに注意してください。:numref:`subsec_broadcasting` で説明されているブロードキャストメカニズムを思い出してください。ベクトルとスカラーを追加すると、ベクトルの各コンポーネントにスカラーが追加されます。
 
-```{.python .input  n=11}
-# Saved in the d2l package for later use
-def sgd(params, lr, batch_size):
+```{.python .input}
+#@tab all
+def linreg(X, w, b):  #@save
+    """The linear regression model."""
+    return d2l.matmul(X, w) + b
+```
+
+## 損失関数の定義
+
+[**モデルを更新するには損失関数の勾配を取る必要がある**] ので、(**損失関数を先に定義する**) 必要があります。ここでは :numref:`sec_linear_regression` で説明されている二乗損失関数を使用します。実装では、真の値 `y` を予測値のシェイプ `y_hat` に変換する必要があります。次の関数が返す結果も `y_hat` と同じ形になります。
+
+```{.python .input}
+#@tab all
+def squared_loss(y_hat, y):  #@save
+    """Squared loss."""
+    return (y_hat - d2l.reshape(y, y_hat.shape)) ** 2 / 2
+```
+
+## 最適化アルゴリズムの定義
+
+:numref:`sec_linear_regression` で説明したように、線形回帰には閉形式の解があります。しかし、これは線形回帰に関する本ではなく、ディープラーニングに関する本です。本書で紹介する他のモデルは解析的に解くことができないため、この機会にミニバッチ確率的勾配降下法の最初の実例を紹介します。[~~線形回帰には閉形式の解がありますが、本書の他のモデルにはありません。ここではミニバッチ確率的勾配降下法について紹介します。~~] 
+
+各ステップで、データセットからランダムに抽出された1つのミニバッチを使用して、パラメーターに対する損失の勾配を推定します。次に、損失を減らす可能性のある方向にパラメータを更新します。次のコードは、一連のパラメーター、学習率、およびバッチサイズを指定して、ミニバッチの確率的勾配降下法の更新を適用します。更新ステップのサイズは、学習率 `lr` によって決まります。損失は例のミニバッチの合計として計算されるため、標準的なステップサイズの大きさがバッチサイズの選択に大きく依存しないように、ステップサイズをバッチサイズ (`batch_size`) で正規化します。
+
+```{.python .input}
+def sgd(params, lr, batch_size):  #@save
+    """Minibatch stochastic gradient descent."""
     for param in params:
         param[:] = param - lr * param.grad / batch_size
 ```
 
-## Training
+```{.python .input}
+#@tab pytorch
+def sgd(params, lr, batch_size):  #@save
+    """Minibatch stochastic gradient descent."""
+    with torch.no_grad():
+        for param in params:
+            param -= lr * param.grad / batch_size
+            param.grad.zero_()
+```
 
-Now that we have all of the parts in place,
-we are ready to implement the main training loop.
-It is crucial that you understand this code
-because you will see nearly identical training loops
-over and over again throughout your career in deep learning.
+```{.python .input}
+#@tab tensorflow
+def sgd(params, grads, lr, batch_size):  #@save
+    """Minibatch stochastic gradient descent."""
+    for param, grad in zip(params, grads):
+        param.assign_sub(lr*grad/batch_size)
+```
 
-In each iteration, we will grab minibatches of models,
-first passing them through our model to obtain a set of predictions.
-After calculating the loss, we call the `backward` function
-to initiate the backwards pass through the network, 
-storing the gradients with respect to each parameter
-in its corresponding `.grad` attribute.
-Finally, we will call the optimization algorithm `sgd`
-to update the model parameters.
-Since we previously set the batch size `batch_size` to $10$,
-the loss shape `l` for each minibatch is ($10$, $1$).
+## 訓練
 
-In summary, we will execute the following loop:
+これですべてのパーツが揃ったので、[**メインのトレーニングループを実装する**] 準備ができました。ディープラーニングのキャリアを通じて、ほぼ同じトレーニングループが何度も繰り返し見られるため、このコードを理解することが重要です。 
 
-* Initialize parameters $(\mathbf{w}, b)$
-* Repeat until done
-    * Compute gradient $\mathbf{g} \leftarrow \partial_{(\mathbf{w},b)} \frac{1}{\mathcal{B}} \sum_{i \in \mathcal{B}} l(\mathbf{x}^i, y^i, \mathbf{w}, b)$
-    * Update parameters $(\mathbf{w}, b) \leftarrow (\mathbf{w}, b) - \eta \mathbf{g}$
+各反復で、トレーニング例のミニバッチを取得し、モデルに渡して一連の予測を取得します。損失を計算した後、ネットワークの逆方向パスを開始し、各パラメータに関する勾配を保存します。最後に、最適化アルゴリズム `sgd` を呼び出してモデルパラメーターを更新します。 
 
-In the code below, `l` is a vector of the losses
-for each example in the minibatch.
-Because `l` is not a scalar variable,
-running `l.backward()` adds together the elements in `l`
-to obtain the new variable and then calculates the gradient.
+要約すると、次のループを実行します。 
 
-In each epoch (a pass through the data),
-we will iterate through the entire dataset
-(using the `data_iter` function) once
-passing through every examples in the training dataset
-(assuming the number of examples is divisible by the batch size).
-The number of epochs `num_epochs` and the learning rate `lr` are both hyper-parameters, 
-which we set here to $3$ and $0.03$, respectively. 
-Unfortunately, setting hyper-parameters is tricky
-and requires some adjustment by trial and error.
-We elide these details for now but revise them
-later in
-:numref:`chap_optimization`.
+* パラメーターを初期化する $(\mathbf{w}, b)$
+* 完了するまで繰り返す
+    * グラディエントを計算する $\mathbf{g} \leftarrow \partial_{(\mathbf{w},b)} \frac{1}{|\mathcal{B}|} \sum_{i \in \mathcal{B}} l(\mathbf{x}^{(i)}, y^{(i)}, \mathbf{w}, b)$
+    * 更新パラメータ $(\mathbf{w}, b) \leftarrow (\mathbf{w}, b) - \eta \mathbf{g}$
 
-```{.python .input  n=12}
-lr = 0.03  # Learning rate
-num_epochs = 3  # Number of iterations
-net = linreg  # Our fancy linear model
-loss = squared_loss  # 0.5 (y-y')^2
+*epoch* ごとに、トレーニングデータセットのすべての例を通過した後、データセット全体 (`data_iter` 関数を使用) を反復処理します (例の数がバッチサイズで割り切れると仮定)。エポック数 `num_epochs` と学習率 `lr` はどちらもハイパーパラメーターで、ここではそれぞれ 3 と 0.03 に設定します。残念ながら、ハイパーパラメータの設定は難しく、試行錯誤による調整が必要です。ここではこれらの詳細は省略していますが、:numref:`chap_optimization` の後半で修正します。
 
+```{.python .input}
+#@tab all
+lr = 0.03
+num_epochs = 3
+net = linreg
+loss = squared_loss
+```
+
+```{.python .input}
 for epoch in range(num_epochs):
-    # Assuming the number of examples can be divided by the batch size, all
-    # the examples in the training dataset are used once in one epoch
-    # iteration. The features and tags of minibatch examples are given by X
-    # and y respectively
     for X, y in data_iter(batch_size, features, labels):
         with autograd.record():
-            l = loss(net(X, w, b), y)  # Minibatch loss in X and y
-        l.backward()  # Compute gradient on l with respect to [w, b]
+            l = loss(net(X, w, b), y)  # Minibatch loss in `X` and `y`
+        # Because `l` has a shape (`batch_size`, 1) and is not a scalar
+        # variable, the elements in `l` are added together to obtain a new
+        # variable, on which gradients with respect to [`w`, `b`] are computed
+        l.backward()
         sgd([w, b], lr, batch_size)  # Update parameters using their gradient
     train_l = loss(net(features, w, b), labels)
-    print('epoch %d, loss %f' % (epoch + 1, train_l.mean().asnumpy()))
+    print(f'epoch {epoch + 1}, loss {float(train_l.mean()):f}')
 ```
 
-In this case, because we synthesized the data ourselves,
-we know precisely what the true parameters are. 
-Thus, we can evaluate our success in training 
-by comparing the true parameters
-with those that we learned through our training loop. 
-Indeed they turn out to be very close to each other.
-
-```{.python .input  n=13}
-print('Error in estimating w', true_w - w.reshape(true_w.shape))
-print('Error in estimating b', true_b - b)
+```{.python .input}
+#@tab pytorch
+for epoch in range(num_epochs):
+    for X, y in data_iter(batch_size, features, labels):
+        l = loss(net(X, w, b), y)  # Minibatch loss in `X` and `y`
+        # Compute gradient on `l` with respect to [`w`, `b`]
+        l.sum().backward()
+        sgd([w, b], lr, batch_size)  # Update parameters using their gradient
+    with torch.no_grad():
+        train_l = loss(net(features, w, b), labels)
+        print(f'epoch {epoch + 1}, loss {float(train_l.mean()):f}')
 ```
 
-Note that we should not take it for granted
-that we are able to recover the parameters accurately.
-This only happens for a special category problems:
-strongly convex optimization problems with "enough" data to ensure
-that the noisy samples allow us to recover the underlying dependency.
-In most cases this is *not* the case.
-In fact, the parameters of a deep network 
-are rarely the same (or even close) between two different runs, 
-unless all conditions are identical,
-including the order in which the data is traversed.
-However, in machine learning, we are typically less concerned
-with recovering true underlying parameters,
-and more concerned with parameters that lead to accurate prediction.
-Fortunately, even on difficult optimization problems,
-stochastic gradient descent can often find remarkably good solutions,
-owing partly to the fact that, for deep networks,
-there exist many configurations of the parameters 
-that lead to accurate prediction.
+```{.python .input}
+#@tab tensorflow
+for epoch in range(num_epochs):
+    for X, y in data_iter(batch_size, features, labels):
+        with tf.GradientTape() as g:
+            l = loss(net(X, w, b), y)  # Minibatch loss in `X` and `y`
+        # Compute gradient on l with respect to [`w`, `b`]
+        dw, db = g.gradient(l, [w, b])
+        # Update parameters using their gradient
+        sgd([w, b], [dw, db], lr, batch_size)
+    train_l = loss(net(features, w, b), labels)
+    print(f'epoch {epoch + 1}, loss {float(tf.reduce_mean(train_l)):f}')
+```
 
-## Summary
+この場合、データセットを自分で合成したため、真のパラメータが何であるかを正確に把握できます。したがって、トレーニングループを通じて [**真のパラメータと学習したパラメータを比較して、トレーニングの成功を評価する**] ことができます。実際、彼らはお互いに非常に近いことが分かります。
 
-We saw how a deep network can be implemented
-and optimized from scratch, using just `ndarray` and `autograd`,
-without any need for defining layers, fancy optimizers, etc.
-This only scratches the surface of what is possible.
-In the following sections, we will describe additional models
-based on the concepts that we have just introduced
-and learn how to implement them more concisely.
+```{.python .input}
+#@tab all
+print(f'error in estimating w: {true_w - d2l.reshape(w, true_w.shape)}')
+print(f'error in estimating b: {true_b - b}')
+```
 
-## Exercises
+パラメータを完全に回復できるのは当然のことではないことに注意してください。しかし、機械学習では通常、真の基礎となるパラメーターの回復にはあまり関心がなく、高精度の予測につながるパラメーターへの関心が高まります。幸いなことに、困難な最適化問題であっても、確率的勾配降下法は非常に優れた解を見出すことがよくあります。これは、ディープネットワークでは、非常に正確な予測につながるパラメーターの構成が多数存在するためです。 
 
-1. What would happen if we were to initialize the weights $\mathbf{w} = 0$. Would the algorithm still work?
-1. Assume that you are [Georg Simon Ohm](https://en.wikipedia.org/wiki/Georg_Ohm) trying to come up with a model between voltage and current. Can you use `autograd` to learn the parameters of your model.
-1. Can you use [Planck's Law](https://en.wikipedia.org/wiki/Planck%27s_law) to determine the temperature of an object using spectral energy density?
-1. What are the problems you might encounter if you wanted to extend `autograd` to second derivatives? How would you fix them?
-1.  Why is the `reshape` function needed in the `squared_loss` function?
-1. Experiment using different learning rates to find out how fast the loss function value drops.
-1. If the number of examples cannot be divided by the batch size, what happens to the `data_iter` function's behavior?
+## [概要
 
-## [Discussions](https://discuss.mxnet.io/t/2332)
+* レイヤーの定義や高度なオプティマイザーを必要とせずに、テンソルと自動微分のみを使用して、ディープネットワークをゼロから実装して最適化する方法を確認しました。
+* このセクションでは、可能なことの表面のみをスクラッチします。次のセクションでは、今紹介した概念に基づいた追加モデルについて説明し、より簡潔に実装する方法を学習します。
 
-![](../img/qr_linear-regression-scratch.svg)
+## 演習
+
+1. 重みをゼロに初期化するとどうなるでしょうか。アルゴリズムはまだ機能しますか？
+1. [Georg Simon Ohm](https://en.wikipedia.org/wiki/Georg_Ohm) が電圧と電流の間のモデルを考え出そうとしているとします。自動微分を使用してモデルのパラメーターを学習できるか
+1. [プランクの法則](https://en.wikipedia.org/wiki/Planck%27s_law) を使って、スペクトルエネルギー密度を使って物体の温度を決定できますか？
+1. 二次微分を計算する場合に遭遇する可能性のある問題は何ですか？どうやって直すの？
+1.  `squared_loss` 関数に `reshape` 関数が必要なのはなぜですか？
+1. さまざまな学習率を試して、損失関数の値がどれだけ速く低下するかを調べます。
+1. 例の数をバッチサイズで割れない場合、`data_iter` 関数の動作はどうなりますか？
+
+:begin_tab:`mxnet`
+[Discussions](https://discuss.d2l.ai/t/42)
+:end_tab:
+
+:begin_tab:`pytorch`
+[Discussions](https://discuss.d2l.ai/t/43)
+:end_tab:
+
+:begin_tab:`tensorflow`
+[Discussions](https://discuss.d2l.ai/t/201)
+:end_tab:

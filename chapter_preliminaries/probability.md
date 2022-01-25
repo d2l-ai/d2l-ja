@@ -1,80 +1,122 @@
 # 確率
 :label:`sec_prob`
 
-形は様々ですが、機械学習が行っていることはすべて予測です。患者の臨床歴を考慮して、来年に心臓発作に苦しむであろう患者の*確率*を予測しようとするかもしれません。異常検出では、飛行機が正常に動作していたときのジェットエンジンからの一連の測定値から、今後とりうる値を評価することができます。強化学習では、環境下でエージェントが知的に行動することを望むでしょう。これは、利用可能な各行動の下で、高い報酬を得る確率について考えることを意味します。また、推薦システムを構築する際も確率について考慮する必要があります。たとえば、大規模なオンライン書店で*仮に*働いていたとします。ある顧客が特定の本を購入する確率を推定したいと考えるでしょう。このためには、確率と統計という言語を使用する必要があります。あらゆるコース、専攻、学位論文、キャリア、さらには学科まで、確率に深く関わっているのです。したがって当然ですが、この節の目標はこのトピック全体について説明することではありません。代わりに、読者に基礎を固めてもらうようにし、最初の深層学習モデルを構築するために必要な部分だけ説明し、あとは必要に応じて読者が自分自身で情報を探し求められるようにしたいと思います。
+何らかの形で、機械学習は予測を行うことがすべてです。病歴を考慮して、来年に心臓発作を起こす患者の*確率*を予測したいと思うかもしれません。異常検出では、飛行機のジェットエンジンからの一連の測定値が正常に動作している場合にどの程度*可能性*高いかを評価したい場合があります。強化学習では、エージェントが環境内でインテリジェントに行動することを求めています。これは、利用可能な各アクションで高い報酬を得る確率について考える必要があることを意味します。また、レコメンダーシステムを構築する際には、確率についても考える必要があります。たとえば、ある大手オンライン書店で働いていたと*仮説的に*言ってください。特定のユーザーが特定の本を購入する確率を推定したい場合があります。そのためには確率の言葉を使う必要があります。コース、専攻、論文、キャリア、さらには部門全体が、確率に専念しています。ですから、当然のことながら、このセクションの目標は、主題全体を教えることではありません。代わりに、最初のディープラーニングモデルの構築を開始できるように十分に教え、必要に応じて自分で探索を開始できるように、テーマに十分なフレーバーを与えることを望んでいます。 
 
+前のセクションでは、確率が正確に何であるかを明確にしたり、具体的な例を挙げたりすることなく、すでに確率を呼び出しました。写真に基づいて猫と犬を区別するという最初のケースを考えて、もっと真剣になりましょう。これは単純に聞こえるかもしれませんが、実際には手ごわい挑戦です。まず、問題の難易度は画像の解像度によって異なる場合があります。 
 
-前の節では、確率を正確に説明したり、具体的な例を挙げたりすることはしませんでしたが、すでに確率については話をしていました。写真からイヌとネコを区別する問題について、より深く考えてみましょう。これは簡単に聞こえるかもしれませんが実際は手ごわいです。まず、イヌとネコを区別する問題の難易度は画像の解像度に依存する場合があります。
-
-
-![Images of varying resolutions ($10 \times 10$, $20 \times 20$, $40 \times 40$, $80 \times 80$, and $160 \times 160$ pixels).](../img/cat_dog_pixels.png)
+![Images of varying resolutions ($10 \times 10$, $20 \times 20$, $40 \times 40$, $80 \times 80$, and $160 \times 160$ pixels).](../img/cat-dog-pixels.png)
 :width:`300px`
 :label:`fig_cat_dog`
 
-:numref:`fig_cat_dog` に示すように、人間は $160 \times 160$ピクセルの解像度で猫と犬を簡単に認識できますが、$40 \times 40$ピクセルでは難しく、$10 \times 10$ pixelsピクセルではほとんど不可能になります。言い換えると、猫と犬を遠距離から区別する (つまり解像度が低い状態で区別する) 能力は、十分な情報が与えられていない状況での推測に近いとも言えます。確率は、私たちの確信する度合いについて説明する、形式的な方法を提供します。画像に猫が写っていることを完全に確信している場合、対応するラベル$y$が$\mathrm{cat}$であるということ、つまり$P(l=\mathrm{cat})$が $1$ に等しいことを意味します。$y = \mathrm{cat}$または$l=\mathrm{dog}$を示唆する証拠がなかった場合、両者に判定される確率は等しく、$P(y=$ "cat"$) = P(y=$ "dog"$) = 0.5$ に*近い*表現になります。ある程度確信はあるが、画像に猫が写っているかどうかわからない場合は、 $0.5  < P(y=$ "cat"$) < 1$ の確率が割り当てられるでしょう。
+:numref:`fig_cat_dog` に示すように、人間は猫と犬を $160 \times 160$ ピクセルの解像度では簡単に認識できますが、$40 \times 40$ ピクセルでは難しく、$10 \times 10$ ピクセルではほぼ不可能になります。言い換えれば、猫と犬を遠くから区別する (したがって解像度が低い) 能力は、情報に基づかない推測に近づくかもしれません。確率は、私たちの確実性のレベルについての正式な推論方法を提供します。画像が猫を描いていることが完全に確信できれば、対応するラベル $y$ が「cat」である*確率*、$P(y=$「cat」と表記される $)$ は $1$ と等しいと言います。$y =$「cat」または $y =$「dog」を示唆する証拠がなければ、2つの可能性は同等であると言えるかもしれません。
+*おそらく* これを $P(y=$「猫」$) = P(y=$「犬」$) = 0.5$ と表現します。私たちが合理的だったら
+自信はありますが、画像が猫を描いているかどうかわからない場合は、確率$0.5  < P(y=$「cat」$) < 1$を割り当てることができます。 
 
+2つ目のケースを考えてみましょう。気象モニタリングデータがあれば、明日台北で雨が降る確率を予測したいと考えています。夏なら確率0.5で雨が降るかもしれません。 
 
-次に、2つ目のケースを考えてみましょう。いくつかの気象観測データから、明日台北で雨が降る確率を予測したいと思います。夏の場合、$0.5$の確率で雨になるとします。
+どちらの場合も、関心のある価値があります。どちらの場合も、結果については不明です。しかし、この2つのケースには重要な違いがあります。この最初のケースでは、イメージは実際には犬か猫のどちらかであり、どちらがわからないだけです。2番目のケースでは、そのようなことを信じるなら（そしてほとんどの物理学者がそうする）、結果は実際にはランダムな出来事かもしれません。したがって、確率は、私たちの確実性のレベルを推論するための柔軟な言語であり、幅広いコンテキストで効果的に適用できます。 
 
-画像の分類と天気予報、どちらの場合も注目している値があります。そして、どちらの場合も結果については不確かであるという共通点があります。
-しかし、2つのケースには重要な違いがあります。最初のケースでは、画像は実際には犬または猫のいずれかであり、ただそのどちらかが分からないだけです。 2番目のケースでは、私達が思っているように (そしてほとんどの物理学者も思っているように)、結果はランダムに決まる事象です。したがって、確率は、私たちの確信の度合いを説明するために用いられるフレキシブルな言語であり、幅広いコンテキストで効果的に利用されています。
+## 基礎確率論
 
-## 確率理論の基礎
+私たちがサイコロを投げ、別の数字ではなく1が見える可能性を知りたいとします。ダイスが公平であれば、$\{1, \ldots, 6\}$ の 6 つの結果すべてが等しく発生する可能性が高いため、6 つのケースのうちの 1 つで $1$ が見られます。正式には、$1$は確率$\frac{1}{6}$で発生すると述べている。 
 
-サイコロを投げて、別の数字ではなく$1$が表示される可能性を知りたいとします。サイコロが公平なものであれば、6種類の出目$\mathcal{X} = \{1, \ldots, 6\}$がすべて同様に発生する可能性があり、$6$つの場合の数のうち$1$つが$1$として観測されるでしょう。正式に記述すれば、$1$は確率$\frac{1}{6}$で発生するといえるでしょう。
+工場から受け取る本物の金型については、その割合がわからない場合があり、汚れていないかどうかを確認する必要があります。金型を調査する唯一の方法は、何度も鋳造して結果を記録することです。ダイスのキャストごとに、$\{1, \ldots, 6\}$ の値が観測されます。これらの結果を踏まえて、各結果が観察される確率を調べたいと思います。 
 
-工場から受け取った実際のサイコロについて、それらの比率がわからない可能性があれば、偏りがないかどうかを確認する必要があります。サイコロを調査する唯一の方法は、サイコロを何度も振って結果を記録することです。サイコロを振るたびに値\{1, \ldots, 6\}$を観察します。これらの結果を考慮して、各出目を観測する確率を調査したいと思います。
+各値に対する自然なアプローチの 1 つは、その値の個々のカウントを取り、それを合計トス数で割ることです。これにより、与えられた*イベント*の確率を*推定*することができます。*大数の法則*は、投げる回数が増えるにつれて、この推定値が真の基礎となる確率にますます近づくことを示しています。ここで何が起こっているのかを詳しく説明する前に、試してみましょう。 
 
-それぞれの確率を求める際の自然なアプローチとして、各出目の出現回数をカウントし、それをサイコロを投げた総回数で割ることです。これにより、特定の*イベント*の確率の*推定*を得ることができます。*大数の法則*では、サイコロを振る回数が増えると、潜在的な真の確率に推定の確率がますます近づくことが示されています。ここで何が起こっているか、詳細に入りこむ前に、試すことから始めてみましょう。
+まず、必要なパッケージをインポートしてみましょう。
 
-まず、必要なパッケージをインポートします。
-
-```{.python .input  n=1}
+```{.python .input}
 %matplotlib inline
-import d2l
+from d2l import mxnet as d2l
 from mxnet import np, npx
 import random
 npx.set_np()
 ```
 
+```{.python .input}
+#@tab pytorch
+%matplotlib inline
+from d2l import torch as d2l
+import torch
+from torch.distributions import multinomial
+```
 
-次に、サイコロを振れるようにします。統計では、確率分布からデータ例を引いてくるこのプロセスを*サンプリング*と呼びます。確率をいくつかの離散的な選択肢に割り当てる分布は*多項分布*と呼ばれます。*分布*のより正式な定義については後ほど述べますが、抽象的な見方をすると、イベントに対する単なる確率の割り当てと考えてください。MXNetでは、まさに相応しい名前をもった`np.random.multinomial`という関数によって、多項分布からサンプリングすることができます。 この関数はさまざまな方法で呼び出すことができますが、ここでは最も単純なものに焦点を当てます。 単一のサンプルを引くためには、単純に確率のベクトルを渡します。
+```{.python .input}
+#@tab tensorflow
+%matplotlib inline
+from d2l import tensorflow as d2l
+import tensorflow as tf
+import tensorflow_probability as tfp
+import numpy as np
+```
 
-```{.python .input  n=2}
+次に、サイコロを投げることができるようにします。統計学では、確率分布から例を引き出すこのプロセスを「サンプリング」と呼んでいます。いくつかの離散的な選択肢に確率を割り当てる分布は、
+*多項分布*。より正式な定義を挙げて
+*ディストリビューション*は後になりますが、大まかに言うと、それは単なる
+イベントに対する確率。 
+
+1 つのサンプルを描画するには、単純に確率のベクトルを渡します。出力は同じ長さの別のベクトルです。インデックス $i$ の値は、サンプリング結果が $i$ に相当する回数です。
+
+```{.python .input}
 fair_probs = [1.0 / 6] * 6
 np.random.multinomial(1, fair_probs)
 ```
 
-上記のサンプラーを何度も実行すると、毎回ランダムな値を取得することがわかります。サイコロの公平性を推定する場合と同様に、同じ分布から多くのサンプルを生成することがよくあります。 Pythonの`for`ループでこれを行うと耐えられないほど遅いため、`random.multinomial`は複数のサンプルを一度に生成することをサポートし、任意のshapeをもった独立したサンプルの配列を返します。
+```{.python .input}
+#@tab pytorch
+fair_probs = torch.ones([6]) / 6
+multinomial.Multinomial(1, fair_probs).sample()
+```
 
+```{.python .input}
+#@tab tensorflow
+fair_probs = tf.ones(6) / 6
+tfp.distributions.Multinomial(1, fair_probs).sample()
+```
 
-```{.python .input  n=3}
+サンプラーを何度も実行すると、毎回ランダムな値が出てくることがわかります。ダイスの公平性を推定する場合と同様に、同じ分布から多数のサンプルを生成したい場合がよくあります。Python `for` ループでこれを行うのは耐え難いほど遅くなるので、使っている関数は一度に複数のサンプルを描画し、望みどおりの形状の独立したサンプルの配列を返すことをサポートしています。
+
+```{.python .input}
 np.random.multinomial(10, fair_probs)
 ```
 
-We can also conduct, say $3$, groups of experiments, where each group draws $10$ samples, all at once.
-
-```{.python .input  n=4}
-counts = np.random.multinomial(10, fair_probs, size=3)
-counts
+```{.python .input}
+#@tab pytorch
+multinomial.Multinomial(10, fair_probs).sample()
 ```
 
-サイコロの出目をサンプリングする方法がわかったので、1000個の出目をシミュレーションすることができます。その後、1000回サイコロを振った後に、各出目が出た回数を数えます。
-具体的には、その相対的な頻度を、真の確率の推定値とします。
+```{.python .input}
+#@tab tensorflow
+tfp.distributions.Multinomial(10, fair_probs).sample()
+```
 
+ダイスのロールをサンプリングする方法がわかったところで、1000 個のロールをシミュレートできます。その後、1000回のロールのそれぞれの後に、各数字が何回ロールされたかを調べて数えることができます。具体的には、相対度数を真の確率の推定値として計算します。
 
-```{.python .input  n=5}
-# Store the results as 32-bit floats for division
+```{.python .input}
 counts = np.random.multinomial(1000, fair_probs).astype(np.float32)
-counts / 1000  # Reletive frequency as the estimate
+counts / 1000
 ```
 
-Because we generated the data from a fair die, we know that each outcome has true probability $\frac{1}{6}$, roughly $0.167$, so the above output estimates look good.
+```{.python .input}
+#@tab pytorch
+# Store the results as 32-bit floats for division
+counts = multinomial.Multinomial(1000, fair_probs).sample()
+counts / 1000  # Relative frequency as the estimate
+```
 
-We can also visualize how these probabilities converge over time towards the true probability.
-Let's conduct $500$ groups of experiments where each group draws $10$ samples.
+```{.python .input}
+#@tab tensorflow
+counts = tfp.distributions.Multinomial(1000, fair_probs).sample()
+counts / 1000
+```
 
-```{.python .input  n=6}
+公正なダイスからデータを生成したため、各結果の真の確率 $\frac{1}{6}$、およそ $0.167$ であることがわかっているため、上記の出力推定値は良好に見えます。 
+
+また、これらの確率が時間の経過とともに真の確率に向かってどのように収束するかを視覚化することもできます。各グループが10個のサンプルを採取する500グループの実験を行いましょう。
+
+```{.python .input}
 counts = np.random.multinomial(10, fair_probs, size=500)
 cum_counts = counts.astype(np.float32).cumsum(axis=0)
 estimates = cum_counts / cum_counts.sum(axis=1, keepdims=True)
@@ -89,110 +131,108 @@ d2l.plt.gca().set_ylabel('Estimated probability')
 d2l.plt.legend();
 ```
 
-各実線の曲線は、サイコロの6つの出目のうちの1つに対応しており、各グループの実験のあとに予想される、サイコロの出目が出る推定確率を表します。黒い破線は、潜在的な真の確率を示しています。より多くのデータを取得すると、$6$本の実線の曲線は真の解に向かって収束します。
+```{.python .input}
+#@tab pytorch
+counts = multinomial.Multinomial(10, fair_probs).sample((500,))
+cum_counts = counts.cumsum(dim=0)
+estimates = cum_counts / cum_counts.sum(dim=1, keepdims=True)
 
+d2l.set_figsize((6, 4.5))
+for i in range(6):
+    d2l.plt.plot(estimates[:, i].numpy(),
+                 label=("P(die=" + str(i + 1) + ")"))
+d2l.plt.axhline(y=0.167, color='black', linestyle='dashed')
+d2l.plt.gca().set_xlabel('Groups of experiments')
+d2l.plt.gca().set_ylabel('Estimated probability')
+d2l.plt.legend();
+```
 
-### Axioms of Probability Theory
+```{.python .input}
+#@tab tensorflow
+counts = tfp.distributions.Multinomial(10, fair_probs).sample(500)
+cum_counts = tf.cumsum(counts, axis=0)
+estimates = cum_counts / tf.reduce_sum(cum_counts, axis=1, keepdims=True)
 
-When dealing with the rolls of a die,
-we call the set $\mathcal{S} = \{1, 2, 3, 4, 5, 6\}$ the *sample space* or *outcome space*, where each element is an *outcome*.
-An *event* is a set of outcomes from a given sample space.
-For instance, "seeing a $5$" ($\{5\}$) and "seeing an odd number" ($\{1, 3, 5\}$) are both valid events of rolling a die.
-Note that if the outcome of a random experiment is in event $\mathcal{A}$,
-then event $\mathcal{A}$ has occurred.
-That is to say, if $3$ dots faced up after rolling a die, since $3 \in \{1, 3, 5\}$,
-we can say that the event "seeing an odd number" has occurred.
+d2l.set_figsize((6, 4.5))
+for i in range(6):
+    d2l.plt.plot(estimates[:, i].numpy(),
+                 label=("P(die=" + str(i + 1) + ")"))
+d2l.plt.axhline(y=0.167, color='black', linestyle='dashed')
+d2l.plt.gca().set_xlabel('Groups of experiments')
+d2l.plt.gca().set_ylabel('Estimated probability')
+d2l.plt.legend();
+```
 
-Formally, *probability* can be thought of a function that maps a set to a real value.
-The probability of an event $\mathcal{A}$ in the given sample space $\mathcal{S}$,
-denoted as $P(\mathcal{A})$, satisfies the following properties:
+各実線曲線はダイの6つの値の1つに対応し、各実験グループの後に評価されたとおりに、ダイスがその値を上げる推定確率を示します。黒い破線は真の基礎となる確率を示しています。より多くの実験を行うことでより多くのデータを得ると、$6$ の実線曲線は真の確率に向かって収束します。 
 
-* For any event $\mathcal{A}$, its probability is never negative, i.e., $P(\mathcal{A}) \geq 0$;
-* Probability of the entire sample space is $1$, i.e., $P(\mathcal{S}) = 1$;
-* For any countable sequence of events $\mathcal{A}_1, \mathcal{A}_2, \ldots$ that are *mutually exclusive* ($\mathcal{A}_i \cap \mathcal{A}_j = \emptyset$ for all $i \neq j$), the probability that any happens is equal to the sum of their individual probabilities, i.e., $P(\bigcup_{i=1}^{\infty} \mathcal{A}_i) = \sum_{i=1}^{\infty} P(\mathcal{A}_i)$.
+### 確率論の公理
 
-These are also the axioms of probability theory, proposed by Kolmogorov in 1933.
-Thanks to this axiom system, we can avoid any philosophical dispute on randomness;
-instead, we can reason rigorously with a mathematical language.
-For instance, by letting event $\mathcal{A}_1$ be the entire sample space and $\mathcal{A}_i = \emptyset$ for all $i > 1$, we can prove that $P(\emptyset) = 0$, i.e., the probability of an impossible event is $0$.
+ダイスのロールを扱う場合、集合 $\mathcal{S} = \{1, 2, 3, 4, 5, 6\}$ を*サンプル空間* または*結果空間*と呼びます。ここで、各要素は*結果* です。*event* は、特定のサンプル空間からの結果のセットです。たとえば、「$5$」($\{5\}$) と「奇数を見る」($\{1, 3, 5\}$) は、どちらもサイコロを振るのに有効なイベントです。ランダム実験の結果がイベント $\mathcal{A}$ の場合、イベント $\mathcal{A}$ が発生していることに注意してください。つまり、サイコロを振った後に $3$ ドットが上向きになった場合、$3 \in \{1, 3, 5\}$ 以降、「奇数を見た」というイベントが発生したと言えます。 
 
+正式には、*probability* は集合を実数値にマッピングする関数と考えることができます。$P(\mathcal{A})$ と表される所定のサンプル空間 $\mathcal{S}$ における事象 $\mathcal{A}$ の確率は、次の特性を満たします。 
 
-### Random Variables
+* いずれの事象 $\mathcal{A}$ についても、その確率は負になることはありません。つまり $P(\mathcal{A}) \geq 0$
+* サンプル空間全体の確率は$1$、つまり$P(\mathcal{S}) = 1$です。
+* *相互に排他的* ($i \neq j$ すべてで $\mathcal{A}_i \cap \mathcal{A}_j = \emptyset$) の可算事象 $\mathcal{A}_1, \mathcal{A}_2, \ldots$ のシーケンスの場合、発生する確率は個々の確率の合計、つまり $P(\bigcup_{i=1}^{\infty} \mathcal{A}_i) = \sum_{i=1}^{\infty} P(\mathcal{A}_i)$ と等しくなります。
 
-サイコロを振るというランダムな実験において**確率変数**の概念を導入しました。確率変数は、ほぼすべての値を取る可能性があり決定的ではありません。確率変数はとりうる可能性の集合の中から、1回のランダムな実験により、1つの値をとることができます。Consider a random variable $X$ whose value is in the sample space $\mathcal{S} = \{1, 2, 3, 4, 5, 6\}$ of rolling a die. We can denote the event "seeing a $5$" as $\{X = 5\}$ or $X = 5$, and its probability as $P(\{X = 5\})$ or $P(X = 5)$.
-By $P(X = a)$, we make a distinction between the random variable $X$ and the values (e.g., $a$) that $X$ can take.
-However, such pedantry results in a cumbersome notation.
-For a compact notation,
-on one hand, we can just denote $P(X)$ as the *distribution* over the random variable $X$:
-the distribution tells us the probability that $X$ takes any value.
-On the other hand,
-we can simply write $P(a)$ to denote the probability that a random variable takes the value $a$.
-Since an event in probability theory is a set of outcomes from the sample space,
-we can specify a range of values for a random variable to take.
-For example, $P(1 \leq X \leq 3)$ denotes the probability of the event $\{1 \leq X \leq 3\}$,
-which means $\{X = 1, 2, \text{or}, 3\}$. Equivalently, $P(1 \leq X \leq 3)$ represents the probability that the random variable $X$ can take a value from $\{1, 2, 3\}$.
+これらは1933年にコルモゴロフが提案した確率論の公理でもあります。この公理システムのおかげで、ランダム性に関する哲学的な論争を避けることができます。代わりに、数学的な言語で厳密に推論することができます。たとえば、事象 $\mathcal{A}_1$ をサンプル空間全体とし、$i > 1$ を $\mathcal{A}_i = \emptyset$ とすることで、$P(\emptyset) = 0$、つまり不可能な事象の確率が $0$ であることを証明できます。 
 
+### ランダム変数
 
-サイコロの面のような*離散*確率変数と、人の体重や身長のような*連続*確率変数との間には微妙な違いがあることに注意してください。 2人の人の身長がまったく同じかどうかを尋ねても意味がありません。十分に正確な測定を行うと、地球上の2人の人がまったく同じ身長にならないことがわかります。実際、十分に細かい測定を行った場合、目覚めたときと寝ているときの身長は同じになりません。そのため、ある人の身長が$1.80139278291028719210196740527486202$メートルである確率について尋ねる人はまずいないでしょう。世界人口を考えると確率は事実上0です。この場合、誰かの身長が$1.79$から$1.81$メートルの間など、指定された間隔に収まるかどうかを確認する方が理にかなっています。こういった場合、可能性を*密度*という見える値で定量化します。ちょうど$1.8$メートルの高さをとる確率はありませんが、密度はゼロではありません。任意の2つの異なる高さの間には、ゼロ以外の確率があります。残りの節では、離散空間における確率について考えます。連続変数に関する確率については、:numref:`sec_random_variables` を参照してください。
+サイコロを投げるランダム実験では、*ランダム変数*の概念を導入しました。確率変数はほとんどどんな量でもよく、決定論的ではありません。ランダム実験では、一連の可能性のうち 1 つの値を取ることができます。ダイスを転がすサンプル空間 $\mathcal{S} = \{1, 2, 3, 4, 5, 6\}$ に値が入る確率変数 $X$ を考えてみましょう。「$5$ を見ている」というイベントを $\{X = 5\}$ または $X = 5$、その確率は $P(\{X = 5\})$ または $P(X = 5)$ と表すことができます。$P(X = a)$ では、確率変数 $X$ と $X$ が取ることができる値 (例:$a$) とを区別します。しかし、そのような歩兵は面倒な表記法になります。コンパクトな表記法では、$P(X)$ を確率変数 $X$ に対する*分布* として表すことができます。この分布は $X$ が何らかの値をとる確率を示しています。一方、確率変数が値 $a$ を取る確率を示すために $P(a)$ と簡単に書くことができます。確率論の事象は標本空間からの結果の集合であるため、確率変数が取る値の範囲を指定することができます。たとえば、$P(1 \leq X \leq 3)$ は事象 $\{1 \leq X \leq 3\}$ の確率を表し、$\{X = 1, 2, \text{or}, 3\}$ を意味します。同様に、$P(1 \leq X \leq 3)$ は、確率変数 $X$ が $\{1, 2, 3\}$ から値をとることができる確率を表します。 
 
-## 複数の確率変数の取り扱い
+ダイスの側面のような*離散*確率変数と、人の体重や身長のような*連続*確率変数には微妙な違いがあることに注意してください。2人の身長がまったく同じかどうかを尋ねる意味はほとんどありません。十分に正確に測定すれば、地球上でまったく同じ身長を持つ人はいないことがわかります。実際、十分に細かく測定すると、起床時と寝るときの身長は同じではありません。したがって、誰かの身長が1.80139278291028719210196740527486202メートルである確率について尋ねる目的はありません。世界の人口を考えると、確率は事実上 0.この場合、誰かの身長が特定の間隔、たとえば1.79〜1.81メートルに収まるかどうかを尋ねる方が理にかなっています。このような場合、値が*density* として認識される尤度を定量化します。ちょうど1.80メートルの高さには確率はありませんが、密度はゼロではありません。2つの異なる高さの間の区間では、確率はゼロではありません。このセクションの残りの部分では、離散空間における確率について考察します。連続確率変数に対する確率については、:numref:`sec_random_variables` を参照してください。 
 
-一度に複数の確率変数を扱いたくなることが多くあります。例えば、病気と症状の関係をモデル化したい場合を考えましょう。例えば、「インフルエンザ」と「せき」のような病気と症状が与えられていて、ある確率で患者に発生したり、しなかったりするとします。その双方の確率がゼロであることを望みますが、その確率と関係性を推定することで、その推論をより良い医療看護につなげることができるでしょう。
+## 複数の確率変数を扱う
 
-より複雑な例としては、数百万ピクセルの画像は、数百万の確率変数を含んでいると言えます。多くの場合、画像の中に写る物体を表すラベルを伴います。ラベルもまた確率変数と考えることができます。さらには、すべてのメタデータを確率変数と考えることもできるでしょう。例えば、場所、時間、レンズの口径、焦点距離、ISO、集束距離、カメラの種類などです。これらはすべて、同時に発生する確率変数です。複数の確率変数を扱う場合、いくつかの重要な概念があります。
+多くの場合、一度に複数の確率変数を検討する必要があります。例えば、病気と症状の関係をモデル化したいと思うかもしれません。「インフルエンザ」や「咳」などの病気や症状を考えると、ある程度の確率で患者に発生する場合と発生しない場合があります。両者の確率がゼロに近づくことを願っていますが、これらの確率と互いの関係を推定して、推論を適用してより良い医療を実現できるようにしたいと思うかもしれません。 
 
+より複雑な例として、イメージには数百万のピクセルが含まれており、したがって数百万の確率変数が含まれています。また、多くの場合、画像にはラベルが付いており、画像内のオブジェクトを識別します。ラベルは確率変数と考えることもできます。すべてのメタデータは、位置、時間、絞り、焦点距離、ISO、焦点距離、カメラタイプなどのランダム変数と考えることもできます。これらはすべて、連動して発生する確率変数です。複数の確率変数を扱う場合、関心のある量がいくつかあります。 
 
-### 結合確率
+### 合同確率
 
-1つ目は*結合分布*$\P(A=a,B=b)$です。$a$と$b$の値が与えられたとき、結合分布は$A=a$と$B=b$が同時に発生する確率を示します。あらゆる$a, b$に対して、$\P(A=a, B=b) \leq \P(A=a)$が成立することに注意してください。これはつまり、$A$と$B$が発生するためには、$A$が発生して、*かつ*、$B$も発生する必要があるからです (逆も同様です)。したがって、$A, B$が個別に発生するよりも、$A$と$B$が同時に発生することはありません。
+1つ目は*ジョイント確率* $P(A = a, B=b)$と呼ばれます。$a$と$b$の値があれば、結合確率で答えることができます。$A=a$と$B=b$が同時に発生する確率はどれくらいですか？$a$ と $b$ の値については $P(A=a, B=b) \leq P(A=a)$ であることに注意してください。$A=a$ と $B=b$ が起こるためには $A=a$ が起こらなければならず、* $B=b$ も起こらなければならない (逆も同様) ので、これは事実でなければならない。したがって、$A=a$ と $B=b$ はそれぞれ $A=a$ または $B=b$ よりも高い確率になることはありません。 
 
 ### 条件付き確率
 
-上記によって、 $0 \leq \frac{P(A=a, B=b)}{P(A=a)} \leq 1$ という、確率の比に関する興味深い式を導くことができます。これを**条件付き確率**と呼び、 $P(B=b \mid A=a)$ で表します。$A=a$が発生する条件のもとで$B=b$が発生する確率を表します。
+これにより、$0 \leq \frac{P(A=a, B=b)}{P(A=a)} \leq 1$という興味深い比率になります。この比率を*条件付き確率*と呼び、$P(B=b \mid A=a)$ で表します。$A=a$ が発生した場合、$B=b$ の確率です。 
 
 ### ベイズの定理
 
-条件付き確率の定義にもとづいて、ベイズ統計学で最も有用かる有名な方程式の1つを導くことができます。それは以下の通りです。定義から、積の法則より $P(A, B) = P(B \mid A) P(A)$ となります。対称性より $P(A, B) = P(A \mid B) P(B)$ も成立します。$P(b)>0$ を仮定します。これらの式から、条件の変数に関して解くと、次のようになります。
+条件付き確率の定義を用いて、統計学で最も有用で有名な方程式の一つ、*ベイズの定理*を導き出すことができます。それは次のようになります。構造上、$P(A, B) = P(B \mid A) P(A)$という*乗算ルール*があります。対称性により、これは$P(A, B) = P(A \mid B) P(B)$にも当てはまります。$P(B) > 0$ と仮定します。得た条件変数の1つを解く 
 
 $$P(A \mid B) = \frac{P(B \mid A) P(A)}{P(B)}.$$
 
-Note that here we use the more compact notation where $P(A, B)$ is a *joint distribution* and $P(A \mid B)$ is a *conditional distribution*. Such distributions can be evaluated for particular values $A = a, B=b$.
+ここでは $P(A, B)$ が*結合分布*、$P(A \mid B)$ が*条件付き分布* であるよりコンパクトな表記法を使用していることに注意してください。このような分布は、特定の値 $A = a, B=b$ について評価できます。 
 
-### 周辺化
+### 疎外化
 
-This is very useful if we want to infer one thing from another, say cause and effect but we only know the properties in the reverse direction. One important operation that we need, to make this work, is *marginalization*, i.e., the operation of determining $\Pr(A)$ and $\Pr(B)$ from $\Pr(A,B)$. We can see that the probability of seeing $A$ amounts to accounting for all possible choices of $B$ and aggregating the joint probabilities over all of them, i.e.
-
-ベイズの定理は、原因と結果など、あるものを別のものから推測したい場合に有用ですが、後で述べるように、逆方向の特性しかわからない場合があります。これを解決するために重要な操作として *marginalization (周辺化)*があります。つまり、$\P(A,B)$から$\P(B)$を決定する演算です。$B$を確認する確率は、$A$のすべての可能性を考慮し、それらすべてに関する結合確率を集約することで得られます。
+ベイズの定理は、因果関係など、あるものを別のものから推測したい場合に非常に役立ちますが、このセクションの後半で説明するように、逆方向のプロパティしか知りません。これを成し遂げるために必要な重要な操作の一つが、*疎外化*です。$P(A, B)$から$P(B)$を決定する演算です。$B$ の確率は $A$ のすべての可能な選択肢を説明し、それらすべての結合確率を集計することになることがわかります。 
 
 $$P(B) = \sum_{A} P(A, B),$$
 
-which is also known as the *sum rule*. The probability or distribution as a result of marginalization is called a *marginal probability* or a *marginal distribution*.
+これは*sumルール*としても知られています。周縁化の結果として生じる確率または分布は、*周辺確率* または*周辺分布* と呼ばれます。 
 
 ### 独立性
 
-チェックすべきもう一つの特性として、*dependence(依存性)*と*independence(独立性)*があります。2つの確率変数 $A$ と $B$ が独立であるということは、あるイベント$A$が発生しても、イベント $B$ の発生に関する情報が明らかにならないことを意味します。この場合、$\P(B \mid A) = \P(B)$です。統計学者は通常、これを $A \perp B$ と表現します。ベイズの定理から、ただちに$\P(A \mid B) = \Pr(A)$であることがわかります。その他の場合は、すべて、$A$および$B$に依存する (dependence) ことになります。たとえば、サイコロを連続で2回振ったときの出目は独立しています。一方、照明スイッチの位置と部屋の明るさは独立していません (ただし、電球、停電、またはスイッチが破損する可能性が常にあるため、
-独立しているかどうかは完全に決定論的とはいえません)。
+チェックすべきもう 1 つの便利なプロパティは、*dependence* と*dependence* です。2 つの確率変数 $A$ と $B$ が独立しているということは、$A$ の 1 つの事象が発生しても $B$ の事象の発生に関する情報は明らかにされないことを意味します。この場合は $P(B \mid A) = P(B)$ です。統計学者は通常、これを $A \perp  B$ と表現します。ベイズの定理からすると、$P(A \mid B) = P(A)$もすぐに続く。それ以外の場合は $A$ と $B$ を従属と呼んでいます。たとえば、ダイスの連続する2つのロールは独立しています。対照的に、照明スイッチの位置と部屋の明るさはそうではありません (ただし、電球の破損、停電、またはスイッチの破損が常に発生することがあるため、これらは完全に決定論的ではありません)。 
 
+$P(A \mid B) = \frac{P(A, B)}{P(B)} = P(A)$ は $P(A, B) = P(A)P(B)$ と等しいので、2 つの確率変数は、その結合分布が個々の分布の積である場合にのみ独立します。同様に、2 つの確率変数 $A$ と $B$ は、$P(A, B \mid C) = P(A \mid C)P(B \mid C)$ の場合に限り、別の確率変数 $C$ が与えられると、*条件付きで独立* になります。これは $A \perp B \mid C$ と表現されます。 
 
-Since $P(A \mid B) = \frac{P(A, B)}{P(B)} = P(A)$ is equivalent to $P(A, B) = P(A)P(B)$, two random variables are independent if and only if their joint distribution is the product of their individual distributions.
-Likewise, two random variables $A$ and $B$ are *conditionally independent* given another random variable $C$
-if and only if $P(A, B \mid C) = P(A \mid C)P(B \mid C)$. This is expressed as $A \perp B \mid C$.
-
-### 応用
+### アプリケーション
 :label:`subsec_probability_hiv_app`
 
-ここまで学んだことを試してみましょう。医師が患者にエイズ検査を実施するとします。このテストはかなり正確であり、患者が健康であるにもかかわらず、感染していると誤診する確率は、たったの$1\%$しかありません。また、患者が実際にHIVに感染していれば、HIVの検出に失敗することはありません。診断を$D_1$ ($1$は陽性、$0$は陰性)、HIVの感染の状態を$H$ ($1$は陽性、$0$は陰性)で表します。:numref:`conditional_prob_D1` に条件付き確率の一覧を示します。
+私たちのスキルを試してみよう。医師が患者にHIV検査を実施すると仮定します。この検査はかなり正確で、患者が健康であるが病気であると報告した場合、1％の確率で不合格となります。さらに、患者が実際にHIVに感染していれば、HIVの検出に失敗することはありません。診断を示すために $D_1$ を使用し (陽性の場合は $1$、陰性の場合は $0$)、HIV の状態を示すために $H$ (陽性の場合は $1$、陰性の場合は $0$) を使用します。:numref:`conditional_prob_D1` は、このような条件付き確率を列挙しています。 
 
-:$P(D_1 \mid H)$ の条件付き確率
+:$P(D_1 \mid H)$ の条件付き確率。 
 
-| 条件付き確率 | $H=1$ | $H=0$ |
+| Conditional probability | $H=1$ | $H=0$ |
 |---|---|---|
 |$P(D_1 = 1 \mid H)$|            1 |         0.01 |
 |$P(D_1 = 0 \mid H)$|            0 |         0.99 |
 :label:`conditional_prob_D1`
 
-
-条件付き確率は一般の確率と同様に足して$1$になる必要があるため、列方向の和はすべて$1$となる（ただし、行方向は1とならない）ことに注意してください。陽性の結果がでたときに、患者がAIDSに感染している確率、つまり $P(H = 1 \mid D_1 = 1)$ を計算しましょう。明らかに、この計算にはこの病気がどれくらい一般的かに依存するでしょう。なぜなら、それによって誤検知の値が変わるからです。ここでは、母集団が非常に健康的な場合を考え、$P(H=1) = 0.0015$ としましょう。ベイズの定理を適用すると
+条件付き確率は確率と同様に合計が 1 になる必要があるため、列の合計はすべて 1 です (ただし、行の合計はそうではありません)。検査が陽性になった場合、患者がHIVに感染する確率、つまり$P(H = 1 \mid D_1 = 1)$を調べてみましょう。明らかに、これは誤警報の数に影響を与えるため、病気がどれほど一般的であるかに依存します。人口が非常に健康であると仮定します (例:$P(H=1) = 0.0015$)。ベイズの定理を適用するには、周縁化と乗算則を適用して決定する必要があります 
 
 $$\begin{aligned}
 &P(D_1 = 1) \\
@@ -202,24 +242,24 @@ $$\begin{aligned}
 \end{aligned}
 $$
 
-したがって、
+したがって、我々が得る 
 
 $$\begin{aligned}
 &P(H = 1 \mid D_1 = 1)\\ =& \frac{P(D_1=1 \mid H=1) P(H=1)}{P(D_1=1)} \\ =& 0.1306 \end{aligned}.$$
 
+つまり、非常に正確な検査を行っているにもかかわらず、患者が実際にHIVに感染している可能性は13.06％しかありません。ご覧のとおり、確率は直観に反する可能性があります。 
 
-言い換えれば、検査の結果が99%正しいにも関わらず、患者が実際にAIDSに感染している確率は13.06%にすぎないことがわかります。このように統計は直感に反することがあります。
+そのような恐ろしい知らせを受け取ったとき、患者は何をすべきでしょうか？おそらく、患者は明確にするために別の検査を実施するよう医師に依頼するでしょう。2番目のテストは特性が異なり、:numref:`conditional_prob_D2`に示すように、最初のテストほど良くありません。 
 
+:$P(D_2 \mid H)$ の条件付き確率。 
 
-もし、患者が上記のようなおそろしいニュースを聞いたとしたらどうするでしょうか。おそらく、医者に対して、より正確な結果を得るための、追加のテストを実施するよう依頼するでしょう。:numref:`conditional_prob_D2` に示すように、2回目のテストはさきほどのテストとは異なる特徴があり、最初のものよりも精度が悪いとしましょう。
-
-| 条件付き確率 | $H=1$ | $H=0$ |
+| Conditional probability | $H=1$ | $H=0$ |
 |---|---|---|
-|テスト 陽性|          0.98 |0.03 |
-|テスト 陰性|          0.02 |          0.97
+|$P(D_2 = 1 \mid H)$|            0.98 |         0.03 |
+|$P(D_2 = 0 \mid H)$|            0.02 |         0.97 |
 :label:`conditional_prob_D2`
 
-残念ながら、2回目も陽性だったとしましょう。ベイズ理論を利用して必要な確率を計算しましょう。
+残念ながら、2番目のテストも陽性に戻ります。条件付き独立性を仮定して、ベイズの定理を呼び出すために必要な確率を計算してみましょう。 
 
 $$\begin{aligned}
 &P(D_1 = 1, D_2 = 1 \mid H = 0) \\
@@ -235,7 +275,7 @@ $$\begin{aligned}
 \end{aligned}
 $$
 
-ここで周辺化と積の法則を適用します。
+ここで、疎外化と乗算ルールを適用できます。 
 
 $$\begin{aligned}
 &P(D_1 = 1, D_2 = 1) \\
@@ -245,8 +285,7 @@ $$\begin{aligned}
 \end{aligned}
 $$
 
-
-最後に、両方の検査の結果、陽性であると判断される確率は
+結局、両方の陽性検査を受けた患者がHIVに感染する確率は 
 
 $$\begin{aligned}
 &P(H = 1 \mid D_1 = 1, D_2 = 1)\\
@@ -255,52 +294,48 @@ $$\begin{aligned}
 \end{aligned}
 $$
 
-2回目の検査によって、HIVの感染に関してより確信を得ることができました。2回目の検査は1回目の検査よりもかなり精度が低いにも関わらず、推定の結果を改善しました。
+つまり、2番目のテストでは、すべてがうまくいっているわけではないという確信がはるかに高まりました。2番目のテストは最初のテストよりもかなり精度が低くなりましたが、それでも見積もりは大幅に改善されました。 
 
+## 期待値と分散
 
-
-## Expectation and Variance
-
-To summarize key characteristics of probability distributions,
-we need some measures.
-The *expectation* (or average) of the random variable $X$ is denoted as
+確率分布の重要な特徴をまとめるには、いくつかの測度が必要です。確率変数 $X$ の*期待値* (または平均) は次のように表されます。 
 
 $$E[X] = \sum_{x} x P(X = x).$$
 
-When the input of a function $f(x)$ is a random variable drawn from the distribution $P$ with different values $x$,
-the expectation of $f(x)$ is computed as
+関数 $f(x)$ の入力が、分布 $P$ から取り出され、値 $x$ が異なる確率変数である場合、$f(x)$ の期待値は次のように計算されます。 
 
 $$E_{x \sim P}[f(x)] = \sum_x f(x) P(x).$$
 
-
-In many cases we want to measure by how much the random variable $X$ deviates from its expectation. This can be quantified by the variance
+多くの場合、確率変数 $X$ が期待値からどれだけ逸脱しているかを測定します。これは分散によって定量化できます。 
 
 $$\mathrm{Var}[X] = E\left[(X - E[X])^2\right] =
 E[X^2] - E[X]^2.$$
 
-Its square root is called the *standard deviation*.
-The variance of a function of a random variable measures
-by how much the function deviates from the expectation of the function,
-as different values $x$ of the random variable are sampled from its distribution:
+その平方根を*標準偏差*といいます。確率変数の関数の分散は、確率変数の値 $x$ が分布からサンプリングされるため、関数が関数の期待値からどれだけ逸脱しているかによって測定されます。 
 
 $$\mathrm{Var}[f(x)] = E\left[\left(f(x) - E[f(x)]\right)^2\right].$$
 
+## [概要
 
-## Summary
+* 確率分布からサンプリングできます。
+* 結合分布、条件分布、ベイズの定理、疎外化、独立性仮定を使用して、複数の確率変数を分析できます。
+* 期待値と分散は、確率分布の主要な特徴を要約するうえで有用な測度となります。
 
-* We can use MXNet to sample from probability distributions.
-* We can analyze multiple random variables using joint distribution, conditional distribution, Bayes' theorem, marginalization, and independence assumptions.  
-* Expectation and variance offer useful measures to summarize key characteristics of probability distributions.
+## 演習
 
+1. $m=500$ グループの実験を行い、各グループが $n=10$ 個のサンプルを抽出しました。$m$ と $n$ を変化させてください。実験結果を観察し、分析する。
+1. 確率が $P(\mathcal{A})$ と $P(\mathcal{B})$ の 2 つの事象について、$P(\mathcal{A} \cup \mathcal{B})$ と $P(\mathcal{A} \cap \mathcal{B})$ の上限と下限を計算します。(ヒント:[Venn Diagram](https://en.wikipedia.org/wiki/Venn_diagram) を使用して状況を表示してください。)
+1. $A$、$B$、$C$ などの一連の確率変数があるとします。$B$ は $A$ にのみ依存し、$C$ は $B$ にのみ依存します。結合確率 $P(A, B, C)$ を単純化できますか？(ヒント:これは [Markov Chain](https://en.wikipedia.org/wiki/Markov_chain) です。)
+1. :numref:`subsec_probability_hiv_app` では、最初の検定がより正確になりました。最初のテストと2番目のテストの両方を実行するのではなく、最初のテストを2回実行しないのはなぜですか？
 
+:begin_tab:`mxnet`
+[Discussions](https://discuss.d2l.ai/t/36)
+:end_tab:
 
-## 練習
+:begin_tab:`pytorch`
+[Discussions](https://discuss.d2l.ai/t/37)
+:end_tab:
 
-1. 各グループが10サンプルを引くような実験を $m=500$ グループで行いました。$m$と$n$を変えて、実験結果を観測・分析してみてください。
-1. 確率$P(\mathcal{A})$ と $P(\mathcal{B})$で発生する2つの事象について、$P(\mathcal{A} \cup \mathcal{B})$ と $P(\mathcal{A} \cap \mathcal{B})$の上限と下限を計算してください。ヒント: [ベン図](https://en.wikipedia.org/wiki/Venn_diagram)を利用して状況を表してみましょう。
-1. $A, $B$, $C$ という事象の系列があり、$B$は$A$と$C$に依存し、$A$と$C$は$B$のみに依存する場合、その同時確率を単純化することは可能ですか? ヒント: これは[マルコフ連鎖](https://en.wikipedia.org/wiki/Markov_chain)です。
-1. :numref:`subsec_probability_hiv_app`においては最初の検査のほうが精度が良かったです。最初の検査を2回目に実施したらどうなりますか?
-
-## [議論](https://discuss.mxnet.io/t/2319)
-
-![](../img/qr_probability.svg)
+:begin_tab:`tensorflow`
+[Discussions](https://discuss.d2l.ai/t/198)
+:end_tab:
