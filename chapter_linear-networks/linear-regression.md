@@ -119,7 +119,7 @@ $\mathbf{w}$ と $\mathbf{x}$ は :eqref:`eq_linreg_batch_update` のベクト�
 %matplotlib inline
 from d2l import mxnet as d2l
 import math
-from mxnet import np
+import numpy as np
 import time
 ```
 
