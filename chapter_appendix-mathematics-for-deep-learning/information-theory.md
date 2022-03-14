@@ -606,7 +606,7 @@ $$
  = - \sum_{i=1}^n \sum_{j=1}^k y_{ij} \log{p_{\theta} (y_{ij}  \mid  \mathbf{x}_i)}.\\
 $$
 
-反対に、最尤推定によって問題にアプローチすることもできます。はじめに、$k$ クラスのマルチヌーイ分布を簡単に紹介しましょう。これはベルヌーイ分布をバイナリクラスからマルチクラスに拡張したものです。確率変数 $\mathbf{z} = (z_{1}, \ldots, z_{k})$ が確率$\mathbf{p} =$ ($p_{1}, \ldots, p_{k}$) をもつ $k$ クラス *マルチヌーイ分布* に従う場合、つまり $$p(\mathbf{z}) = p(z_1, \ldots, z_k) = \mathrm{Multi} (p_1, \ldots, p_k), \text{ where } \sum_{i=1}^k p_i = 1,$$ then the joint probability mass function(p.m.f.) of $\ mathbf {z} $ は $$\mathbf{p}^\mathbf{z} = \prod_{j=1}^k p_{j}^{z_{j}}.$ $になります 
+反対に、最尤推定によって問題にアプローチすることもできます。はじめに、$k$ クラスのマルチヌーイ分布を簡単に紹介しましょう。これはベルヌーイ分布をバイナリクラスからマルチクラスに拡張したものです。確率変数 $\mathbf{z} = (z_{1}, \ldots, z_{k})$ が確率$\mathbf{p} =$ ($p_{1}, \ldots, p_{k}$) をもつ $k$ クラス *マルチヌーイ分布* に従う場合、つまり $$p(\mathbf{z}) = p(z_1, \ldots, z_k) = \mathrm{Multi} (p_1, \ldots, p_k), \text{ where } \sum_{i=1}^k p_i = 1,$$ then the joint probability mass function(p.m.f.) of $\ mathbf {z}$ は $$\mathbf{p}^\mathbf{z} = \prod_{j=1}^k p_{j}^{z_{j}}.$$ になります
 
 各データ例のラベル $\mathbf{y}_i$ は、確率が $\boldsymbol{\pi} =$ ($\pi_{1}, \ldots, \pi_{k}$) の $k$ クラスのマルチヌーイ分布に従っていることがわかります。したがって、各データ例 $\mathbf{y}_i$ のジョイント午後は $\mathbf{\pi}^{\mathbf{y}_i} = \prod_{j=1}^k \pi_{j}^{y_{ij}}.$ となります。したがって、対数尤度関数は次のようになります。 
 
