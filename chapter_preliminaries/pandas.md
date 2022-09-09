@@ -1,99 +1,103 @@
+```{.python .input}
+%load_ext d2lbook.tab
+tab.interact_select(['mxnet', 'pytorch', 'tensorflow'])
+```
+
 # データ前処理
 :label:`sec_pandas`
 
-これまで、テンソルにすでに格納されているデータを操作するためのさまざまな手法を紹介してきました。ディープラーニングを現実世界の問題の解決に適用するために、テンソル形式で適切に準備されたデータではなく、生データの前処理から始めることがよくあります。Python でよく使われるデータ分析ツールの中でも、`pandas` パッケージがよく使われています。Python の広大なエコシステムにある他の多くの拡張パッケージと同様に、`pandas` はテンソルと連携して動作することができます。そこで、生データを `pandas` で前処理し、テンソル形式に変換する手順を簡単に説明します。データの前処理テクニックについては、後の章で詳しく説明します。 
+これまで、既製のテンソルで届いた合成データを扱ってきました。しかし、ディープラーニングを実際に適用するには、任意の形式で保存された乱雑なデータを抽出し、ニーズに合わせて前処理する必要があります。幸いなことに、*pandas* [library](https://pandas.pydata.org/)は重い作業の多くを行うことができます。このセクションは、適切な*pandas* [tutorial](https://pandas.pydata.org/pandas-docs/stable/user_guide/10min.html)に代わるものではありませんが、最も一般的なルーチンのいくつかについての短期集中コースを提供します。 
 
 ## データセットの読み取り
 
-例として、(**csv (カンマ区切り値) ファイルに格納される人工データセットを作成する**) `../data/house_tiny.csv` から始めます。他の形式で保存されたデータも同様の方法で処理される場合があります。 
-
-以下では、データセットを行ごとにcsvファイルに書き込みます。
+カンマ区切り値 (CSV) ファイルは、表形式 (スプレッドシートのような) データを格納するために広く使用されています。ここで、各行は1つのレコードに対応し、いくつかの（カンマ区切り）フィールドで構成されています。例えば、「アルバート・アインシュタイン、1879年3月14日、ウルム、連邦工科大学、重力物理学の分野での成果」。`pandas` で CSV ファイルを読み込む方法を示すために、(**以下で CSV ファイルを作成します**) `../data/house_tiny.csv`。このファイルは住宅のデータセットを表し、各行は個別の家に対応し、列は部屋数（`NumRooms`）、屋根のタイプ（`RoofType`）、および価格（`Price`）に対応します。
 
 ```{.python .input}
-#@tab all
+%%tab all
 import os
 
 os.makedirs(os.path.join('..', 'data'), exist_ok=True)
 data_file = os.path.join('..', 'data', 'house_tiny.csv')
 with open(data_file, 'w') as f:
-    f.write('NumRooms,Alley,Price\n')  # Column names
-    f.write('NA,Pave,127500\n')  # Each row represents a data example
-    f.write('2,NA,106000\n')
-    f.write('4,NA,178100\n')
-    f.write('NA,NA,140000\n')
+    f.write('''NumRooms,RoofType,Price
+NA,NA,127500
+2,NA,106000
+4,Slate,178100
+NA,NA,140000''')
 ```
 
-[**作成した csv ファイルから生のデータセットを読み込む**] には、`pandas` パッケージをインポートし、`read_csv` 関数を呼び出します。このデータセットには 4 つの行と 3 つの列があり、各行には家の部屋数 (「numRooms」)、路地のタイプ (「路地」)、価格 (「価格」) が記述されています。
+それでは、`pandas`をインポートして、`read_csv`でデータセットをロードしましょう。
 
 ```{.python .input}
-#@tab all
-# If pandas is not installed, just uncomment the following line:
-# !pip install pandas
+%%tab all
 import pandas as pd
 
 data = pd.read_csv(data_file)
 print(data)
 ```
 
-## 欠損データの処理
+## データ準備
 
-「NaN」エントリは欠損値であることに注意してください。欠損データを処理するために、典型的な方法には*imputation* と*delettion* があります。補完では欠損値が置換された値に置き換えられ、削除では欠損値は無視されます。ここでは、帰属について検討します。 
+教師あり学習では、*入力*値のセットを指定して、指定された*目標*値を予測するようにモデルをトレーニングします。データセットを処理する最初のステップは、入力値とターゲット値に対応する列を分離することです。列は、名前または整数位置ベースのインデックス (`iloc`) によって選択できます。 
 
-整数位置ベースのインデックス (`iloc`) により、`data` を `inputs` と `outputs` に分割しました。前者は最初の 2 つのカラムを取り、後者は最後のカラムだけを保持します。`inputs` の数値が欠落している場合は、[**「NaN」エントリを同じ列の平均値に置き換えます。**]
+`pandas`が値`NA`を持つすべてのCSVエントリを特別な`NaN`（*数字ではない*）値に置き換えたことに気づいたかもしれません。これは、「3,, ,270000" など、エントリが空の場合にも発生する可能性があります。これらは*ミッシングバリュー*と呼ばれ、データサイエンスの「トコジラミ」であり、キャリアを通じて直面する永続的な脅威です。コンテキストによっては、欠落した値は*代入* または*削除* によって処理されます。補完は欠損値をその値の推定値に置き換え、削除は欠損値を含む行または列のいずれかを単に破棄します。  
+
+以下に、一般的な帰属ヒューリスティックをいくつか示します。[**カテゴリ入力フィールドの場合、`NaN`をカテゴリとして扱うことができます。**] `RoofType`列は`Slate`と`NaN`の値を取るため、`pandas`はこの列を`RoofType_Slate`と`RoofType_nan`の2つの列に変換できます。路地タイプが `Slate` の行は、`RoofType_Slate` と `RoofType_nan` の値をそれぞれ 1 と 0 に設定します。`RoofType` の値が欠落している行については、その逆が成り立ちます。
 
 ```{.python .input}
-#@tab all
-inputs, outputs = data.iloc[:, 0:2], data.iloc[:, 2]
-inputs = inputs.fillna(inputs.mean())
+%%tab all
+inputs, targets = data.iloc[:, 0:2], data.iloc[:, 2]
+inputs = pd.get_dummies(inputs, dummy_na=True)
 print(inputs)
 ```
 
-[** `inputs` のカテゴリ値または不連続値については、「NaN」をカテゴリと見なします。**]「Alley」列は「Pave」と「NaN」の 2 種類のカテゴリ値しか取らないため、`pandas` はこの列を「Alley_Pave」と「alley_NAN」の 2 つの列に自動的に変換できます。路地タイプが「Pave」の行は、「Alley_Pave」と「alley_NAN」の値を 1 と 0 に設定します。路地タイプが欠落している行は、その値を 0 と 1 に設定します。
+欠落している数値の場合の一般的なヒューリスティックは、[**`NaN`エントリを対応する列の平均値に置き換える**] です。
 
 ```{.python .input}
-#@tab all
-inputs = pd.get_dummies(inputs, dummy_na=True)
+%%tab all
+inputs = inputs.fillna(inputs.mean())
 print(inputs)
 ```
 
 ## テンソル形式への変換
 
-[**`inputs` と `outputs` のすべてのエントリは数値なので、テンソル形式に変換できます。**] データがこの形式になると、:numref:`sec_ndarray` で紹介したテンソル関数でさらに操作できるようになります。
+[**`inputs`と`targets`のすべてのエントリが数値であるため、テンソルにロードできます**]（:numref:`sec_ndarray`を思い出してください）。
 
 ```{.python .input}
+%%tab mxnet
 from mxnet import np
 
-X, y = np.array(inputs.values), np.array(outputs.values)
+X, y = np.array(inputs.values), np.array(targets.values)
 X, y
 ```
 
 ```{.python .input}
-#@tab pytorch
+%%tab pytorch
 import torch
 
-X, y = torch.tensor(inputs.values), torch.tensor(outputs.values)
+X, y = torch.tensor(inputs.values), torch.tensor(targets.values)
 X, y
 ```
 
 ```{.python .input}
-#@tab tensorflow
+%%tab tensorflow
 import tensorflow as tf
 
-X, y = tf.constant(inputs.values), tf.constant(outputs.values)
+X, y = tf.constant(inputs.values), tf.constant(targets.values)
 X, y
 ```
 
-## [概要
+## ディスカッション
 
-* Python の広大なエコシステムにある他の多くの拡張パッケージと同様に、`pandas` はテンソルと連携して動作することができます。
-* 補完と削除は、欠損データを処理するために使用できます。
+これで、データ列を分割し、欠損変数を補完し、`pandas` データをテンソルに読み込む方法がわかりました。:numref:`sec_kaggle_house`では、もう少しデータ処理スキルを習得します。この短期集中コースは物事をシンプルに保ちましたが、データ処理は毛むくじゃらになることがあります。たとえば、データセットが 1 つの CSV ファイルに収まるのではなく、リレーショナルデータベースから抽出された複数のファイルに分散している場合があります。たとえば、eコマースアプリケーションでは、顧客の住所は1つのテーブルにあり、購入データは別のテーブルにあります。さらに、開業医は、カテゴリや数値を超える無数のデータタイプに直面しています。その他のデータタイプには、テキスト文字列、画像、オーディオデータ、および点群が含まれます。多くの場合、データ処理が機械学習パイプラインの最大のボトルネックになるのを防ぐために、高度なツールと効率的なアルゴリズムが必要です。これらの問題は、コンピュータービジョンと自然言語処理に着いたときに発生します。最後に、データ品質に注意を払う必要があります。実世界のデータセットは、外れ値、センサーからの誤った測定、および記録エラーに悩まされることが多く、データをモデルに送る前に対処する必要があります。[seaborn](https://seaborn.pydata.org/)、[Bokeh](https://docs.bokeh.org/)、[matplotlib](https://matplotlib.org/) などのデータ視覚化ツールは、データを手動で検査し、対処する必要がある問題について直感的に理解するのに役立ちます。 
 
 ## 演習
 
-行と列の数が多い生データセットを作成します。 
-
-1. 欠損値が最も多い列を削除します。
-2. 前処理されたデータセットをテンソル形式に変換します。
+1. [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets.php)からAbaloneなどのデータセットをロードして、そのプロパティを調べてみてください。欠損値があるのはどの割合ですか？変数のどの部分が数値、カテゴリ、またはテキストですか？
+1. データ列のインデックスを作成し、列番号ではなく名前で選択してみてください。[indexing](https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html)のpandasのドキュメントには、これを行う方法の詳細が記載されています。
+1. この方法で読み込めるデータセットの大きさはどれくらいだと思いますか？どのような制限がありますか？ヒント:データ、表現、処理、およびメモリフットプリントを読み取る時間を考慮してください。これをラップトップで試してみてください。サーバーで試してみると何が変わりますか？ 
+1. カテゴリ数が非常に多いデータをどのように扱いますか？カテゴリラベルがすべて一意の場合はどうなりますか？後者を含めるべきですか？
+1. パンダに代わるものは何ですか？[loading NumPy tensors from a file](https://numpy.org/doc/stable/reference/generated/numpy.load.html)はどう？Python イメージングライブラリ [Pillow](https://python-pillow.org/) をチェックしてください。
 
 :begin_tab:`mxnet`
 [Discussions](https://discuss.d2l.ai/t/28)
