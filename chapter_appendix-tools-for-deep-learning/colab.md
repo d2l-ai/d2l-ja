@@ -1,28 +1,30 @@
-# グーグル・コラボレーションを使う
+# グーグル・コラボを使う
 :label:`sec_colab`
 
-:numref:`sec_sagemaker` と :numref:`sec_aws` で AWS でこの本を実行する方法を紹介しました。もう 1 つの選択肢として、この本を [Google Colab](https://colab.research.google.com/) で実行する方法があります。Google アカウントをお持ちの場合は、無料の GPU が提供されます。 
+:numref:`sec_sagemaker` と :numref:`sec_aws` で AWS でこの本を実行する方法を紹介しました。別のオプションは、Googleアカウントを持っている場合、この本を[Google Colab](https://colab.research.google.com/)で実行することです。 
 
-Colab でセクションを実行するには、:numref:`fig_colab` のように、そのセクションのタイトルの右側にある `Colab` ボタンをクリックするだけです。  
+Colabでセクションのコードを実行するには、:numref:`fig_colab`に示すように、`Colab`ボタンをクリックします。  
 
-![Open a section on Colab](../img/colab.png)
+![Run the code of a section on Colab](../img/colab.png)
 :width:`300px`
 :label:`fig_colab`
 
-コードセルを初めて実行すると、:numref:`fig_colab2` に示すような警告メッセージが表示されます。「RUN ANYWAY」をクリックして無視してもかまいません。 
+コードセルを初めて実行する場合は、:numref:`fig_colab2`に示すような警告メッセージが表示されます。無視するには、「実行する」をクリックするだけです。 
 
-![The warning message for running a section on Colab](../img/colab-2.png)
+![Ignore the warning message by clicking "RUN ANYWAY".](../img/colab-2.png)
 :width:`300px`
 :label:`fig_colab2`
 
-次に、Colab がこのノートブックを実行するインスタンスに接続します。具体的には、`d2l.try_gpu()` 関数を呼び出すときなど、GPU が必要な場合、GPU インスタンスに自動的に接続するように Colab にリクエストします。 
+次に、Colab は、このセクションのコードを実行するインスタンスに接続します。具体的には、GPUが必要な場合、ColabはGPUインスタンスへの接続を自動的に要求されます。 
 
-## [概要
+## まとめ
 
-* Google Colab を使用して、この本の各セクションを GPU で実行できます。
+* Google Colab を使用して、この本の各セクションのコードを実行できます。
+* 本書のいずれかのセクションでGPUが必要な場合、ColabはGPUインスタンスへの接続を要求されます。
 
 ## 演習
 
-1. Google Colab を使用して、この本のコードを編集して実行してみてください。
+1. Google Colab を使用して、この本の任意のセクションを開きます。
+1. Google Colab を使用して GPU を必要とするセクションを編集して実行します。
 
 [Discussions](https://discuss.d2l.ai/t/424)

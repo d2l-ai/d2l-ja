@@ -1,3 +1,16 @@
+USE_MXNET = True
+USE_PYTORCH = False
+USE_TENSORFLOW = False
+
+DATA_HUB = dict()
+DATA_URL = 'http://d2l-data.s3-accelerate.amazonaws.com/'
+
+from mxnet import autograd, context, gluon, image, init, np, npx
+from mxnet.gluon import nn, rnn
+from mxnet.gluon.data.vision import transforms
+
+nn_Module = nn.Block
+
 #################   WARNING   ################
 # The below part is generated automatically through:
 #    d2lbook build lib
@@ -5,6 +18,7 @@
 
 import collections
 import hashlib
+import inspect
 import math
 import os
 import random
@@ -19,6 +33,7 @@ import pandas as pd
 import requests
 from IPython import display
 from matplotlib import pyplot as plt
+from matplotlib_inline import backend_inline
 
 d2l = sys.modules[__name__]
 
@@ -29,7 +44,7 @@ def use_svg_display():
     """Use the svg format to display a plot in Jupyter.
 
     Defined in :numref:`sec_calculus`"""
-    display.set_matplotlib_formats('svg')
+    backend_inline.set_matplotlib_formats('svg')
 
 def set_figsize(figsize=(3.5, 2.5)):
     """Set the figure size for matplotlib.
@@ -42,357 +57,453 @@ def set_axes(axes, xlabel, ylabel, xlim, ylim, xscale, yscale, legend):
     """Set the axes for matplotlib.
 
     Defined in :numref:`sec_calculus`"""
-    axes.set_xlabel(xlabel)
-    axes.set_ylabel(ylabel)
-    axes.set_xscale(xscale)
-    axes.set_yscale(yscale)
-    axes.set_xlim(xlim)
-    axes.set_ylim(ylim)
+    axes.set_xlabel(xlabel), axes.set_ylabel(ylabel)
+    axes.set_xscale(xscale), axes.set_yscale(yscale)
+    axes.set_xlim(xlim),     axes.set_ylim(ylim)
     if legend:
         axes.legend(legend)
     axes.grid()
 
-def plot(X, Y=None, xlabel=None, ylabel=None, legend=None, xlim=None,
+def plot(X, Y=None, xlabel=None, ylabel=None, legend=[], xlim=None,
          ylim=None, xscale='linear', yscale='linear',
          fmts=('-', 'm--', 'g-.', 'r:'), figsize=(3.5, 2.5), axes=None):
     """Plot data points.
 
     Defined in :numref:`sec_calculus`"""
-    if legend is None:
-        legend = []
 
-    set_figsize(figsize)
-    axes = axes if axes else d2l.plt.gca()
-
-    # Return True if `X` (tensor or list) has 1 axis
-    def has_one_axis(X):
+    def has_one_axis(X):  # True if `X` (tensor or list) has 1 axis
         return (hasattr(X, "ndim") and X.ndim == 1 or isinstance(X, list)
                 and not hasattr(X[0], "__len__"))
 
-    if has_one_axis(X):
-        X = [X]
+    if has_one_axis(X): X = [X]
     if Y is None:
         X, Y = [[]] * len(X), X
     elif has_one_axis(Y):
         Y = [Y]
     if len(X) != len(Y):
         X = X * len(Y)
+
+    set_figsize(figsize)
+    if axes is None: axes = d2l.plt.gca()
     axes.cla()
     for x, y, fmt in zip(X, Y, fmts):
-        if len(x):
-            axes.plot(x, y, fmt)
-        else:
-            axes.plot(y, fmt)
+        axes.plot(x,y,fmt) if len(x) else axes.plot(y,fmt)
     set_axes(axes, xlabel, ylabel, xlim, ylim, xscale, yscale, legend)
 
-class Timer:
-    """Record multiple running times."""
-    def __init__(self):
-        """Defined in :numref:`subsec_linear_model`"""
-        self.times = []
-        self.start()
+def add_to_class(Class):
+    """Defined in :numref:`sec_oo-design`"""
+    def wrapper(obj):
+        setattr(Class, obj.__name__, obj)
+    return wrapper
 
-    def start(self):
-        """Start the timer."""
-        self.tik = time.time()
+class HyperParameters:
+    def save_hyperparameters(self, ignore=[]):
+        """Defined in :numref:`sec_oo-design`"""
+        raise NotImplemented
 
-    def stop(self):
-        """Stop the timer and record the time in a list."""
-        self.times.append(time.time() - self.tik)
-        return self.times[-1]
+    def save_hyperparameters(self, ignore=[]):
+        """Save function arguments into class attributes.
+    
+        Defined in :numref:`sec_utils`"""
+        frame = inspect.currentframe().f_back
+        _, _, _, local_vars = inspect.getargvalues(frame)
+        self.hparams = {k:v for k, v in local_vars.items()
+                        if k not in set(ignore+['self']) and not k.startswith('_')}
+        for k, v in self.hparams.items():
+            setattr(self, k, v)
 
-    def avg(self):
-        """Return the average time."""
-        return sum(self.times) / len(self.times)
+class ProgressBoard(d2l.HyperParameters):
+    """Plot data points in animation.
 
-    def sum(self):
-        """Return the sum of time."""
-        return sum(self.times)
+    Defined in :numref:`sec_oo-design`"""
+    def __init__(self, xlabel=None, ylabel=None, xlim=None,
+                 ylim=None, xscale='linear', yscale='linear',
+                 ls=['-', '--', '-.', ':'], colors=['C0', 'C1', 'C2', 'C3'],
+                 fig=None, axes=None, figsize=(3.5, 2.5), display=True):
+        self.save_hyperparameters()
 
-    def cumsum(self):
-        """Return the accumulated time."""
-        return np.array(self.times).cumsum().tolist()
+    def draw(self, x, y, label, every_n=1):
+        raise NotImplemented
 
-def synthetic_data(w, b, num_examples):
-    """Generate y = Xw + b + noise.
+    def draw(self, x, y, label, every_n=1):
+        """Defined in :numref:`sec_utils`"""
+        Point = collections.namedtuple('Point', ['x', 'y'])
+        if not hasattr(self, 'raw_points'):
+            self.raw_points = collections.OrderedDict()
+            self.data = collections.OrderedDict()
+        if label not in self.raw_points:
+            self.raw_points[label] = []
+            self.data[label] = []
+        points = self.raw_points[label]
+        line = self.data[label]
+        points.append(Point(x, y))
+        if len(points) != every_n:
+            return
+        mean = lambda x: sum(x) / len(x)
+        line.append(Point(mean([p.x for p in points]),
+                          mean([p.y for p in points])))
+        points.clear()
+        if not self.display:
+            return
+        d2l.use_svg_display()
+        if self.fig is None:
+            self.fig = d2l.plt.figure(figsize=self.figsize)
+        plt_lines, labels = [], []
+        for (k, v), ls, color in zip(self.data.items(), self.ls, self.colors):
+            plt_lines.append(d2l.plt.plot([p.x for p in v], [p.y for p in v],
+                                          linestyle=ls, color=color)[0])
+            labels.append(k)
+        axes = self.axes if self.axes else d2l.plt.gca()
+        if self.xlim: axes.set_xlim(self.xlim)
+        if self.ylim: axes.set_ylim(self.ylim)
+        if not self.xlabel: self.xlabel = self.x
+        axes.set_xlabel(self.xlabel)
+        axes.set_ylabel(self.ylabel)
+        axes.set_xscale(self.xscale)
+        axes.set_yscale(self.yscale)
+        axes.legend(plt_lines, labels)
+        display.display(self.fig)
+        display.clear_output(wait=True)
 
-    Defined in :numref:`sec_linear_scratch`"""
-    X = d2l.normal(0, 1, (num_examples, len(w)))
-    y = d2l.matmul(X, w) + b
-    y += d2l.normal(0, 0.01, y.shape)
-    return X, d2l.reshape(y, (-1, 1))
+class Module(d2l.nn_Module, d2l.HyperParameters):
+    """Defined in :numref:`sec_oo-design`"""
+    def __init__(self, plot_train_per_epoch=2, plot_valid_per_epoch=1):
+        super().__init__()
+        self.save_hyperparameters()
+        self.board = ProgressBoard()
+    def loss(self, y_hat, y):
+        raise NotImplementedError
 
-def linreg(X, w, b):
-    """The linear regression model.
+    def forward(self, X):
+        assert hasattr(self, 'net'), 'Neural network is defined'
+        return self.net(X)
 
-    Defined in :numref:`sec_linear_scratch`"""
-    return d2l.matmul(X, w) + b
+    def plot(self, key, value, train):
+        """Plot a point in animation."""
+        assert hasattr(self, 'trainer'), 'Trainer is not inited'
+        self.board.xlabel = 'epoch'
+        if train:
+            x = self.trainer.train_batch_idx / \
+                self.trainer.num_train_batches
+            n = self.trainer.num_train_batches / \
+                self.plot_train_per_epoch
+        else:
+            x = self.trainer.epoch + 1
+            n = self.trainer.num_val_batches / \
+                self.plot_valid_per_epoch
+        self.board.draw(x, d2l.numpy(value), (
+            'train_' if train else 'val_') + key, every_n=int(n))
+    def training_step(self, batch):
+        l = self.loss(self(*batch[:-1]), batch[-1])
+        self.plot('loss', l, train=True)
+        return l
 
-def squared_loss(y_hat, y):
-    """Squared loss.
+    def validation_step(self, batch):
+        l = self.loss(self(*batch[:-1]), batch[-1])
+        self.plot('loss', l, train=False)
 
-    Defined in :numref:`sec_linear_scratch`"""
-    return (y_hat - d2l.reshape(y, y_hat.shape)) ** 2 / 2
+    def configure_optimizers(self):
+        raise NotImplementedError
 
-def sgd(params, lr, batch_size):
-    """Minibatch stochastic gradient descent.
+    def configure_optimizers(self):
+        """Defined in :numref:`sec_classification`"""
+        params = self.parameters()
+        if isinstance(params, list):
+            return d2l.SGD(params, self.lr)
+        return gluon.Trainer(params, 'sgd', {'learning_rate': self.lr})
 
-    Defined in :numref:`sec_linear_scratch`"""
-    for param in params:
-        param[:] = param - lr * param.grad / batch_size
+    def get_scratch_params(self):
+        """Defined in :numref:`sec_classification`"""
+        params = []
+        for attr in dir(self):
+            a = getattr(self, attr)
+            if isinstance(a, np.ndarray):
+                params.append(a)
+            if isinstance(a, d2l.Module):
+                params.extend(a.get_scratch_params())
+        return params
+    
 
-def load_array(data_arrays, batch_size, is_train=True):
-    """Construct a Gluon data iterator.
+    def parameters(self):
+        """Defined in :numref:`sec_classification`"""
+        params = self.collect_params()
+        return params if isinstance(params, gluon.parameter.ParameterDict) and len(
+            params.keys()) else self.get_scratch_params()
 
-    Defined in :numref:`sec_linear_concise`"""
-    dataset = gluon.data.ArrayDataset(*data_arrays)
-    return gluon.data.DataLoader(dataset, batch_size, shuffle=is_train)
+    def set_scratch_params_device(self, device):
+        """Defined in :numref:`sec_use_gpu`"""
+        for attr in dir(self):
+            a = getattr(self, attr)
+            if isinstance(a, np.ndarray):
+                with autograd.record():
+                    setattr(self, attr, a.as_in_ctx(device))
+                getattr(self, attr).attach_grad()
+            if isinstance(a, d2l.Module):
+                a.set_scratch_params_device(device)
+            if isinstance(a, list):
+                for elem in a:
+                    elem.set_scratch_params_device(device)
 
-def get_fashion_mnist_labels(labels):
-    """Return text labels for the Fashion-MNIST dataset.
+class DataModule(d2l.HyperParameters):
+    """Defined in :numref:`sec_oo-design`"""
+    def __init__(self, root='../data', num_workers=4):
+        self.save_hyperparameters()
 
-    Defined in :numref:`sec_fashion_mnist`"""
-    text_labels = ['t-shirt', 'trouser', 'pullover', 'dress', 'coat',
-                   'sandal', 'shirt', 'sneaker', 'bag', 'ankle boot']
-    return [text_labels[int(i)] for i in labels]
+    def get_dataloader(self, train):
+        raise NotImplementedError
+
+    def train_dataloader(self):
+        return self.get_dataloader(train=True)
+
+    def val_dataloader(self):
+        return self.get_dataloader(train=False)
+
+    def get_tensorloader(self, tensors, train, indices=slice(0, None)):
+        """Defined in :numref:`sec_synthetic-regression-data`"""
+        tensors = tuple(a[indices] for a in tensors)
+        dataset = gluon.data.ArrayDataset(*tensors)
+        return gluon.data.DataLoader(dataset, self.batch_size,
+                                     shuffle=train)
+
+class Trainer(d2l.HyperParameters):
+    """Defined in :numref:`sec_oo-design`"""
+    def __init__(self, max_epochs, num_gpus=0, gradient_clip_val=0):
+        self.save_hyperparameters()
+        assert num_gpus == 0, 'No GPU support yet'
+
+    def prepare_data(self, data):
+        self.train_dataloader = data.train_dataloader()
+        self.val_dataloader = data.val_dataloader()
+        self.num_train_batches = len(self.train_dataloader)
+        self.num_val_batches = (len(self.val_dataloader)
+                                if self.val_dataloader is not None else 0)
+
+    def prepare_model(self, model):
+        model.trainer = self
+        model.board.xlim = [0, self.max_epochs]
+        self.model = model
+
+    def fit(self, model, data):
+        self.prepare_data(data)
+        self.prepare_model(model)
+        self.optim = model.configure_optimizers()
+        self.epoch = 0
+        self.train_batch_idx = 0
+        self.val_batch_idx = 0
+        for self.epoch in range(self.max_epochs):
+            self.fit_epoch()
+
+    def fit_epoch(self):
+        raise NotImplementedError
+
+    def prepare_batch(self, batch):
+        """Defined in :numref:`sec_linear_scratch`"""
+        return batch
+
+    def fit_epoch(self):
+        """Defined in :numref:`sec_linear_scratch`"""
+        for batch in self.train_dataloader:
+            with autograd.record():
+                loss = self.model.training_step(self.prepare_batch(batch))
+            loss.backward()
+            if self.gradient_clip_val > 0:
+                self.clip_gradients(self.gradient_clip_val, self.model)
+            self.optim.step(1)
+            self.train_batch_idx += 1
+        if self.val_dataloader is None:
+            return
+        for batch in self.val_dataloader:
+            self.model.validation_step(self.prepare_batch(batch))
+            self.val_batch_idx += 1
+
+    def __init__(self, max_epochs, num_gpus=0, gradient_clip_val=0):
+        """Defined in :numref:`sec_use_gpu`"""
+        self.save_hyperparameters()
+        self.gpus = [d2l.gpu(i) for i in range(min(num_gpus, d2l.num_gpus()))]
+    
+
+    def prepare_batch(self, batch):
+        """Defined in :numref:`sec_use_gpu`"""
+        if self.gpus:
+            batch = [d2l.to(a, self.gpus[0]) for a in batch]
+        return batch
+    
+
+    def prepare_model(self, model):
+        """Defined in :numref:`sec_use_gpu`"""
+        model.trainer = self
+        model.board.xlim = [0, self.max_epochs]
+        if self.gpus:
+            model.collect_params().reset_ctx(self.gpus[0])
+            model.set_scratch_params_device(self.gpus[0])
+        self.model = model
+
+class SyntheticRegressionData(d2l.DataModule):
+    """Defined in :numref:`sec_synthetic-regression-data`"""
+    def __init__(self, w, b, noise=0.01, num_train=1000, num_val=1000,
+                 batch_size=32):
+        super().__init__()
+        self.save_hyperparameters()
+        n = num_train + num_val
+        self.X = d2l.randn(n, len(w))
+        noise = d2l.randn(n, 1) * noise
+        self.y = d2l.matmul(self.X, d2l.reshape(w, (-1, 1))) + b + noise
+
+    def get_dataloader(self, train):
+        """Defined in :numref:`sec_synthetic-regression-data`"""
+        i = slice(0, self.num_train) if train else slice(self.num_train, None)
+        return self.get_tensorloader((self.X, self.y), train, i)
+
+class LinearRegressionScratch(d2l.Module):
+    """Defined in :numref:`sec_linear_scratch`"""
+    def __init__(self, num_inputs, lr, sigma=0.01):
+        super().__init__()
+        self.save_hyperparameters()
+        self.w = d2l.normal(0, sigma, (num_inputs, 1))
+        self.b = d2l.zeros(1)
+        self.w.attach_grad()
+        self.b.attach_grad()
+
+    def forward(self, X):
+        """The linear regression model.
+    
+        Defined in :numref:`sec_linear_scratch`"""
+        return d2l.matmul(X, self.w) + self.b
+
+    def loss(self, y_hat, y):
+        """Defined in :numref:`sec_linear_scratch`"""
+        l = (y_hat - d2l.reshape(y, y_hat.shape)) ** 2 / 2
+        return d2l.reduce_mean(l)
+
+    def configure_optimizers(self):
+        """Defined in :numref:`sec_linear_scratch`"""
+        return SGD([self.w, self.b], self.lr)
+
+class SGD(d2l.HyperParameters):
+    """Defined in :numref:`sec_linear_scratch`"""
+    def __init__(self, params, lr):
+        """Minibatch stochastic gradient descent."""
+        self.save_hyperparameters()
+
+    def step(self, _):
+        for param in self.params:
+            param -= self.lr * param.grad
+
+class LinearRegression(d2l.Module):
+    """Defined in :numref:`sec_linear_concise`"""
+    def __init__(self, lr):
+        super().__init__()
+        self.save_hyperparameters()
+        self.net = nn.Dense(1)
+        self.net.initialize(init.Normal(sigma=0.01))
+
+    def forward(self, X):
+        """The linear regression model.
+    
+        Defined in :numref:`sec_linear_concise`"""
+        return self.net(X)
+
+    def loss(self, y_hat, y):
+        """Defined in :numref:`sec_linear_concise`"""
+        fn = gluon.loss.L2Loss()
+        return fn(y_hat, y).mean()
+
+    def configure_optimizers(self):
+        """Defined in :numref:`sec_linear_concise`"""
+        return gluon.Trainer(self.collect_params(),
+                             'sgd', {'learning_rate': self.lr})
+
+    def get_w_b(self):
+        """Defined in :numref:`sec_linear_concise`"""
+        return (self.net.weight.data(), self.net.bias.data())
+
+class FashionMNIST(d2l.DataModule):
+    """Defined in :numref:`sec_fashion_mnist`"""
+    def __init__(self, batch_size=64, resize=(28, 28)):
+        super().__init__()
+        self.save_hyperparameters()
+        trans = transforms.Compose([transforms.Resize(resize),
+                                    transforms.ToTensor()])
+        self.train = gluon.data.vision.FashionMNIST(
+            train=True).transform_first(trans)
+        self.val = gluon.data.vision.FashionMNIST(
+            train=False).transform_first(trans)
+
+    def text_labels(self, indices):
+        """Return text labels.
+    
+        Defined in :numref:`sec_fashion_mnist`"""
+        labels = ['t-shirt', 'trouser', 'pullover', 'dress', 'coat',
+                  'sandal', 'shirt', 'sneaker', 'bag', 'ankle boot']
+        return [labels[int(i)] for i in indices]
+
+    def get_dataloader(self, train):
+        """Defined in :numref:`sec_fashion_mnist`"""
+        data = self.train if train else self.val
+        return gluon.data.DataLoader(data, self.batch_size, shuffle=train,
+                                     num_workers=self.num_workers)
+
+    def visualize(self, batch, nrows=1, ncols=8, labels=[]):
+        """Defined in :numref:`sec_fashion_mnist`"""
+        X, y = batch
+        if not labels:
+            labels = self.text_labels(y)
+        d2l.show_images(X.squeeze(1), nrows, ncols, titles=labels)
 
 def show_images(imgs, num_rows, num_cols, titles=None, scale=1.5):
     """Plot a list of images.
 
     Defined in :numref:`sec_fashion_mnist`"""
-    figsize = (num_cols * scale, num_rows * scale)
-    _, axes = d2l.plt.subplots(num_rows, num_cols, figsize=figsize)
-    axes = axes.flatten()
-    for i, (ax, img) in enumerate(zip(axes, imgs)):
-        ax.imshow(d2l.numpy(img))
-        ax.axes.get_xaxis().set_visible(False)
-        ax.axes.get_yaxis().set_visible(False)
-        if titles:
-            ax.set_title(titles[i])
-    return axes
+    raise NotImplementedError
 
-def get_dataloader_workers():
-    """Use 4 processes to read the data except for Windows.
+class Classifier(d2l.Module):
+    """Defined in :numref:`sec_classification`"""
+    def validation_step(self, batch):
+        Y_hat = self(*batch[:-1])
+        self.plot('loss', self.loss(Y_hat, batch[-1]), train=False)
+        self.plot('acc', self.accuracy(Y_hat, batch[-1]), train=False)
 
-    Defined in :numref:`sec_fashion_mnist`"""
-    return 0 if sys.platform.startswith('win') else 4
+    def accuracy(self, Y_hat, Y, averaged=True):
+        """Compute the number of correct predictions.
+    
+        Defined in :numref:`sec_classification`"""
+        Y_hat = d2l.reshape(Y_hat, (-1, Y_hat.shape[-1]))
+        preds = d2l.astype(d2l.argmax(Y_hat, axis=1), Y.dtype)
+        compare = d2l.astype(preds == d2l.reshape(Y, -1), d2l.float32)
+        return d2l.reduce_mean(compare) if averaged else compare
 
-def load_data_fashion_mnist(batch_size, resize=None):
-    """Download the Fashion-MNIST dataset and then load it into memory.
+    def loss(self, Y_hat, Y, averaged=True):
+        """Defined in :numref:`sec_softmax_concise`"""
+        Y_hat = d2l.reshape(Y_hat, (-1, Y_hat.shape[-1]))
+        Y = d2l.reshape(Y, (-1,))
+        fn = gluon.loss.SoftmaxCrossEntropyLoss()
+        l = fn(Y_hat, Y)
+        return l.mean() if averaged else l
 
-    Defined in :numref:`sec_fashion_mnist`"""
-    dataset = gluon.data.vision
-    trans = [dataset.transforms.ToTensor()]
-    if resize:
-        trans.insert(0, dataset.transforms.Resize(resize))
-    trans = dataset.transforms.Compose(trans)
-    mnist_train = dataset.FashionMNIST(train=True).transform_first(trans)
-    mnist_test = dataset.FashionMNIST(train=False).transform_first(trans)
-    return (gluon.data.DataLoader(mnist_train, batch_size, shuffle=True,
-                                  num_workers=get_dataloader_workers()),
-            gluon.data.DataLoader(mnist_test, batch_size, shuffle=False,
-                                  num_workers=get_dataloader_workers()))
+def cpu():
+    """Defined in :numref:`sec_use_gpu`"""
+    return npx.cpu()
+def gpu(i=0):
+    """Defined in :numref:`sec_use_gpu`"""
+    return npx.gpu(i)
 
-def accuracy(y_hat, y):
-    """Compute the number of correct predictions.
-
-    Defined in :numref:`sec_softmax_scratch`"""
-    if len(y_hat.shape) > 1 and y_hat.shape[1] > 1:
-        y_hat = d2l.argmax(y_hat, axis=1)
-    cmp = d2l.astype(y_hat, y.dtype) == y
-    return float(d2l.reduce_sum(d2l.astype(cmp, y.dtype)))
-
-def evaluate_accuracy(net, data_iter):
-    """Compute the accuracy for a model on a dataset.
-
-    Defined in :numref:`sec_softmax_scratch`"""
-    metric = Accumulator(2)  # No. of correct predictions, no. of predictions
-    for X, y in data_iter:
-        metric.add(accuracy(net(X), y), d2l.size(y))
-    return metric[0] / metric[1]
-
-class Accumulator:
-    """For accumulating sums over `n` variables."""
-    def __init__(self, n):
-        """Defined in :numref:`sec_softmax_scratch`"""
-        self.data = [0.0] * n
-
-    def add(self, *args):
-        self.data = [a + float(b) for a, b in zip(self.data, args)]
-
-    def reset(self):
-        self.data = [0.0] * len(self.data)
-
-    def __getitem__(self, idx):
-        return self.data[idx]
-
-def train_epoch_ch3(net, train_iter, loss, updater):
-    """Train a model within one epoch (defined in Chapter 3).
-
-    Defined in :numref:`sec_softmax_scratch`"""
-    # Sum of training loss, sum of training accuracy, no. of examples
-    metric = Accumulator(3)
-    if isinstance(updater, gluon.Trainer):
-        updater = updater.step
-    for X, y in train_iter:
-        # Compute gradients and update parameters
-        with autograd.record():
-            y_hat = net(X)
-            l = loss(y_hat, y)
-        l.backward()
-        updater(X.shape[0])
-        metric.add(float(l.sum()), accuracy(y_hat, y), y.size)
-    # Return training loss and training accuracy
-    return metric[0] / metric[2], metric[1] / metric[2]
-
-class Animator:
-    """For plotting data in animation."""
-    def __init__(self, xlabel=None, ylabel=None, legend=None, xlim=None,
-                 ylim=None, xscale='linear', yscale='linear',
-                 fmts=('-', 'm--', 'g-.', 'r:'), nrows=1, ncols=1,
-                 figsize=(3.5, 2.5)):
-        """Defined in :numref:`sec_softmax_scratch`"""
-        # Incrementally plot multiple lines
-        if legend is None:
-            legend = []
-        d2l.use_svg_display()
-        self.fig, self.axes = d2l.plt.subplots(nrows, ncols, figsize=figsize)
-        if nrows * ncols == 1:
-            self.axes = [self.axes, ]
-        # Use a lambda function to capture arguments
-        self.config_axes = lambda: d2l.set_axes(
-            self.axes[0], xlabel, ylabel, xlim, ylim, xscale, yscale, legend)
-        self.X, self.Y, self.fmts = None, None, fmts
-
-    def add(self, x, y):
-        # Add multiple data points into the figure
-        if not hasattr(y, "__len__"):
-            y = [y]
-        n = len(y)
-        if not hasattr(x, "__len__"):
-            x = [x] * n
-        if not self.X:
-            self.X = [[] for _ in range(n)]
-        if not self.Y:
-            self.Y = [[] for _ in range(n)]
-        for i, (a, b) in enumerate(zip(x, y)):
-            if a is not None and b is not None:
-                self.X[i].append(a)
-                self.Y[i].append(b)
-        self.axes[0].cla()
-        for x, y, fmt in zip(self.X, self.Y, self.fmts):
-            self.axes[0].plot(x, y, fmt)
-        self.config_axes()
-        display.display(self.fig)
-        display.clear_output(wait=True)
-
-def train_ch3(net, train_iter, test_iter, loss, num_epochs, updater):
-    """Train a model (defined in Chapter 3).
-
-    Defined in :numref:`sec_softmax_scratch`"""
-    animator = Animator(xlabel='epoch', xlim=[1, num_epochs], ylim=[0.3, 0.9],
-                        legend=['train loss', 'train acc', 'test acc'])
-    for epoch in range(num_epochs):
-        train_metrics = train_epoch_ch3(net, train_iter, loss, updater)
-        test_acc = evaluate_accuracy(net, test_iter)
-        animator.add(epoch + 1, train_metrics + (test_acc,))
-    train_loss, train_acc = train_metrics
-    assert train_loss < 0.5, train_loss
-    assert train_acc <= 1 and train_acc > 0.7, train_acc
-    assert test_acc <= 1 and test_acc > 0.7, test_acc
-
-def predict_ch3(net, test_iter, n=6):
-    """Predict labels (defined in Chapter 3).
-
-    Defined in :numref:`sec_softmax_scratch`"""
-    for X, y in test_iter:
-        break
-    trues = d2l.get_fashion_mnist_labels(y)
-    preds = d2l.get_fashion_mnist_labels(d2l.argmax(net(X), axis=1))
-    titles = [true +'\n' + pred for true, pred in zip(trues, preds)]
-    d2l.show_images(
-        d2l.reshape(X[0:n], (n, 28, 28)), 1, n, titles=titles[0:n])
-
-def evaluate_loss(net, data_iter, loss):
-    """Evaluate the loss of a model on the given dataset.
-
-    Defined in :numref:`sec_model_selection`"""
-    metric = d2l.Accumulator(2)  # Sum of losses, no. of examples
-    for X, y in data_iter:
-        l = loss(net(X), y)
-        metric.add(d2l.reduce_sum(l), d2l.size(l))
-    return metric[0] / metric[1]
-
-DATA_HUB = dict()
-DATA_URL = 'http://d2l-data.s3-accelerate.amazonaws.com/'
-
-def download(name, cache_dir=os.path.join('..', 'data')):
-    """Download a file inserted into DATA_HUB, return the local filename.
-
-    Defined in :numref:`sec_kaggle_house`"""
-    assert name in DATA_HUB, f"{name} does not exist in {DATA_HUB}."
-    url, sha1_hash = DATA_HUB[name]
-    os.makedirs(cache_dir, exist_ok=True)
-    fname = os.path.join(cache_dir, url.split('/')[-1])
-    if os.path.exists(fname):
-        sha1 = hashlib.sha1()
-        with open(fname, 'rb') as f:
-            while True:
-                data = f.read(1048576)
-                if not data:
-                    break
-                sha1.update(data)
-        if sha1.hexdigest() == sha1_hash:
-            return fname  # Hit cache
-    print(f'Downloading {fname} from {url}...')
-    r = requests.get(url, stream=True, verify=True)
-    with open(fname, 'wb') as f:
-        f.write(r.content)
-    return fname
-
-def download_extract(name, folder=None):
-    """Download and extract a zip/tar file.
-
-    Defined in :numref:`sec_kaggle_house`"""
-    fname = download(name)
-    base_dir = os.path.dirname(fname)
-    data_dir, ext = os.path.splitext(fname)
-    if ext == '.zip':
-        fp = zipfile.ZipFile(fname, 'r')
-    elif ext in ('.tar', '.gz'):
-        fp = tarfile.open(fname, 'r')
-    else:
-        assert False, 'Only zip/tar files can be extracted.'
-    fp.extractall(base_dir)
-    return os.path.join(base_dir, folder) if folder else data_dir
-
-def download_all():
-    """Download all files in the DATA_HUB.
-
-    Defined in :numref:`sec_kaggle_house`"""
-    for name in DATA_HUB:
-        download(name)
-
-DATA_HUB['kaggle_house_train'] = (
-    DATA_URL + 'kaggle_house_pred_train.csv',
-    '585e9cc93e70b39160e7921475f9bcd7d31219ce')
-
-DATA_HUB['kaggle_house_test'] = (
-    DATA_URL + 'kaggle_house_pred_test.csv',
-    'fa19780a7b011d9b009e8bff8e99922a8ee2eb90')
+def num_gpus():
+    """Defined in :numref:`sec_use_gpu`"""
+    return npx.num_gpus()
 
 def try_gpu(i=0):
     """Return gpu(i) if exists, otherwise return cpu().
 
     Defined in :numref:`sec_use_gpu`"""
-    return npx.gpu(i) if npx.num_gpus() >= i + 1 else npx.cpu()
+    if num_gpus() >= i + 1:
+        return gpu(i)
+    return cpu()
 
 def try_all_gpus():
-    """Return all available GPUs, or [cpu()] if no GPU exists.
+    """Return all available GPUs, or [cpu(),] if no GPU exists.
 
     Defined in :numref:`sec_use_gpu`"""
-    devices = [npx.gpu(i) for i in range(npx.num_gpus())]
-    return devices if devices else [npx.cpu()]
+    return [gpu(i) for i in range(num_gpus())]
 
 def corr2d(X, K):
     """Compute 2D cross-correlation.
@@ -2803,11 +2914,473 @@ def update_G(Z, net_D, net_G, loss, trainer_G):
     return float(loss_G.sum())
 
 d2l.DATA_HUB['pokemon'] = (d2l.DATA_URL + 'pokemon.zip',
-                           'c065c0e2593b8b161a2d7873e42418bf6a21106c')# Alias defined in config.ini
+                           'c065c0e2593b8b161a2d7873e42418bf6a21106c')
+
+def load_array(data_arrays, batch_size, is_train=True):
+    """Construct a Gluon data iterator.
+
+    Defined in :numref:`sec_utils`"""
+    dataset = gluon.data.ArrayDataset(*data_arrays)
+    return gluon.data.DataLoader(dataset, batch_size, shuffle=is_train)
+
+def synthetic_data(w, b, num_examples):
+    """Generate y = Xw + b + noise.
+
+    Defined in :numref:`sec_utils`"""
+    X = d2l.normal(0, 1, (num_examples, len(w)))
+    y = d2l.matmul(X, w) + b
+    y += d2l.normal(0, 0.01, y.shape)
+    return X, d2l.reshape(y, (-1, 1))
+
+def sgd(params, lr, batch_size):
+    """Minibatch stochastic gradient descent.
+
+    Defined in :numref:`sec_utils`"""
+    for param in params:
+        param[:] = param - lr * param.grad / batch_size
+
+def get_dataloader_workers():
+    """Use 4 processes to read the data except for Windows.
+
+    Defined in :numref:`sec_utils`"""
+    return 0 if sys.platform.startswith('win') else 4
+
+def load_data_fashion_mnist(batch_size, resize=None):
+    """Download the Fashion-MNIST dataset and then load it into memory.
+
+    Defined in :numref:`sec_utils`"""
+    dataset = gluon.data.vision
+    trans = [dataset.transforms.ToTensor()]
+    if resize:
+        trans.insert(0, dataset.transforms.Resize(resize))
+    trans = dataset.transforms.Compose(trans)
+    mnist_train = dataset.FashionMNIST(train=True).transform_first(trans)
+    mnist_test = dataset.FashionMNIST(train=False).transform_first(trans)
+    return (gluon.data.DataLoader(mnist_train, batch_size, shuffle=True,
+                                  num_workers=get_dataloader_workers()),
+            gluon.data.DataLoader(mnist_test, batch_size, shuffle=False,
+                                  num_workers=get_dataloader_workers()))
+
+def evaluate_accuracy_gpu(net, data_iter, device=None):
+    """Compute the accuracy for a model on a dataset using a GPU.
+
+    Defined in :numref:`sec_utils`"""
+    if not device:  # Query the first device where the first parameter is on
+        device = list(net.collect_params().values())[0].list_ctx()[0]
+    # No. of correct predictions, no. of predictions
+    metric = d2l.Accumulator(2)
+    for X, y in data_iter:
+        X, y = X.as_in_ctx(device), y.as_in_ctx(device)
+        metric.add(d2l.accuracy(net(X), y), d2l.size(y))
+    return metric[0] / metric[1]
+
+def train_ch6(net, train_iter, test_iter, num_epochs, lr, device):
+    """Train a model with a GPU (defined in Chapter 6).
+
+    Defined in :numref:`sec_utils`"""
+    net.initialize(force_reinit=True, ctx=device, init=init.Xavier())
+    loss = gluon.loss.SoftmaxCrossEntropyLoss()
+    trainer = gluon.Trainer(net.collect_params(),
+                            'sgd', {'learning_rate': lr})
+    animator = d2l.Animator(xlabel='epoch', xlim=[1, num_epochs],
+                            legend=['train loss', 'train acc', 'test acc'])
+    timer, num_batches = d2l.Timer(), len(train_iter)
+    for epoch in range(num_epochs):
+        # Sum of training loss, sum of training accuracy, no. of examples
+        metric = d2l.Accumulator(3)
+        for i, (X, y) in enumerate(train_iter):
+            timer.start()
+            # Here is the major difference from `d2l.train_epoch_ch3`
+            X, y = X.as_in_ctx(device), y.as_in_ctx(device)
+            with autograd.record():
+                y_hat = net(X)
+                l = loss(y_hat, y)
+            l.backward()
+            trainer.step(X.shape[0])
+            metric.add(l.sum(), d2l.accuracy(y_hat, y), X.shape[0])
+            timer.stop()
+            train_l = metric[0] / metric[2]
+            train_acc = metric[1] / metric[2]
+            if (i + 1) % (num_batches // 5) == 0 or i == num_batches - 1:
+                animator.add(epoch + (i + 1) / num_batches,
+                             (train_l, train_acc, None))
+        test_acc = evaluate_accuracy_gpu(net, test_iter)
+        animator.add(epoch + 1, (None, None, test_acc))
+    print(f'loss {train_l:.3f}, train acc {train_acc:.3f}, '
+          f'test acc {test_acc:.3f}')
+    print(f'{metric[2] * num_epochs / timer.sum():.1f} examples/sec '
+          f'on {str(device)}')
+
+def grad_clipping(net, theta):
+    """Clip the gradient.
+
+    Defined in :numref:`sec_utils`"""
+    if isinstance(net, gluon.Block):
+        params = [p.data() for p in net.collect_params().values()]
+    else:
+        params = net.params
+    norm = math.sqrt(sum((p.grad ** 2).sum() for p in params))
+    if norm > theta:
+        for param in params:
+            param.grad[:] *= theta / norm
+
+def evaluate_accuracy(net, data_iter):
+    """Compute the accuracy for a model on a dataset.
+
+    Defined in :numref:`sec_utils`"""
+    metric = Accumulator(2)  # No. of correct predictions, no. of predictions
+    for X, y in data_iter:
+        metric.add(accuracy(net(X), y), d2l.size(y))
+    return metric[0] / metric[1]
+
+def linreg(X, w, b):
+    """The linear regression model.
+
+    Defined in :numref:`sec_utils`"""
+    return d2l.matmul(X, w) + b
+
+def squared_loss(y_hat, y):
+    """Squared loss.
+
+    Defined in :numref:`sec_utils`"""
+    return (y_hat - d2l.reshape(y, y_hat.shape)) ** 2 / 2
+
+def get_fashion_mnist_labels(labels):
+    """Return text labels for the Fashion-MNIST dataset.
+
+    Defined in :numref:`sec_utils`"""
+    text_labels = ['t-shirt', 'trouser', 'pullover', 'dress', 'coat',
+                   'sandal', 'shirt', 'sneaker', 'bag', 'ankle boot']
+    return [text_labels[int(i)] for i in labels]
+
+def show_images(imgs, num_rows, num_cols, titles=None, scale=1.5):
+    """Plot a list of images.
+
+    Defined in :numref:`sec_utils`"""
+    figsize = (num_cols * scale, num_rows * scale)
+    _, axes = d2l.plt.subplots(num_rows, num_cols, figsize=figsize)
+    axes = axes.flatten()
+    for i, (ax, img) in enumerate(zip(axes, imgs)):
+        try:
+            img = d2l.numpy(img)
+        except:
+            pass
+        ax.imshow(img)
+        ax.axes.get_xaxis().set_visible(False)
+        ax.axes.get_yaxis().set_visible(False)
+        if titles:
+            ax.set_title(titles[i])
+    return axes
+
+class Animator:
+    """For plotting data in animation."""
+    def __init__(self, xlabel=None, ylabel=None, legend=None, xlim=None,
+                 ylim=None, xscale='linear', yscale='linear',
+                 fmts=('-', 'm--', 'g-.', 'r:'), nrows=1, ncols=1,
+                 figsize=(3.5, 2.5)):
+        """Defined in :numref:`sec_utils`"""
+        # Incrementally plot multiple lines
+        if legend is None:
+            legend = []
+        d2l.use_svg_display()
+        self.fig, self.axes = d2l.plt.subplots(nrows, ncols, figsize=figsize)
+        if nrows * ncols == 1:
+            self.axes = [self.axes, ]
+        # Use a lambda function to capture arguments
+        self.config_axes = lambda: d2l.set_axes(
+            self.axes[0], xlabel, ylabel, xlim, ylim, xscale, yscale, legend)
+        self.X, self.Y, self.fmts = None, None, fmts
+
+    def add(self, x, y):
+        # Add multiple data points into the figure
+        if not hasattr(y, "__len__"):
+            y = [y]
+        n = len(y)
+        if not hasattr(x, "__len__"):
+            x = [x] * n
+        if not self.X:
+            self.X = [[] for _ in range(n)]
+        if not self.Y:
+            self.Y = [[] for _ in range(n)]
+        for i, (a, b) in enumerate(zip(x, y)):
+            if a is not None and b is not None:
+                self.X[i].append(a)
+                self.Y[i].append(b)
+        self.axes[0].cla()
+        for x, y, fmt in zip(self.X, self.Y, self.fmts):
+            self.axes[0].plot(x, y, fmt)
+        self.config_axes()
+        display.display(self.fig)
+        display.clear_output(wait=True)
+
+class Accumulator:
+    """For accumulating sums over `n` variables."""
+    def __init__(self, n):
+        """Defined in :numref:`sec_utils`"""
+        self.data = [0.0] * n
+
+    def add(self, *args):
+        self.data = [a + float(b) for a, b in zip(self.data, args)]
+
+    def reset(self):
+        self.data = [0.0] * len(self.data)
+
+    def __getitem__(self, idx):
+        return self.data[idx]
+
+
+def accuracy(y_hat, y):
+    """Compute the number of correct predictions.
+
+    Defined in :numref:`sec_utils`"""
+    if len(y_hat.shape) > 1 and y_hat.shape[1] > 1:
+        y_hat = d2l.argmax(y_hat, axis=1)
+    cmp = d2l.astype(y_hat, y.dtype) == y
+    return float(d2l.reduce_sum(d2l.astype(cmp, y.dtype)))
+
+def download(url, folder='../data', sha1_hash=None):
+    """Download a file to folder and return the local filepath.
+
+    Defined in :numref:`sec_utils`"""
+    if not url.startswith('http'):
+        # For back compatability
+        url, sha1_hash = DATA_HUB[url]
+    os.makedirs(folder, exist_ok=True)
+    fname = os.path.join(folder, url.split('/')[-1])
+    # Check if hit cache
+    if os.path.exists(fname) and sha1_hash:
+        sha1 = hashlib.sha1()
+        with open(fname, 'rb') as f:
+            while True:
+                data = f.read(1048576)
+                if not data:
+                    break
+                sha1.update(data)
+        if sha1.hexdigest() == sha1_hash:
+            return fname
+    # Download
+    print(f'Downloading {fname} from {url}...')
+    r = requests.get(url, stream=True, verify=True)
+    with open(fname, 'wb') as f:
+        f.write(r.content)
+    return fname
+
+def extract(filename, folder=None):
+    """Extract a zip/tar file into folder.
+
+    Defined in :numref:`sec_utils`"""
+    base_dir = os.path.dirname(filename)
+    _, ext = os.path.splitext(filename)
+    assert ext in ('.zip', '.tar', '.gz'), 'Only support zip/tar files.'
+    if ext == '.zip':
+        fp = zipfile.ZipFile(filename, 'r')
+    else:
+        fp = tarfile.open(filename, 'r')
+    if folder is None:
+        folder = base_dir
+    fp.extractall(folder)
+
+def download_extract(name, folder=None):
+    """Download and extract a zip/tar file.
+
+    Defined in :numref:`sec_utils`"""
+    fname = download(name)
+    base_dir = os.path.dirname(fname)
+    data_dir, ext = os.path.splitext(fname)
+    if ext == '.zip':
+        fp = zipfile.ZipFile(fname, 'r')
+    elif ext in ('.tar', '.gz'):
+        fp = tarfile.open(fname, 'r')
+    else:
+        assert False, 'Only zip/tar files can be extracted.'
+    fp.extractall(base_dir)
+    return os.path.join(base_dir, folder) if folder else data_dir
+
+
+def tokenize(lines, token='word'):
+    """Split text lines into word or character tokens.
+
+    Defined in :numref:`sec_utils`"""
+    assert token in ('word', 'char'), 'Unknown token type: ' + token
+    return [line.split() if token == 'word' else list(line) for line in lines]
+
+def evaluate_loss(net, data_iter, loss):
+    """Evaluate the loss of a model on the given dataset.
+
+    Defined in :numref:`sec_utils`"""
+    metric = d2l.Accumulator(2)  # Sum of losses, no. of examples
+    for X, y in data_iter:
+        l = loss(net(X), y)
+        metric.add(d2l.reduce_sum(l), d2l.size(l))
+    return metric[0] / metric[1]
+
+d2l.DATA_HUB['fra-eng'] = (d2l.DATA_URL + 'fra-eng.zip',
+                           '94646ad1522d915e7b0f9296181140edcf86a4f5')
+
+def read_data_nmt():
+    """Load the English-French dataset.
+
+    Defined in :numref:`sec_utils`"""
+    data_dir = d2l.download_extract('fra-eng')
+    with open(os.path.join(data_dir, 'fra.txt'), 'r') as f:
+        return f.read()
+
+def preprocess_nmt(text):
+    """Preprocess the English-French dataset.
+
+    Defined in :numref:`sec_utils`"""
+    def no_space(char, prev_char):
+        return char in set(',.!?') and prev_char != ' '
+
+    # Replace non-breaking space with space, and convert uppercase letters to
+    # lowercase ones
+    text = text.replace('\u202f', ' ').replace('\xa0', ' ').lower()
+    # Insert space between words and punctuation marks
+    out = [' ' + char if i > 0 and no_space(char, text[i - 1]) else char
+           for i, char in enumerate(text)]
+    return ''.join(out)
+
+def tokenize_nmt(text, num_examples=None):
+    """Tokenize the English-French dataset.
+
+    Defined in :numref:`sec_utils`"""
+    source, target = [], []
+    for i, line in enumerate(text.split('\n')):
+        if num_examples and i > num_examples:
+            break
+        parts = line.split('\t')
+        if len(parts) == 2:
+            source.append(parts[0].split(' '))
+            target.append(parts[1].split(' '))
+    return source, target
+
+
+def truncate_pad(line, num_steps, padding_token):
+    """Truncate or pad sequences.
+
+    Defined in :numref:`sec_utils`"""
+    if len(line) > num_steps:
+        return line[:num_steps]  # Truncate
+    return line + [padding_token] * (num_steps - len(line))  # Pad
+
+
+def build_array_nmt(lines, vocab, num_steps):
+    """Transform text sequences of machine translation into minibatches.
+
+    Defined in :numref:`sec_utils`"""
+    lines = [vocab[l] for l in lines]
+    lines = [l + [vocab['<eos>']] for l in lines]
+    array = d2l.tensor([truncate_pad(
+        l, num_steps, vocab['<pad>']) for l in lines])
+    valid_len = d2l.reduce_sum(
+        d2l.astype(array != vocab['<pad>'], d2l.int32), 1)
+    return array, valid_len
+
+
+def load_data_nmt(batch_size, num_steps, num_examples=600):
+    """Return the iterator and the vocabularies of the translation dataset.
+
+    Defined in :numref:`sec_utils`"""
+    text = preprocess_nmt(read_data_nmt())
+    source, target = tokenize_nmt(text, num_examples)
+    src_vocab = d2l.Vocab(source, min_freq=2,
+                          reserved_tokens=['<pad>', '<bos>', '<eos>'])
+    tgt_vocab = d2l.Vocab(target, min_freq=2,
+                          reserved_tokens=['<pad>', '<bos>', '<eos>'])
+    src_array, src_valid_len = build_array_nmt(source, src_vocab, num_steps)
+    tgt_array, tgt_valid_len = build_array_nmt(target, tgt_vocab, num_steps)
+    data_arrays = (src_array, src_valid_len, tgt_array, tgt_valid_len)
+    data_iter = d2l.load_array(data_arrays, batch_size)
+    return data_iter, src_vocab, tgt_vocab
+
+class MaskedSoftmaxCELoss(gluon.loss.SoftmaxCELoss):
+    """The softmax cross-entropy loss with masks.
+
+    Defined in :numref:`sec_utils`"""
+    # `pred` shape: (`batch_size`, `num_steps`, `vocab_size`)
+    # `label` shape: (`batch_size`, `num_steps`)
+    # `valid_len` shape: (`batch_size`,)
+    def forward(self, pred, label, valid_len):
+        # `weights` shape: (`batch_size`, `num_steps`, 1)
+        weights = np.expand_dims(np.ones_like(label), axis=-1)
+        weights = npx.sequence_mask(weights, valid_len, True, axis=1)
+        return super(MaskedSoftmaxCELoss, self).forward(pred, label, weights)
+
+def train_seq2seq(net, data_iter, lr, num_epochs, tgt_vocab, device):
+    """Train a model for sequence to sequence.
+
+    Defined in :numref:`sec_utils`"""
+    net.initialize(init.Xavier(), force_reinit=True, ctx=device)
+    trainer = gluon.Trainer(net.collect_params(), 'adam',
+                            {'learning_rate': lr})
+    loss = MaskedSoftmaxCELoss()
+    animator = d2l.Animator(xlabel='epoch', ylabel='loss',
+                            xlim=[10, num_epochs])
+    for epoch in range(num_epochs):
+        timer = d2l.Timer()
+        metric = d2l.Accumulator(2)  # Sum of training loss, no. of tokens
+        for batch in data_iter:
+            X, X_valid_len, Y, Y_valid_len = [
+                x.as_in_ctx(device) for x in batch]
+            bos = np.array(
+                [tgt_vocab['<bos>']] * Y.shape[0], ctx=device).reshape(-1, 1)
+            dec_input = d2l.concat([bos, Y[:, :-1]], 1)  # Teacher forcing
+            with autograd.record():
+                Y_hat, _ = net(X, dec_input, X_valid_len)
+                l = loss(Y_hat, Y, Y_valid_len)
+            l.backward()
+            d2l.grad_clipping(net, 1)
+            num_tokens = Y_valid_len.sum()
+            trainer.step(num_tokens)
+            metric.add(l.sum(), num_tokens)
+        if (epoch + 1) % 10 == 0:
+            animator.add(epoch + 1, (metric[0] / metric[1],))
+    print(f'loss {metric[0] / metric[1]:.3f}, {metric[1] / timer.stop():.1f} '
+          f'tokens/sec on {str(device)}')
+
+def predict_seq2seq(net, src_sentence, src_vocab, tgt_vocab, num_steps,
+                    device, save_attention_weights=False):
+    """Predict for sequence to sequence.
+
+    Defined in :numref:`sec_utils`"""
+    src_tokens = src_vocab[src_sentence.lower().split(' ')] + [
+        src_vocab['<eos>']]
+    enc_valid_len = np.array([len(src_tokens)], ctx=device)
+    src_tokens = d2l.truncate_pad(src_tokens, num_steps, src_vocab['<pad>'])
+    # Add the batch axis
+    enc_X = np.expand_dims(np.array(src_tokens, ctx=device), axis=0)
+    enc_outputs = net.encoder(enc_X, enc_valid_len)
+    dec_state = net.decoder.init_state(enc_outputs, enc_valid_len)
+    # Add the batch axis
+    dec_X = np.expand_dims(np.array([tgt_vocab['<bos>']], ctx=device), axis=0)
+    output_seq, attention_weight_seq = [], []
+    for _ in range(num_steps):
+        Y, dec_state = net.decoder(dec_X, dec_state)
+        # We use the token with the highest prediction likelihood as input
+        # of the decoder at the next time step
+        dec_X = Y.argmax(axis=2)
+        pred = dec_X.squeeze(axis=0).astype('int32').item()
+        # Save attention weights (to be covered later)
+        if save_attention_weights:
+            attention_weight_seq.append(net.decoder.attention_weights)
+        # Once the end-of-sequence token is predicted, the generation of the
+        # output sequence is complete
+        if pred == tgt_vocab['<eos>']:
+            break
+        output_seq.append(pred)
+    return ' '.join(tgt_vocab.to_tokens(output_seq)), attention_weight_seq
+
+
+# Alias defined in config.ini
 size = lambda a: a.size
 transpose = lambda a: a.T
+nn_Module = nn.Block
+sigmoid = npx.sigmoid
+batch_matmul = npx.batch_dot
 
+ones_like = np.ones_like
 ones = np.ones
+zeros_like = np.zeros_like
 zeros = np.zeros
 arange = np.arange
 meshgrid = np.meshgrid
@@ -2821,9 +3394,12 @@ exp = np.exp
 log = np.log
 tensor = np.array
 normal = np.random.normal
+randn = np.random.randn
+expand_dims = np.expand_dims
 rand = np.random.rand
 matmul = np.dot
 int32 = np.int32
+int64 = np.int64
 float32 = np.float32
 concat = np.concatenate
 stack = np.stack
@@ -2835,4 +3411,7 @@ to = lambda x, *args, **kwargs: x.as_in_context(*args, **kwargs)
 reduce_sum = lambda x, *args, **kwargs: x.sum(*args, **kwargs)
 argmax = lambda x, *args, **kwargs: x.argmax(*args, **kwargs)
 astype = lambda x, *args, **kwargs: x.astype(*args, **kwargs)
+reduce_mean = lambda x, *args, **kwargs: x.mean(*args, **kwargs)
+swapaxes = lambda x, *args, **kwargs: x.swapaxes(*args, **kwargs)
+repeat = lambda x, *args, **kwargs: x.repeat(*args, **kwargs)
 
