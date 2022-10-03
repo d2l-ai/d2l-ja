@@ -225,7 +225,7 @@ d2l.plot(x.numpy(), t.gradient(y, x).numpy(), 'x', 'grad of sigmoid',
 ### タン機能
 :label:`subsec_tanh`
 
-シグモイド関数と同様に、[**tanh (双曲線正接) 関数も入力を押しつぶします**]、区間 (**-1 と 1** の間) の要素に変換します。 
+シグモイド関数と同様に、[**tanh (双曲線正接) 関数も入力を押しつぶします**]、区間 (**-1 と 1 の間**) の要素に変換します。 
 
 $$\operatorname{tanh}(x) = \frac{1 - \exp(-2x)}{1 + \exp(-2x)}.$$
 
